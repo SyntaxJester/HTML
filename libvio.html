@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LIBVIO WebHome</title>
+    <style>
+        :root {
+            --panel-rgb: 30, 30, 30;
+            --panel: rgba(var(--panel-rgb), .75);
+            --panel-soft: rgba(var(--panel-rgb), .55);
+            --panel-strong: rgba(var(--panel-rgb), .95);
+            --line: rgba(255, 255, 255, .15);
+            --text-main: #e5e5e5;
+            --text-sub: #999999;
+            --accent: #f5c518;
+            --bg-fallback: #0b0b0b;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            min-height: 100%;
+            background: transparent;
+            color: var(--text-main);
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        html:not(.fm-native), html:not(.fm-native) body {
+            background: var(--bg-fallback);
+        }
+
+        .focusable:focus {
+            outline: 3px solid var(--accent);
+            outline-offset: -2px;
+            transform: scale(1.02);
+            z-index: 5;
+            transition: transform 0.2s ease, outline 0.2s ease;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        body.detail-active .container {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 10px;
+            background: var(--panel-soft);
+            border-radius: 8px;
+            border: 1px solid var(--line);
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            border: 1px solid var(--line);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .nav-tab.active {
+            background: var(--accent);
+            color: #000;
+            font-weight: bold;
+            border-color: var(--accent);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 6px;
+        }
+
+        .search-input {
+            background: rgba(0, 0, 0, 0.4);
+            color: var(--text-main);
+            border: 1px solid var(--line);
+            padding: 8px 12px;
+            border-radius: 6px;
+            width: 180px;
+            font-size: 14px;
+        }
+
+        .search-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border: 1px solid var(--line);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .vod-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+            gap: 16px;
+            flex: 1;
+        }
+
+        .vod-card {
+            background: var(--panel-soft);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid var(--line);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .vod-thumb-box {
+            position: relative;
+            width: 100%;
+            padding-top: 140%;
+            background: rgba(0,0,0,0.2);
+        }
+
+        .vod-thumb {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        .vod-tag {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: var(--accent);
+            color: #000;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .vod-remarks {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .vod-title {
+            padding: 8px;
+            font-size: 13px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-top: 25px;
+            padding: 10px 0;
+        }
+
+        .page-btn {
+            background: var(--panel-soft);
+            color: var(--text-main);
+            border: 1px solid var(--line);
+            padding: 8px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .page-text {
+            font-size: 14px;
+            color: var(--text-sub);
+        }
+
+        .layer-sheet {
+            position: fixed;
+            inset: 0;
+            background: transparent;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .sheet-body {
+            background: var(--panel-strong);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            width: 100%;
+            max-width: 860px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .sheet-main {
+            display: flex;
+            gap: 20px;
+        }
+
+        .sheet-poster {
+            width: 140px;
+            height: 196px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid var(--line);
+            flex-shrink: 0;
+        }
+
+        .sheet-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sheet-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .sheet-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: var(--accent);
+            margin: 0;
+        }
+
+        .sheet-close {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            border: 1px solid var(--line);
+            padding: 6px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .sheet-desc {
+            font-size: 13px;
+            color: var(--text-sub);
+            line-height: 1.6;
+            max-height: 110px;
+            overflow-y: auto;
+        }
+
+        .part-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #fff;
+            border-left: 3px solid var(--accent);
+            padding-left: 8px;
+            margin-bottom: 10px;
+        }
+
+        .episode-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .episode-item {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            border: 1px solid var(--line);
+            padding: 8px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+            min-width: 60px;
+        }
+
+        .disk-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--line);
+            padding: 10px 14px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .disk-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .disk-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #777;
+        }
+
+        .disk-status.ok { background: #2ecc71; box-shadow: 0 0 6px #2ecc71; }
+        .disk-status.bad { background: #e74c3c; }
+        .disk-status.locked { background: #f1c40f; }
+
+        .status-msg {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-sub);
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="mainContainer">
+    <div class="header">
+        <div class="logo">LIBVIO</div>
+        <div class="nav-tabs" id="categoryBox">
+            <div class="nav-tab focusable active" data-id="home">首页</div>
+            <div class="nav-tab focusable" data-id="1">电影</div>
+            <div class="nav-tab focusable" data-id="2">剧集</div>
+            <div class="nav-tab focusable" data-id="4">番剧</div>
+            <div class="nav-tab focusable" data-id="15">日韩</div>
+            <div class="nav-tab focusable" data-id="16">欧美</div>
+        </div>
+        <div class="search-bar">
+            <input type="text" id="keywords" class="search-input focusable" placeholder="输入关键字...">
+            <button id="searchButton" class="search-btn focusable">搜索</button>
+        </div>
+    </div>
+
+    <div class="vod-grid" id="vodGrid"></div>
+
+    <div class="pagination" id="pageBox">
+        <button id="btnPrev" class="page-btn focusable">上一页</button>
+        <span id="txtPage" class="page-text">第 1 页</span>
+        <button id="btnNext" class="page-btn focusable">下一页</button>
+    </div>
+</div>
+
+<div class="layer-sheet" id="detailSheet" style="display: none;">
+    <div class="sheet-body">
+        <div class="sheet-main">
+            <img id="detailImg" class="sheet-poster" src="" alt="">
+            <div class="sheet-details">
+                <div class="sheet-title-row">
+                    <h2 id="sheetTitle" class="sheet-title"></h2>
+                    <button class="sheet-close focusable" id="btnCloseSheet">返回</button>
+                </div>
+                <div id="sheetDesc" class="sheet-desc"></div>
+            </div>
+        </div>
+        <div id="sourceContainer"></div>
+    </div>
+</div>
+
+<script>
+    const HOST = 'https://www.libvio.run';
+    let currentType = 'home';
+    let currentIdx = 1;
+    let queryWord = '';
+    let preFocusNode = null;
+
+    function verifySdk() {
+        if (window.fongmiBridge || window.fm || window.fongmi) {
+            document.documentElement.classList.add("fm-native");
+        }
+    }
+
+    window.addEventListener("fmsdk", verifySdk);
+    document.addEventListener("DOMContentLoaded", () => {
+        verifySdk();
+        requestList();
+    });
+
+    async function loadHtml(uri) {
+        const url = uri.startsWith('http') ? uri : HOST + uri;
+        if (window.fm && window.fm.req) {
+            const resp = await fm.req(url, { method: 'GET', responseType: 'text', timeout: 12 });
+            if (!resp.ok) throw new Error(`Status ${resp.status}`);
+            return resp.body;
+        }
+        const resp = await fetch(url);
+        return await resp.text();
+    }
+
+    function safeImg(url) {
+        if (!url) return '';
+        if (url.startsWith('//')) url = 'https:' + url;
+        if (window.fm && window.fm.res) {
+            return fm.res(url, { headers: { 'Referer': HOST } });
+        }
+        return url;
+    }
+
+    function parseVods(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const items = [];
+        const blocks = doc.querySelectorAll('.stui-vodlist__box');
+        
+        blocks.forEach(b => {
+            const node = b.querySelector('a.stui-vodlist__thumb');
+            if (node) {
+                let img = node.getAttribute('data-original') || node.getAttribute('style') || '';
+                if (img.includes('url(')) {
+                    const match = img.match(/url\(['"]?(.*?)['"]?\)/);
+                    if (match) img = match[1];
+                }
+                const score = b.querySelector('.pic-tag-top');
+                const remark = b.querySelector('.pic-text');
+                items.push({
+                    title: node.getAttribute('title') || b.querySelector('.title a')?.innerText || '',
+                    href: node.getAttribute('href'),
+                    pic: img,
+                    tag: score ? score.innerText.trim() : '',
+                    note: remark ? remark.innerText.trim() : ''
+                });
+            }
+        });
+        return items;
+    }
+
+    function parseMeta(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const title = doc.querySelector('h1.title')?.innerText || '';
+        const poster = doc.querySelector('.vod-poster img')?.getAttribute('data-original') || '';
+        const desc = doc.querySelector('.vod-desc .detail-sketch')?.innerText || '';
+        
+        const lines = [];
+        const clouds = [];
+
+        doc.querySelectorAll('.playlist-panel:not(.netdisk-panel)').forEach(p => {
+            const label = p.querySelector('h3')?.innerText || '播放播放';
+            const eps = [];
+            p.querySelectorAll('.stui-content__playlist li a').forEach(a => {
+                eps.push({ name: a.innerText.trim(), href: a.getAttribute('href') });
+            });
+            if (eps.length > 0) lines.push({ name: label, data: eps });
+        });
+
+        doc.querySelectorAll('.netdisk-panel .netdisk-item').forEach(p => {
+            const tag = p.querySelector('.netdisk-name')?.innerText || '网盘下载';
+            const link = p.getAttribute('href');
+            if (link) {
+                let type = 'http';
+                if (link.includes('quark.cn')) type = 'quark';
+                else if (link.includes('uc.cn')) type = 'uc';
+                else if (link.includes('aliyun.com')) type = 'aliyun';
+                else if (link.includes('baidu.com')) type = 'baidu';
+                clouds.push({ name: tag, url: link, type: type });
+            }
+        });
+
+        return { title, poster, desc, lines, clouds };
+    }
+
+    function parseMediaLink(html) {
+        const match = html.match(/var player_aaaa\s*=\s*(\{.*?\})/);
+        if (match && match[1]) {
+            try {
+                const config = JSON.parse(match[1]);
+                return config.url || '';
+            } catch (e) {}
+        }
+        return '';
+    }
+
+    async function requestList() {
+        const grid = document.getElementById('vodGrid');
+        grid.innerHTML = '<div class="status-msg">数据加载中...</div>';
+        
+        let path = '/';
+        if (currentType === 'search') {
+            path = `/search/-------------.html?wd=${encodeURIComponent(queryWord)}`;
+            document.getElementById('pageBox').style.display = 'none';
+        } else if (currentType === 'home') {
+            path = '/';
+            document.getElementById('pageBox').style.display = 'none';
+        } else {
+            path = `/type/${currentType}-${currentIdx}.html`;
+            document.getElementById('pageBox').style.display = 'flex';
+            document.getElementById('txtPage').innerText = `第 ${currentIdx} 页`;
+        }
+
+        try {
+            const html = await loadHtml(path);
+            const items = parseVods(html);
+            renderGrid(items);
+        } catch (e) {
+            grid.innerHTML = `<div class="status-msg">数据加载失败: ${e.message}</div>`;
+        }
+    }
+
+    function renderGrid(items) {
+        const grid = document.getElementById('vodGrid');
+        grid.innerHTML = '';
+        if (items.length === 0) {
+            grid.innerHTML = '<div class="status-msg">未找到相关资源</div>';
+            return;
+        }
+
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'vod-card focusable';
+            card.tabIndex = 0;
+            
+            let html = `<div class="vod-thumb-box"><img class="vod-thumb" src="${safeImg(item.pic)}" loading="lazy">`;
+            if (item.tag && item.tag !== '0.0') html += `<div class="vod-tag">${item.tag}</div>`;
+            if (item.note) html += `<div class="vod-remarks">${item.note}</div>`;
+            html += `</div><div class="vod-title">${item.title}</div>`;
+            
+            card.innerHTML = html;
+            card.onclick = () => openDetails(item.href);
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') openDetails(item.href);
+            });
+            grid.appendChild(card);
+        });
+    }
+
+    async function openDetails(url) {
+        preFocusNode = document.activeElement;
+        document.body.classList.add('detail-active');
+        
+        const sheet = document.getElementById('detailSheet');
+        sheet.style.display = 'flex';
+        
+        const title = document.getElementById('sheetTitle');
+        const desc = document.getElementById('sheetDesc');
+        const img = document.getElementById('detailImg');
+        const box = document.getElementById('sourceContainer');
+        
+        title.innerText = '资源读取中...';
+        desc.innerText = '';
+        img.src = '';
+        box.innerHTML = '<div class="status-msg">详情加载中...</div>';
+
+        document.getElementById('btnCloseSheet').focus();
+
+        try {
+            const html = await loadHtml(url);
+            const meta = parseMeta(html);
+
+            title.innerText = meta.title;
+            desc.innerText = meta.desc;
+            img.src = safeImg(meta.poster);
+            box.innerHTML = '';
+
+            if (meta.clouds.length > 0) {
+                const part = document.createElement('div');
+                part.className = 'play-group';
+                part.innerHTML = `<div class="part-title">网盘下载</div>`;
+                const list = document.createElement('div');
+                
+                meta.clouds.forEach(c => {
+                    const item = document.createElement('div');
+                    item.className = 'disk-item focusable';
+                    item.tabIndex = 0;
+                    item.innerHTML = `<div class="disk-info"><div class="disk-status" id="pan_${btoa(c.url).replace(/=/g,'')}"></div><span>${c.name} [${c.type.toUpperCase()}]</span></div>`;
+                    
+                    const triggerPlay = () => {
+                        if (window.fm && window.fm.pan && window.fm.pan.play) {
+                            fm.pan.play({ type: c.type, url: c.url, title: meta.title });
+                        } else {
+                            window.open(c.url);
+                        }
+                    };
+                    item.onclick = triggerPlay;
+                    item.addEventListener('keydown', (e) => { if (e.key === 'Enter') triggerPlay(); });
+                    list.appendChild(item);
+                });
+                part.appendChild(list);
+                box.appendChild(part);
+                triggerPanCheck(meta.clouds);
+            }
+
+            meta.lines.forEach(line => {
+                const part = document.createElement('div');
+                part.className = 'play-group';
+                part.innerHTML = `<div class="part-title">${line.name}</div>`;
+                
+                const list = document.createElement('div');
+                list.className = 'episode-grid';
+                
+                line.data.forEach(ep => {
+                    const item = document.createElement('div');
+                    item.className = 'episode-item focusable';
+                    item.tabIndex = 0;
+                    item.innerText = ep.name;
+                    
+                    const startPlay = async () => {
+                        const originalText = item.innerText;
+                        item.innerText = '解析中...';
+                        try {
+                            const phtml = await loadHtml(ep.href);
+                            const streamUrl = parseMediaLink(phtml);
+                            item.innerText = originalText;
+                            if (streamUrl) {
+                                if (window.fm && window.fm.play) {
+                                    fm.play(streamUrl, `${meta.title} - ${ep.name}`, {
+                                        headers: {
+                                            'Referer': HOST + '/',
+                                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+                                        }
+                                    });
+                                } else {
+                                    alert(`解析直链成功:\n${streamUrl}`);
+                                }
+                            } else {
+                                alert('未找到有效的媒体播放直链');
+                            }
+                        } catch (err) {
+                            item.innerText = originalText;
+                        }
+                    };
+                    item.onclick = startPlay;
+                    item.addEventListener('keydown', (e) => { if (e.key === 'Enter') startPlay(); });
+                    list.appendChild(item);
+                });
+                part.appendChild(list);
+                box.appendChild(part);
+            });
+
+        } catch (e) {
+            box.innerHTML = `<div class="status-msg">详情加载失败: ${e.message}</div>`;
+        }
+    }
+
+    function closeDetails() {
+        document.body.classList.remove('detail-active');
+        document.getElementById('detailSheet').style.display = 'none';
+        if (preFocusNode) {
+            preFocusNode.focus({ preventScroll: true });
+            preFocusNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    document.getElementById('btnCloseSheet').onclick = closeDetails;
+
+    async function triggerPanCheck(clouds) {
+        if (!window.fm || !window.fm.config || !window.fm.pan || !window.fm.pan.check) return;
+        try {
+            const conf = await fm.config();
+            if (!conf.driveCheck) return;
+
+            const targets = clouds.map(c => ({ type: c.type, url: c.url, password: "" }))
+                                  .filter(t => ['quark', 'uc', 'aliyun', 'baidu'].includes(t.type));
+            if (targets.length === 0) return;
+
+            const resp = await fm.pan.check(targets);
+            if (resp && resp.results) {
+                resp.results.forEach(r => {
+                    const dot = document.getElementById(`pan_${btoa(r.url).replace(/=/g,'')}`);
+                    if (dot) dot.className = `disk-status ${r.state}`;
+                });
+            }
+        } catch (e) {}
+    }
+
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            e.target.classList.add('active');
+            currentType = e.target.getAttribute('data-id');
+            currentIdx = 1;
+            requestList();
+        });
+    });
+
+    document.getElementById('btnPrev').onclick = () => {
+        if (currentIdx > 1) {
+            currentIdx--;
+            requestList();
+        }
+    };
+    document.getElementById('btnNext').onclick = () => {
+        currentIdx++;
+        requestList();
+    };
+
+    function startSearch() {
+        const val = document.getElementById('keywords').value.trim();
+        if (!val) return;
+        queryWord = val;
+        currentType = 'search';
+        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+        requestList();
+    }
+    document.getElementById('searchButton').onclick = startSearch;
+    document.getElementById('keywords').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') startSearch();
+    });
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' || e.key === 'Backspace' || e.keyCode === 27 || e.keyCode === 8) {
+            if (document.body.classList.contains('detail-active')) {
+                closeDetails();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            } else if (window.fm && window.fm.back) {
+                fm.back();
+            }
+        }
+    });
+</script>
+
+</body>
+</html>
