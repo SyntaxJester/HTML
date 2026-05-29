@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+html_content = '''<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="theme-color" content="#101419">
-    <title>LIBVIO WebHome</title>
+    <title>LIBVIO推荐</title>
     <style>
         :root {
             color-scheme: dark;
@@ -113,77 +113,85 @@
             pointer-events: none;
         }
 
-        .header {
+        /* ===== Top Bar (like nostr) ===== */
+        .top-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
             gap: 12px;
-            margin-bottom: 18px;
-            padding: 12px 14px;
-            background: var(--panel-soft);
-            border-radius: var(--radius);
-            border: 1px solid var(--line);
-            backdrop-filter: blur(12px) saturate(1.05);
+            margin-bottom: 14px;
+            padding: 0 2px;
         }
 
-        .logo {
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--panel-soft);
+            border: 1px solid var(--line);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .page-title {
             font-size: 20px;
             font-weight: 800;
             color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
+            white-space: nowrap;
         }
 
-        .chips {
-            width: 100%;
-            max-width: 100%;
-            min-width: 0;
+        .top-bar-right {
             display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding: 3px 0 2px;
-            overscroll-behavior-x: contain;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
         }
 
-        .chips::-webkit-scrollbar { display: none; }
-
-        .chip {
-            flex: 0 0 auto;
-            min-height: 36px;
-            padding: 0 14px;
-            border-radius: 999px;
+        .icon-btn {
+            width: 38px;
+            height: 38px;
+            display: grid;
+            place-items: center;
+            border-radius: var(--radius);
             background: var(--control);
             border: 1px solid var(--line);
             color: var(--text);
-            font-weight: 700;
-            font-size: 13px;
             text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
             backdrop-filter: blur(12px) saturate(1.05);
-            cursor: pointer;
             transition: transform .06s ease, background-color .12s ease, border-color .12s ease;
         }
 
-        .chip.active {
-            background: var(--control-active);
-            color: var(--text);
-            border-color: var(--line-strong);
-            font-weight: 760;
-        }
-
-        .chip:focus {
+        .icon-btn:focus {
             outline: none;
             transform: translateY(-1px);
             background: rgba(70, 85, 96, .72);
             border-color: var(--focus-line);
-            box-shadow: none;
         }
 
-        .chip:active {
+        .icon-btn:active {
             transform: translateY(1px);
         }
 
+        .icon-btn .icon {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* ===== Search Bar (nostr style) ===== */
         .search-bar {
             width: 100%;
             min-width: 0;
@@ -256,6 +264,138 @@
             transform: translateY(1px);
         }
 
+        /* ===== Chips / Nav Tabs (nostr style) ===== */
+        .chips {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 3px 0 2px;
+            overscroll-behavior-x: contain;
+        }
+
+        .chips::-webkit-scrollbar { display: none; }
+
+        .chip {
+            flex: 0 0 auto;
+            min-height: 36px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: var(--control);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-weight: 700;
+            font-size: 13px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
+            backdrop-filter: blur(12px) saturate(1.05);
+            cursor: pointer;
+            transition: transform .06s ease, background-color .12s ease, border-color .12s ease;
+        }
+
+        .chip.active {
+            background: var(--control-active);
+            color: var(--text);
+            border-color: var(--line-strong);
+            font-weight: 760;
+        }
+
+        .chip:focus {
+            outline: none;
+            transform: translateY(-1px);
+            background: rgba(70, 85, 96, .72);
+            border-color: var(--focus-line);
+            box-shadow: none;
+        }
+
+        .chip:active {
+            transform: translateY(1px);
+        }
+
+        /* ===== Section Head (nostr style) ===== */
+        .section-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 24px 0 10px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .section-head h3 {
+            margin: 0;
+            font-size: 18px;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .section-actions {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== Connection Dock (nostr style) ===== */
+        .connection-dock {
+            position: relative;
+            z-index: 50;
+            width: fit-content;
+            max-width: 100%;
+            justify-self: end;
+            margin: 0;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            background: var(--control);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, .2);
+            backdrop-filter: blur(12px) saturate(1.05);
+            overflow: visible;
+        }
+
+        .connection-toggle {
+            width: auto;
+            min-height: 34px;
+            display: grid;
+            grid-template-columns: auto auto auto;
+            align-items: center;
+            gap: 7px;
+            padding: 0 9px;
+            background: transparent;
+            color: var(--text);
+            text-align: left;
+            border-radius: var(--radius);
+        }
+
+        .connection-title {
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .connection-arrow {
+            color: var(--muted);
+            font-size: 13px;
+            transition: transform .16s ease;
+        }
+
+        .connection-dock.open .connection-arrow {
+            transform: rotate(180deg);
+        }
+
+        .dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            background: var(--muted);
+        }
+
+        .dot.ok { background: var(--ok); }
+        .dot.warn { background: #ffcc4d; }
+        .dot.bad { background: var(--danger); }
+
+        /* ===== Vod Grid (nostr style 3 columns) ===== */
         .vod-grid {
             width: 100%;
             max-width: 100%;
@@ -263,7 +403,6 @@
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
-            margin-top: 14px;
         }
 
         @media (min-width: 720px) {
@@ -287,7 +426,11 @@
             }
         }
 
-        .vod-card {
+        /* ===== Vod Card (nostr style) ===== */
+        .card {
+            flex: 0 0 142px;
+            min-width: 0;
+            max-width: 172px;
             position: relative;
             border-radius: var(--radius);
             background: var(--panel-soft);
@@ -296,12 +439,18 @@
             padding: 0;
             text-align: left;
             color: var(--text);
-            cursor: pointer;
+            scroll-snap-align: start;
             backdrop-filter: blur(10px) saturate(1.05);
             transition: transform .16s ease, border-color .16s ease, background-color .16s ease;
         }
 
-        .vod-card:focus {
+        .vod-grid .card {
+            width: 100%;
+            max-width: none;
+            flex: none;
+        }
+
+        .card:focus {
             outline: none;
             transform: translateY(-2px) scale(1.025);
             border-color: var(--focus-line);
@@ -309,31 +458,56 @@
             box-shadow: none;
         }
 
-        .vod-card:focus img {
+        .card:focus img {
             filter: brightness(1.06) saturate(1.04);
         }
 
-        .vod-card:active {
+        .card:active {
             transform: translateY(1px) scale(0.985);
         }
 
-        .vod-thumb-box {
-            position: relative;
-            width: 100%;
+        .poster {
             aspect-ratio: 2 / 3;
-            overflow: hidden;
-        }
-
-        .vod-thumb {
             width: 100%;
-            height: 100%;
             object-fit: cover;
-            transition: transform .3s ease, filter .3s ease;
+            display: block;
         }
 
-        .vod-card:hover .vod-thumb {
-            transform: scale(1.04);
+        .card > .poster {
+            width: calc(100% + 2px);
+            max-width: calc(100% + 2px);
+            margin: -1px -1px 0;
         }
+
+        .card-body {
+            padding: 10px;
+            background: var(--panel);
+            border-top: 1px solid var(--line);
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 760;
+            line-height: 1.2;
+            min-height: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .42);
+        }
+
+        .card-meta {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.3;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-meta:empty { display: none; }
 
         .rating-badge {
             position: absolute;
@@ -353,10 +527,11 @@
             backdrop-filter: blur(8px);
         }
 
-        .vod-remarks {
+        .recent-badge {
             position: absolute;
-            left: 7px;
-            bottom: 7px;
+            top: 7px;
+            right: 7px;
+            z-index: 2;
             max-width: calc(100% - 14px);
             min-height: 22px;
             display: inline-flex;
@@ -376,23 +551,38 @@
             text-overflow: ellipsis;
         }
 
-        .vod-body {
-            padding: 10px;
-            background: var(--panel);
-            border-top: 1px solid var(--line);
-        }
-
-        .vod-title {
-            font-size: 12px;
+        .card-people {
+            position: absolute;
+            right: 10px;
+            bottom: 10px;
+            color: rgba(226, 234, 242, .64);
+            font-size: 11px;
             font-weight: 760;
-            line-height: 1.2;
-            min-height: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, .42);
+            line-height: 1;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .46);
+            pointer-events: none;
         }
 
+        .card.has-people .card-body {
+            padding-right: 42px;
+        }
+
+        /* ===== Empty State ===== */
+        .empty {
+            min-height: 92px;
+            display: grid;
+            place-items: center;
+            padding: 14px;
+            border-radius: var(--radius);
+            border: 1px dashed rgba(255, 255, 255, .18);
+            color: var(--muted);
+            background: rgba(255, 255, 255, .03);
+            font-size: 13px;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        /* ===== Pagination ===== */
         .pagination {
             display: flex;
             justify-content: center;
@@ -410,20 +600,7 @@
             text-align: center;
         }
 
-        .empty {
-            min-height: 92px;
-            display: grid;
-            place-items: center;
-            padding: 14px;
-            border-radius: var(--radius);
-            border: 1px dashed rgba(255, 255, 255, .18);
-            color: var(--muted);
-            background: rgba(255, 255, 255, .03);
-            font-size: 13px;
-            text-align: center;
-            grid-column: 1 / -1;
-        }
-
+        /* ===== Detail Sheet (nostr style) ===== */
         .sheet {
             --sheet-x: 14px;
             display: none;
@@ -609,6 +786,7 @@
             line-height: 1.2;
         }
 
+        /* ===== Episode Grid ===== */
         .episode-grid {
             display: flex;
             flex-wrap: wrap;
@@ -646,6 +824,7 @@
             transform: translateY(1px);
         }
 
+        /* ===== Disk Item ===== */
         .disk-item {
             width: 100%;
             min-width: 0;
@@ -721,6 +900,7 @@
             color: var(--text);
         }
 
+        /* ===== Toast ===== */
         .toast {
             position: fixed;
             left: 50%;
@@ -745,6 +925,7 @@
             transform: translateX(-50%) translateY(0);
         }
 
+        /* ===== Back Top ===== */
         .back-top {
             position: fixed;
             right: max(14px, env(safe-area-inset-right));
@@ -826,29 +1007,70 @@
 </head>
 <body>
     <main class="app" id="home">
-        <div class="header">
-            <div class="logo">LIBVIO</div>
-            <nav class="chips" id="categoryBox">
-                <button class="chip focusable active" type="button" data-id="home">首页</button>
-                <button class="chip focusable" type="button" data-id="1">电影</button>
-                <button class="chip focusable" type="button" data-id="2">剧集</button>
-                <button class="chip focusable" type="button" data-id="4">番剧</button>
-                <button class="chip focusable" type="button" data-id="15">日韩</button>
-                <button class="chip focusable" type="button" data-id="16">欧美</button>
-            </nav>
-            <div class="search-bar">
-                <input type="text" id="keywords" class="field focusable" placeholder="输入关键字..." inputmode="search">
-                <button id="searchButton" class="btn primary focusable" type="button">
-                    <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-                    搜索
+        <!-- Top Bar: Avatar + Title + Icon Tools -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <div class="avatar">
+                    <svg viewBox="0 0 24 24" style="width:100%;height:100%;padding:6px;opacity:.6;">
+                        <circle cx="12" cy="8" r="4" fill="currentColor"/>
+                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6" fill="currentColor"/>
+                    </svg>
+                </div>
+                <div class="page-title">LIBVIO推荐</div>
+            </div>
+            <div class="top-bar-right">
+                <button class="icon-btn focusable" id="btnSearchTop" type="button" aria-label="搜索">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                </button>
+                <button class="icon-btn focusable" id="btnRefresh" type="button" aria-label="刷新">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 21h5v-5"/></svg>
+                </button>
+                <button class="icon-btn focusable" id="btnFavorite" type="button" aria-label="收藏">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </button>
+                <button class="icon-btn focusable" id="btnHistory" type="button" aria-label="历史">
+                    <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                 </button>
             </div>
         </div>
 
+        <!-- Search Bar -->
+        <div class="search-bar" id="searchBar">
+            <input type="text" id="keywords" class="field focusable" placeholder="搜索关键词" inputmode="search">
+            <button id="searchButton" class="btn primary focusable" type="button">
+                <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                搜索
+            </button>
+        </div>
+
+        <!-- Category Chips -->
+        <nav class="chips" id="categoryBox">
+            <button class="chip focusable active" type="button" data-id="home">首页</button>
+            <button class="chip focusable" type="button" data-id="1">电影</button>
+            <button class="chip focusable" type="button" data-id="2">剧集</button>
+            <button class="chip focusable" type="button" data-id="4">番剧</button>
+            <button class="chip focusable" type="button" data-id="15">日韩</button>
+            <button class="chip focusable" type="button" data-id="16">欧美</button>
+        </nav>
+
+        <!-- Section Head with Status Dock -->
+        <div class="section-head">
+            <h3 id="sectionTitle">LIBVIO推荐</h3>
+            <aside class="connection-dock" id="connectionDock">
+                <button class="connection-toggle focusable" id="connectionToggle" type="button" aria-expanded="false">
+                    <span class="dot ok" id="connectionDot"></span>
+                    <span class="connection-title">状态</span>
+                    <span class="connection-arrow">⌃</span>
+                </button>
+            </aside>
+        </div>
+
+        <!-- Vod Grid -->
         <div class="vod-grid" id="vodGrid">
             <div class="empty">数据加载中...</div>
         </div>
 
+        <!-- Pagination -->
         <div class="pagination" id="pageBox" style="display:none">
             <button id="btnPrev" class="btn focusable" type="button">上一页</button>
             <span id="txtPage" class="page-text">第 1 页</span>
@@ -856,6 +1078,7 @@
         </div>
     </main>
 
+    <!-- Detail Sheet -->
     <section class="sheet" id="detailSheet" aria-hidden="true">
         <button class="btn focusable" id="btnCloseSheet" type="button">
             <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
@@ -869,16 +1092,24 @@
         <div class="detail-info">
             <div class="detail-title-row">
                 <h2 id="sheetTitle">资源读取中...</h2>
+                <span class="detail-title-meta" id="detailTitleMeta"></span>
             </div>
             <div class="detail-meta" id="detailMeta"></div>
             <p id="sheetDesc"></p>
         </div>
 
+        <div class="actions" style="display:flex;gap:10px;flex-wrap:wrap;margin:14px 0;">
+            <button class="btn primary focusable" id="detailPlayBtn" type="button">搜索播放</button>
+            <button class="btn focusable" id="detailPanBtn" type="button">盘搜</button>
+        </div>
+
         <div id="sourceContainer"></div>
     </section>
 
+    <!-- Toast -->
     <div class="toast" id="toast"></div>
     
+    <!-- Back to Top -->
     <button class="back-top focusable" id="backTopBtn" type="button" aria-label="返回顶部">
         <svg class="icon" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
     </button>
@@ -933,7 +1164,7 @@
             if (node) {
                 let img = node.getAttribute('data-original') || node.getAttribute('style') || '';
                 if (img.includes('url(')) {
-                    const match = img.match(/url\(['"]?(.*?)['"]?\)/);
+                    const match = img.match(/url\(['"]?(.*?)['"]?)\)/);
                     if (match) img = match[1];
                 }
                 const score = b.querySelector('.pic-tag-top');
@@ -1001,9 +1232,11 @@
         grid.innerHTML = '<div class="empty">数据加载中...</div>';
         
         let path = '/';
+        let sectionName = 'LIBVIO推荐';
         if (currentType === 'search') {
             path = `/search/-------------.html?wd=${encodeURIComponent(queryWord)}`;
             document.getElementById('pageBox').style.display = 'none';
+            sectionName = `搜索: ${queryWord}`;
         } else if (currentType === 'home') {
             path = '/';
             document.getElementById('pageBox').style.display = 'none';
@@ -1011,7 +1244,11 @@
             path = `/type/${currentType}-${currentIdx}.html`;
             document.getElementById('pageBox').style.display = 'flex';
             document.getElementById('txtPage').innerText = `第 ${currentIdx} 页`;
+            const chip = document.querySelector(`#categoryBox .chip[data-id="${currentType}"]`);
+            sectionName = chip ? chip.innerText : 'LIBVIO推荐';
         }
+
+        document.getElementById('sectionTitle').innerText = sectionName;
 
         try {
             const html = await loadHtml(path);
@@ -1023,7 +1260,7 @@
     }
 
     function escapeHtml(value) {
-        return String(value || '').replace(/[&<<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+        return String(value || '').replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     }
 
     function renderGrid(items) {
@@ -1036,20 +1273,18 @@
 
         items.forEach(item => {
             const card = document.createElement('button');
-            card.className = 'vod-card focusable';
+            card.className = 'card focusable';
             card.type = 'button';
             
             const tag = item.tag && item.tag !== '0.0' ? `<span class="rating-badge">${escapeHtml(item.tag)}</span>` : '';
-            const note = item.note ? `<span class="vod-remarks">${escapeHtml(item.note)}</span>` : '';
+            const note = item.note ? `<span class="recent-badge">${escapeHtml(item.note)}</span>` : '';
             
             card.innerHTML = `
-                <div class="vod-thumb-box">
-                    <img class="vod-thumb" src="${safeImg(item.pic)}" loading="lazy" alt="">
-                    ${tag}
-                    ${note}
-                </div>
-                <div class="vod-body">
-                    <div class="vod-title">${escapeHtml(item.title)}</div>
+                <img class="poster" src="${safeImg(item.pic)}" loading="lazy" alt="">
+                ${tag}
+                ${note}
+                <div class="card-body">
+                    <div class="card-title">${escapeHtml(item.title)}</div>
                 </div>
             `;
             
@@ -1072,11 +1307,13 @@
         const cover = document.getElementById('detailCover');
         const box = document.getElementById('sourceContainer');
         const meta = document.getElementById('detailMeta');
+        const titleMeta = document.getElementById('detailTitleMeta');
         
         title.innerText = '资源读取中...';
         desc.innerText = '';
         img.src = '';
         meta.innerHTML = '';
+        titleMeta.innerHTML = '';
         cover.style.setProperty('--detail-cover-bg', 'none');
         cover.classList.add('poster-mode');
         box.innerHTML = '<div class="empty">详情加载中...</div>';
@@ -1096,6 +1333,7 @@
                 cover.style.setProperty('--detail-cover-bg', `url("${posterUrl}")`);
             }
             
+            // Build meta pills
             const metaItems = [];
             if (data.lines.length > 0) {
                 const totalEps = data.lines.reduce((sum, line) => sum + line.data.length, 0);
@@ -1232,6 +1470,7 @@
         } catch (e) {}
     }
 
+    // Category tabs
     document.querySelectorAll('#categoryBox .chip').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('#categoryBox .chip').forEach(t => t.classList.remove('active'));
@@ -1242,6 +1481,7 @@
         });
     });
 
+    // Pagination
     document.getElementById('btnPrev').addEventListener('click', () => {
         if (currentIdx > 1) {
             currentIdx--;
@@ -1253,6 +1493,7 @@
         requestList();
     });
 
+    // Search
     function startSearch() {
         const val = document.getElementById('keywords').value.trim();
         if (!val) return;
@@ -1267,6 +1508,36 @@
         if (e.key === 'Enter') startSearch();
     });
 
+    // Top bar icons
+    document.getElementById('btnRefresh').addEventListener('click', () => {
+        requestList();
+        toast('已刷新');
+    });
+    document.getElementById('btnSearchTop').addEventListener('click', () => {
+        document.getElementById('keywords').focus();
+    });
+    document.getElementById('btnFavorite').addEventListener('click', () => {
+        if (window.fm && window.fm.openKeep) {
+            fm.openKeep();
+        } else {
+            toast('请在 App 中打开收藏');
+        }
+    });
+    document.getElementById('btnHistory').addEventListener('click', () => {
+        if (window.fm && window.fm.history) {
+            fm.history();
+        } else {
+            toast('请在 App 中查看历史');
+        }
+    });
+
+    // Connection dock toggle
+    document.getElementById('connectionToggle').addEventListener('click', () => {
+        const dock = document.getElementById('connectionDock');
+        dock.classList.toggle('open');
+    });
+
+    // Toast
     function toast(message) {
         const el = document.getElementById('toast');
         el.textContent = message || '';
@@ -1275,6 +1546,7 @@
         toast.timer = setTimeout(() => el.classList.remove('show'), 2200);
     }
 
+    // Back to top
     function updateBackTop() {
         const top = window.scrollY || document.documentElement.scrollTop || 0;
         document.getElementById('backTopBtn').classList.toggle('show', top > window.innerHeight);
@@ -1287,6 +1559,7 @@
 
     window.addEventListener('scroll', updateBackTop, { passive: true });
 
+    // Keyboard & remote control (nostr style)
     window.addEventListener('keydown', (e) => {
         const key = e.key;
         
@@ -1357,6 +1630,7 @@
         }
     });
 
+    // Viewport lock for TV/App
     function lockViewportWidth() {
         const width = Math.floor(window.innerWidth || document.documentElement.clientWidth || 0);
         if (!width) return;
@@ -1369,4 +1643,4 @@
     lockViewportWidth();
 </script>
 </body>
-</html>
+</html>'''
