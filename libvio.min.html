@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#101419">
+    <title>LIBVIO WebHome</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: transparent;
+            --panel-rgb: 76, 88, 98;
+            --panel: rgba(var(--panel-rgb), .58);
+            --panel-soft: rgba(var(--panel-rgb), .44);
+            --panel-strong: rgba(var(--panel-rgb), .82);
+            --panel-2: rgba(var(--panel-rgb), .62);
+            --text: #f4f7fb;
+            --muted: rgba(226, 234, 242, .72);
+            --line: rgba(255, 255, 255, .2);
+            --line-strong: rgba(255, 255, 255, .34);
+            --control: rgba(34, 43, 51, .42);
+            --control-active: rgba(48, 61, 70, .58);
+            --accent: rgba(245, 249, 252, .86);
+            --accent-2: rgba(221, 232, 241, .66);
+            --focus-line: rgba(168, 218, 255, .72);
+            --focus-line-soft: rgba(168, 218, 255, .42);
+            --focus-glow: rgba(96, 165, 250, .24);
+            --focus-surface: rgba(255, 255, 255, .12);
+            --ok: #9fd8ad;
+            --danger: #f09d9d;
+            --shadow: 0 16px 42px rgba(0, 0, 0, .24);
+            --radius: 8px;
+            --fm-web-height: 100vh;
+            --fm-safe-bottom: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        @supports (height: 100dvh) {
+            :root { --fm-web-height: 100dvh; }
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            width: 100%;
+            max-width: 100%;
+            min-height: var(--fm-web-height);
+            background: transparent;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        html:not(.fm-native),
+        html:not(.fm-native) body {
+            background-color: #303840;
+            background-image:
+                linear-gradient(45deg, rgba(255, 255, 255, .07) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255, 255, 255, .07) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, .07) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, .07) 75%);
+            background-position: 0 0, 0 16px, 16px -16px, -16px 0;
+            background-size: 32px 32px;
+        }
+
+        html.fm-native,
+        html.fm-native body {
+            background: transparent;
+        }
+
+        body {
+            overflow-x: hidden;
+            letter-spacing: 0;
+            position: relative;
+            overscroll-behavior-x: none;
+        }
+
+        button, input {
+            font: inherit;
+            color: inherit;
+        }
+
+        button {
+            border: 0;
+            cursor: pointer;
+            touch-action: manipulation;
+            margin: 0;
+            padding: 0;
+            appearance: none;
+            -webkit-appearance: none;
+            background: transparent;
+            text-align: inherit;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            background: transparent;
+        }
+
+        .app {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            min-height: var(--fm-web-height);
+            overflow-x: hidden;
+            padding: max(12px, env(safe-area-inset-top)) 14px calc(18px + var(--fm-safe-bottom) + env(safe-area-inset-bottom));
+            background: transparent;
+        }
+
+        body.detail-active .app {
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+            padding: 12px 14px;
+            background: var(--panel-soft);
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            backdrop-filter: blur(12px) saturate(1.05);
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
+        }
+
+        .chips {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 3px 0 2px;
+            overscroll-behavior-x: contain;
+        }
+
+        .chips::-webkit-scrollbar { display: none; }
+
+        .chip {
+            flex: 0 0 auto;
+            min-height: 36px;
+            padding: 0 14px;
+            border-radius: 999px;
+            background: var(--control);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-weight: 700;
+            font-size: 13px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
+            backdrop-filter: blur(12px) saturate(1.05);
+            cursor: pointer;
+            transition: transform .06s ease, background-color .12s ease, border-color .12s ease;
+        }
+
+        .chip.active {
+            background: var(--control-active);
+            color: var(--text);
+            border-color: var(--line-strong);
+            font-weight: 760;
+        }
+
+        .chip:focus {
+            outline: none;
+            transform: translateY(-1px);
+            background: rgba(70, 85, 96, .72);
+            border-color: var(--focus-line);
+            box-shadow: none;
+        }
+
+        .chip:active {
+            transform: translateY(1px);
+        }
+
+        .search-bar {
+            width: 100%;
+            min-width: 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px;
+            margin: 14px 0 8px;
+            position: relative;
+            z-index: 20;
+        }
+
+        .field {
+            width: 100%;
+            min-height: 44px;
+            border-radius: var(--radius);
+            border: 1px solid var(--line);
+            background: var(--control);
+            color: var(--text);
+            padding: 0 12px;
+            outline: none;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .35);
+            backdrop-filter: blur(12px) saturate(1.05);
+            font-size: 14px;
+        }
+
+        .field::placeholder { color: rgba(226, 234, 242, .5); }
+
+        .field:focus {
+            outline: none;
+            background: rgba(28, 38, 46, .72);
+            border-color: var(--focus-line);
+            box-shadow: none;
+        }
+
+        .btn {
+            min-height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 0 14px;
+            border-radius: var(--radius);
+            background: var(--control);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-weight: 760;
+            text-decoration: none;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
+            backdrop-filter: blur(12px) saturate(1.05);
+            cursor: pointer;
+            transition: transform .06s ease, background-color .12s ease, border-color .12s ease;
+            font-size: 14px;
+        }
+
+        .btn.primary {
+            color: var(--text);
+            background: var(--control-active);
+            border-color: var(--line-strong);
+        }
+
+        .btn:focus {
+            outline: none;
+            transform: translateY(-1px);
+            background: rgba(70, 85, 96, .72);
+            border-color: var(--focus-line);
+            box-shadow: none;
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .vod-grid {
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        @media (min-width: 720px) {
+            .vod-grid {
+                grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+                gap: 14px;
+            }
+            .app {
+                padding-left: 34px;
+                padding-right: 34px;
+            }
+        }
+
+        @media (min-width: 1180px) {
+            .vod-grid {
+                grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
+            }
+            .app {
+                padding-left: 56px;
+                padding-right: 56px;
+            }
+        }
+
+        .vod-card {
+            position: relative;
+            border-radius: var(--radius);
+            background: var(--panel-soft);
+            border: 1px solid var(--line);
+            overflow: hidden;
+            padding: 0;
+            text-align: left;
+            color: var(--text);
+            cursor: pointer;
+            backdrop-filter: blur(10px) saturate(1.05);
+            transition: transform .16s ease, border-color .16s ease, background-color .16s ease;
+        }
+
+        .vod-card:focus {
+            outline: none;
+            transform: translateY(-2px) scale(1.025);
+            border-color: var(--focus-line);
+            background: rgba(var(--panel-rgb), .66);
+            box-shadow: none;
+        }
+
+        .vod-card:focus img {
+            filter: brightness(1.06) saturate(1.04);
+        }
+
+        .vod-card:active {
+            transform: translateY(1px) scale(0.985);
+        }
+
+        .vod-thumb-box {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            overflow: hidden;
+        }
+
+        .vod-thumb {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .3s ease, filter .3s ease;
+        }
+
+        .vod-card:hover .vod-thumb {
+            transform: scale(1.04);
+        }
+
+        .rating-badge {
+            position: absolute;
+            right: 7px;
+            top: 7px;
+            min-width: 34px;
+            height: 24px;
+            display: grid;
+            place-items: center;
+            border-radius: 999px;
+            background: rgba(6, 9, 12, .48);
+            border: 1px solid rgba(255, 255, 255, .18);
+            color: rgba(255, 255, 255, .94);
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1;
+            backdrop-filter: blur(8px);
+        }
+
+        .vod-remarks {
+            position: absolute;
+            left: 7px;
+            bottom: 7px;
+            max-width: calc(100% - 14px);
+            min-height: 22px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 7px;
+            border-radius: 999px;
+            background: rgba(6, 9, 12, .46);
+            border: 1px solid rgba(255, 255, 255, .16);
+            color: rgba(255, 255, 255, .9);
+            font-size: 11px;
+            font-weight: 780;
+            line-height: 1;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .48);
+            backdrop-filter: blur(8px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .vod-body {
+            padding: 10px;
+            background: var(--panel);
+            border-top: 1px solid var(--line);
+        }
+
+        .vod-title {
+            font-size: 12px;
+            font-weight: 760;
+            line-height: 1.2;
+            min-height: 15px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .42);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            margin-top: 24px;
+            padding: 10px 0;
+        }
+
+        .page-text {
+            font-size: 13px;
+            color: var(--muted);
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        .empty {
+            min-height: 92px;
+            display: grid;
+            place-items: center;
+            padding: 14px;
+            border-radius: var(--radius);
+            border: 1px dashed rgba(255, 255, 255, .18);
+            color: var(--muted);
+            background: rgba(255, 255, 255, .03);
+            font-size: 13px;
+            text-align: center;
+            grid-column: 1 / -1;
+        }
+
+        .sheet {
+            --sheet-x: 14px;
+            display: none;
+            position: fixed;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            inset: 0;
+            z-index: 60;
+            width: 100%;
+            max-width: 100%;
+            min-width: 0;
+            height: 100vh;
+            min-height: var(--fm-web-height);
+            background: transparent;
+            backdrop-filter: none;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: max(16px, env(safe-area-inset-top)) var(--sheet-x) calc(22px + var(--fm-safe-bottom) + env(safe-area-inset-bottom));
+        }
+
+        .sheet.active { display: block; }
+
+        .detail-cover {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            height: 56.25vw;
+            min-height: 180px;
+            max-height: 42vh;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: transparent;
+            margin: 14px 0;
+        }
+
+        @supports (aspect-ratio: 16 / 9) {
+            .detail-cover {
+                height: auto;
+                aspect-ratio: 16 / 9;
+            }
+        }
+
+        .detail-cover img {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: left center;
+        }
+
+        .detail-cover.poster-mode {
+            background: transparent;
+        }
+
+        .detail-cover.poster-mode::before {
+            content: "";
+            position: absolute;
+            top: -18px;
+            right: -18px;
+            bottom: -18px;
+            left: -18px;
+            inset: -18px;
+            background-image: var(--detail-cover-bg, none);
+            background-size: cover;
+            background-position: center;
+            filter: blur(18px) saturate(1.08);
+            opacity: .42;
+            transform: scale(1.06);
+        }
+
+        .detail-cover.poster-mode::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(0, 0, 0, .22), rgba(0, 0, 0, .02), rgba(0, 0, 0, .22));
+        }
+
+        .detail-cover.poster-mode img {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: left center;
+            z-index: 1;
+        }
+
+        .detail-info {
+            padding: 0 2px 12px;
+        }
+
+        .detail-title-row {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 0 0 8px;
+        }
+
+        .detail-info h2 {
+            margin: 0 0 8px;
+            font-size: clamp(22px, 6vw, 32px);
+            line-height: 1.12;
+        }
+
+        .detail-title-row h2 {
+            margin: 0;
+        }
+
+        .detail-title-meta {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 6px;
+            color: rgba(244, 247, 251, .9);
+            font-size: 13px;
+            font-weight: 720;
+            line-height: 1.2;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
+        }
+
+        .detail-title-meta .score {
+            color: rgba(255, 218, 128, .95);
+            font-weight: 820;
+        }
+
+        .detail-title-meta .sep {
+            color: rgba(244, 247, 251, .42);
+            font-weight: 600;
+        }
+
+        .detail-info p {
+            margin: 0;
+            color: rgba(244, 247, 251, .82);
+            line-height: 1.5;
+            font-size: 14px;
+        }
+
+        .detail-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 8px 0 14px;
+        }
+
+        .meta-pill {
+            padding: 5px 8px;
+            border-radius: 999px;
+            color: var(--muted);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .meta-pill.strong {
+            color: var(--text);
+            border-color: var(--line-strong);
+            background: var(--control-active);
+            font-weight: 760;
+        }
+
+        .detail-block {
+            margin-top: 18px;
+        }
+
+        .detail-block h3 {
+            margin: 0 0 10px;
+            font-size: 17px;
+            line-height: 1.2;
+        }
+
+        .episode-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .episode-item {
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 14px;
+            border-radius: var(--radius);
+            background: var(--panel);
+            border: 1px solid var(--line);
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 700;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, .38);
+            backdrop-filter: blur(10px) saturate(1.05);
+            cursor: pointer;
+            transition: transform .06s ease, background-color .12s ease, border-color .12s ease;
+        }
+
+        .episode-item:focus {
+            outline: none;
+            transform: translateY(-1px);
+            background: rgba(70, 85, 96, .72);
+            border-color: var(--focus-line);
+            box-shadow: none;
+        }
+
+        .episode-item:active {
+            transform: translateY(1px);
+        }
+
+        .disk-item {
+            width: 100%;
+            min-width: 0;
+            display: grid;
+            grid-template-columns: auto minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: var(--radius);
+            background: linear-gradient(135deg, rgba(var(--panel-rgb), .72), rgba(34, 43, 51, .36));
+            border: 1px solid var(--line);
+            color: var(--text);
+            text-align: left;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, .14);
+            backdrop-filter: blur(12px) saturate(1.05);
+            cursor: pointer;
+            transition: transform .06s ease, border-color .12s ease;
+        }
+
+        .disk-item:focus {
+            outline: none;
+            transform: translateY(-1px);
+            border-color: var(--focus-line);
+        }
+
+        .disk-item:active {
+            transform: translateY(1px);
+        }
+
+        .disk-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .disk-status {
+            width: 9px;
+            height: 9px;
+            border-radius: 999px;
+            background: var(--muted);
+            flex-shrink: 0;
+        }
+
+        .disk-status.ok { background: var(--ok); }
+        .disk-status.bad { background: var(--danger); }
+        .disk-status.locked { background: #ffcc4d; }
+
+        .disk-name {
+            font-size: 13px;
+            font-weight: 760;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .disk-type {
+            font-size: 11px;
+            color: var(--muted);
+            font-weight: 600;
+            padding: 2px 6px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, .08);
+            border: 1px solid rgba(255, 255, 255, .14);
+            white-space: nowrap;
+        }
+
+        .part-title {
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin: 0 0 10px;
+            color: var(--text);
+        }
+
+        .toast {
+            position: fixed;
+            left: 50%;
+            bottom: max(18px, calc(var(--fm-safe-bottom) + env(safe-area-inset-bottom)));
+            z-index: 90;
+            transform: translateX(-50%) translateY(24px);
+            max-width: calc(100vw - 28px);
+            padding: 10px 12px;
+            border-radius: var(--radius);
+            background: rgba(6, 8, 10, .86);
+            border: 1px solid var(--line);
+            color: var(--text);
+            box-shadow: var(--shadow);
+            opacity: 0;
+            pointer-events: none;
+            transition: .18s ease;
+            font-size: 13px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .back-top {
+            position: fixed;
+            right: max(14px, env(safe-area-inset-right));
+            bottom: max(76px, calc(58px + var(--fm-safe-bottom) + env(safe-area-inset-bottom)));
+            z-index: 55;
+            width: 44px;
+            height: 44px;
+            display: grid;
+            place-items: center;
+            border-radius: var(--radius);
+            background: rgba(34, 43, 51, .68);
+            border: 1px solid var(--line);
+            color: var(--text);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, .24);
+            backdrop-filter: blur(12px) saturate(1.05);
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateY(10px);
+            transition: opacity .16s ease, transform .16s ease, visibility .16s ease;
+            cursor: pointer;
+        }
+
+        .back-top.show {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateY(0);
+        }
+
+        .back-top:focus {
+            outline: none;
+            border-color: var(--focus-line);
+        }
+
+        .icon {
+            width: 19px;
+            height: 19px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .focusable:focus {
+            outline: none;
+            border-color: var(--focus-line);
+            box-shadow: none;
+            z-index: 5;
+            transition: border-color .06s ease, background-color .06s ease, opacity .06s ease;
+        }
+
+        @media (min-width: 720px) {
+            .sheet {
+                --sheet-x: 34px;
+                padding-left: 34px;
+                padding-right: 34px;
+            }
+
+            .detail-cover {
+                width: 100%;
+                height: 42vw;
+                min-height: 180px;
+                max-height: 42vh;
+                margin: 14px 0;
+                border-radius: var(--radius);
+            }
+        }
+
+        @media (min-width: 1180px) {
+            .sheet {
+                --sheet-x: 56px;
+                padding-left: 56px;
+                padding-right: 56px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="app" id="home">
+        <div class="header">
+            <div class="logo">LIBVIO</div>
+            <nav class="chips" id="categoryBox">
+                <button class="chip focusable active" type="button" data-id="home">首页</button>
+                <button class="chip focusable" type="button" data-id="1">电影</button>
+                <button class="chip focusable" type="button" data-id="2">剧集</button>
+                <button class="chip focusable" type="button" data-id="4">番剧</button>
+                <button class="chip focusable" type="button" data-id="15">日韩</button>
+                <button class="chip focusable" type="button" data-id="16">欧美</button>
+            </nav>
+            <div class="search-bar">
+                <input type="text" id="keywords" class="field focusable" placeholder="输入关键字..." inputmode="search">
+                <button id="searchButton" class="btn primary focusable" type="button">
+                    <svg class="icon" viewBox="0 0 24 24" style="width:16px;height:16px;"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                    搜索
+                </button>
+            </div>
+        </div>
+
+        <div class="vod-grid" id="vodGrid">
+            <div class="empty">数据加载中...</div>
+        </div>
+
+        <div class="pagination" id="pageBox" style="display:none">
+            <button id="btnPrev" class="btn focusable" type="button">上一页</button>
+            <span id="txtPage" class="page-text">第 1 页</span>
+            <button id="btnNext" class="btn primary focusable" type="button">下一页</button>
+        </div>
+    </main>
+
+    <section class="sheet" id="detailSheet" aria-hidden="true">
+        <button class="btn focusable" id="btnCloseSheet" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            返回
+        </button>
+        
+        <div class="detail-cover poster-mode" id="detailCover">
+            <img id="detailImg" src="" alt="">
+        </div>
+        
+        <div class="detail-info">
+            <div class="detail-title-row">
+                <h2 id="sheetTitle">资源读取中...</h2>
+            </div>
+            <div class="detail-meta" id="detailMeta"></div>
+            <p id="sheetDesc"></p>
+        </div>
+
+        <div id="sourceContainer"></div>
+    </section>
+
+    <div class="toast" id="toast"></div>
+    
+    <button class="back-top focusable" id="backTopBtn" type="button" aria-label="返回顶部">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+    </button>
+
+<script>
+    const HOST = 'https://www.libvio.run';
+    let currentType = 'home';
+    let currentIdx = 1;
+    let queryWord = '';
+    let preFocusNode = null;
+
+    function verifySdk() {
+        if (window.fongmiBridge || window.fm || window.fongmi) {
+            document.documentElement.classList.add("fm-native");
+        }
+    }
+
+    window.addEventListener("fmsdk", verifySdk);
+    document.addEventListener("DOMContentLoaded", () => {
+        verifySdk();
+        requestList();
+    });
+
+    async function loadHtml(uri) {
+        const url = uri.startsWith('http') ? uri : HOST + uri;
+        if (window.fm && window.fm.req) {
+            const resp = await fm.req(url, { method: 'GET', responseType: 'text', timeout: 12 });
+            if (!resp.ok) throw new Error(`Status ${resp.status}`);
+            return resp.body;
+        }
+        const resp = await fetch(url);
+        return await resp.text();
+    }
+
+    function safeImg(url) {
+        if (!url) return '';
+        if (url.startsWith('//')) url = 'https:' + url;
+        if (window.fm && window.fm.res) {
+            return fm.res(url, { headers: { 'Referer': HOST } });
+        }
+        return url;
+    }
+
+    function parseVods(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const items = [];
+        const blocks = doc.querySelectorAll('.stui-vodlist__box');
+        
+        blocks.forEach(b => {
+            const node = b.querySelector('a.stui-vodlist__thumb');
+            if (node) {
+                let img = node.getAttribute('data-original') || node.getAttribute('style') || '';
+                if (img.includes('url(')) {
+                    const match = img.match(/url\(['"]?(.*?)['"]?\)/);
+                    if (match) img = match[1];
+                }
+                const score = b.querySelector('.pic-tag-top');
+                const remark = b.querySelector('.pic-text');
+                items.push({
+                    title: node.getAttribute('title') || b.querySelector('.title a')?.innerText || '',
+                    href: node.getAttribute('href'),
+                    pic: img,
+                    tag: score ? score.innerText.trim() : '',
+                    note: remark ? remark.innerText.trim() : ''
+                });
+            }
+        });
+        return items;
+    }
+
+    function parseMeta(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const title = doc.querySelector('h1.title')?.innerText || '';
+        const poster = doc.querySelector('.vod-poster img')?.getAttribute('data-original') || '';
+        const desc = doc.querySelector('.vod-desc .detail-sketch')?.innerText || '';
+        
+        const lines = [];
+        const clouds = [];
+
+        doc.querySelectorAll('.playlist-panel:not(.netdisk-panel)').forEach(p => {
+            const label = p.querySelector('h3')?.innerText || '播放列表';
+            const eps = [];
+            p.querySelectorAll('.stui-content__playlist li a').forEach(a => {
+                eps.push({ name: a.innerText.trim(), href: a.getAttribute('href') });
+            });
+            if (eps.length > 0) lines.push({ name: label, data: eps });
+        });
+
+        doc.querySelectorAll('.netdisk-panel .netdisk-item').forEach(p => {
+            const tag = p.querySelector('.netdisk-name')?.innerText || '网盘下载';
+            const link = p.getAttribute('href');
+            if (link) {
+                let type = 'http';
+                if (link.includes('quark.cn')) type = 'quark';
+                else if (link.includes('uc.cn')) type = 'uc';
+                else if (link.includes('aliyun.com')) type = 'aliyun';
+                else if (link.includes('baidu.com')) type = 'baidu';
+                clouds.push({ name: tag, url: link, type: type });
+            }
+        });
+
+        return { title, poster, desc, lines, clouds };
+    }
+
+    function parseMediaLink(html) {
+        const match = html.match(/var player_aaaa\s*=\s*(\{.*?\})/);
+        if (match && match[1]) {
+            try {
+                const config = JSON.parse(match[1]);
+                return config.url || '';
+            } catch (e) {}
+        }
+        return '';
+    }
+
+    async function requestList() {
+        const grid = document.getElementById('vodGrid');
+        grid.innerHTML = '<div class="empty">数据加载中...</div>';
+        
+        let path = '/';
+        if (currentType === 'search') {
+            path = `/search/-------------.html?wd=${encodeURIComponent(queryWord)}`;
+            document.getElementById('pageBox').style.display = 'none';
+        } else if (currentType === 'home') {
+            path = '/';
+            document.getElementById('pageBox').style.display = 'none';
+        } else {
+            path = `/type/${currentType}-${currentIdx}.html`;
+            document.getElementById('pageBox').style.display = 'flex';
+            document.getElementById('txtPage').innerText = `第 ${currentIdx} 页`;
+        }
+
+        try {
+            const html = await loadHtml(path);
+            const items = parseVods(html);
+            renderGrid(items);
+        } catch (e) {
+            grid.innerHTML = `<div class="empty">数据加载失败: ${escapeHtml(e.message)}</div>`;
+        }
+    }
+
+    function escapeHtml(value) {
+        return String(value || '').replace(/[&<<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    }
+
+    function renderGrid(items) {
+        const grid = document.getElementById('vodGrid');
+        grid.innerHTML = '';
+        if (items.length === 0) {
+            grid.innerHTML = '<div class="empty">未找到相关资源</div>';
+            return;
+        }
+
+        items.forEach(item => {
+            const card = document.createElement('button');
+            card.className = 'vod-card focusable';
+            card.type = 'button';
+            
+            const tag = item.tag && item.tag !== '0.0' ? `<span class="rating-badge">${escapeHtml(item.tag)}</span>` : '';
+            const note = item.note ? `<span class="vod-remarks">${escapeHtml(item.note)}</span>` : '';
+            
+            card.innerHTML = `
+                <div class="vod-thumb-box">
+                    <img class="vod-thumb" src="${safeImg(item.pic)}" loading="lazy" alt="">
+                    ${tag}
+                    ${note}
+                </div>
+                <div class="vod-body">
+                    <div class="vod-title">${escapeHtml(item.title)}</div>
+                </div>
+            `;
+            
+            card.addEventListener('click', () => openDetails(item.href));
+            grid.appendChild(card);
+        });
+    }
+
+    async function openDetails(url) {
+        preFocusNode = document.activeElement;
+        document.body.classList.add('detail-active');
+        
+        const sheet = document.getElementById('detailSheet');
+        sheet.classList.add('active');
+        sheet.setAttribute('aria-hidden', 'false');
+        
+        const title = document.getElementById('sheetTitle');
+        const desc = document.getElementById('sheetDesc');
+        const img = document.getElementById('detailImg');
+        const cover = document.getElementById('detailCover');
+        const box = document.getElementById('sourceContainer');
+        const meta = document.getElementById('detailMeta');
+        
+        title.innerText = '资源读取中...';
+        desc.innerText = '';
+        img.src = '';
+        meta.innerHTML = '';
+        cover.style.setProperty('--detail-cover-bg', 'none');
+        cover.classList.add('poster-mode');
+        box.innerHTML = '<div class="empty">详情加载中...</div>';
+
+        document.getElementById('btnCloseSheet').focus();
+
+        try {
+            const html = await loadHtml(url);
+            const data = parseMeta(html);
+
+            title.innerText = data.title;
+            desc.innerText = data.desc;
+            
+            const posterUrl = safeImg(data.poster);
+            if (posterUrl) {
+                img.src = posterUrl;
+                cover.style.setProperty('--detail-cover-bg', `url("${posterUrl}")`);
+            }
+            
+            const metaItems = [];
+            if (data.lines.length > 0) {
+                const totalEps = data.lines.reduce((sum, line) => sum + line.data.length, 0);
+                metaItems.push({ text: `${totalEps} 集`, strong: true });
+            }
+            if (data.clouds.length > 0) {
+                metaItems.push({ text: `${data.clouds.length} 个网盘`, strong: false });
+            }
+            meta.innerHTML = metaItems.map(m => `<span class="meta-pill${m.strong ? ' strong' : ''}">${escapeHtml(m.text)}</span>`).join('');
+            
+            box.innerHTML = '';
+
+            if (data.clouds.length > 0) {
+                const part = document.createElement('div');
+                part.className = 'detail-block';
+                part.innerHTML = `<h3 class="part-title">网盘下载</h3>`;
+                const list = document.createElement('div');
+                
+                data.clouds.forEach(c => {
+                    const item = document.createElement('button');
+                    item.className = 'disk-item focusable';
+                    item.type = 'button';
+                    item.innerHTML = `
+                        <div class="disk-info">
+                            <div class="disk-status" id="pan_${btoa(c.url).replace(/=/g,'')}"></div>
+                            <span class="disk-name">${escapeHtml(c.name)}</span>
+                        </div>
+                        <span class="disk-type">${c.type.toUpperCase()}</span>
+                    `;
+                    
+                    const triggerPlay = () => {
+                        if (window.fm && window.fm.pan && window.fm.pan.play) {
+                            fm.pan.play({ type: c.type, url: c.url, title: data.title });
+                        } else {
+                            window.open(c.url);
+                        }
+                    };
+                    item.addEventListener('click', triggerPlay);
+                    list.appendChild(item);
+                });
+                part.appendChild(list);
+                box.appendChild(part);
+                triggerPanCheck(data.clouds);
+            }
+
+            data.lines.forEach(line => {
+                const part = document.createElement('div');
+                part.className = 'detail-block';
+                part.innerHTML = `<h3 class="part-title">${escapeHtml(line.name)}</h3>`;
+                
+                const list = document.createElement('div');
+                list.className = 'episode-grid';
+                
+                line.data.forEach(ep => {
+                    const item = document.createElement('button');
+                    item.className = 'episode-item focusable';
+                    item.type = 'button';
+                    item.innerText = ep.name;
+                    
+                    const startPlay = async () => {
+                        const originalText = item.innerText;
+                        item.innerText = '解析中...';
+                        try {
+                            const phtml = await loadHtml(ep.href);
+                            const streamUrl = parseMediaLink(phtml);
+                            item.innerText = originalText;
+                            if (streamUrl) {
+                                if (window.fm && window.fm.play) {
+                                    fm.play(streamUrl, `${data.title} - ${ep.name}`, {
+                                        headers: {
+                                            'Referer': HOST + '/',
+                                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                                        }
+                                    });
+                                } else {
+                                    toast(`解析直链成功: ${streamUrl}`);
+                                }
+                            } else {
+                                toast('未找到有效的媒体播放直链');
+                            }
+                        } catch (err) {
+                            item.innerText = originalText;
+                            toast('解析失败');
+                        }
+                    };
+                    item.addEventListener('click', startPlay);
+                    list.appendChild(item);
+                });
+                part.appendChild(list);
+                box.appendChild(part);
+            });
+
+        } catch (e) {
+            box.innerHTML = `<div class="empty">详情加载失败: ${escapeHtml(e.message)}</div>`;
+        }
+    }
+
+    function closeDetails() {
+        document.body.classList.remove('detail-active');
+        const sheet = document.getElementById('detailSheet');
+        sheet.classList.remove('active');
+        sheet.setAttribute('aria-hidden', 'true');
+        
+        const cover = document.getElementById('detailCover');
+        const img = document.getElementById('detailImg');
+        img.src = '';
+        cover.style.setProperty('--detail-cover-bg', 'none');
+        
+        if (preFocusNode) {
+            preFocusNode.focus({ preventScroll: true });
+            preFocusNode.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    document.getElementById('btnCloseSheet').addEventListener('click', closeDetails);
+
+    async function triggerPanCheck(clouds) {
+        if (!window.fm || !window.fm.config || !window.fm.pan || !window.fm.pan.check) return;
+        try {
+            const conf = await fm.config();
+            if (!conf.driveCheck) return;
+
+            const targets = clouds.map(c => ({ type: c.type, url: c.url, password: "" }))
+                                  .filter(t => ['quark', 'uc', 'aliyun', 'baidu'].includes(t.type));
+            if (targets.length === 0) return;
+
+            const resp = await fm.pan.check(targets);
+            if (resp && resp.results) {
+                resp.results.forEach(r => {
+                    const dot = document.getElementById(`pan_${btoa(r.url).replace(/=/g,'')}`);
+                    if (dot) dot.className = `disk-status ${r.state}`;
+                });
+            }
+        } catch (e) {}
+    }
+
+    document.querySelectorAll('#categoryBox .chip').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('#categoryBox .chip').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentType = tab.getAttribute('data-id');
+            currentIdx = 1;
+            requestList();
+        });
+    });
+
+    document.getElementById('btnPrev').addEventListener('click', () => {
+        if (currentIdx > 1) {
+            currentIdx--;
+            requestList();
+        }
+    });
+    document.getElementById('btnNext').addEventListener('click', () => {
+        currentIdx++;
+        requestList();
+    });
+
+    function startSearch() {
+        const val = document.getElementById('keywords').value.trim();
+        if (!val) return;
+        queryWord = val;
+        currentType = 'search';
+        document.querySelectorAll('#categoryBox .chip').forEach(t => t.classList.remove('active'));
+        requestList();
+    }
+    
+    document.getElementById('searchButton').addEventListener('click', startSearch);
+    document.getElementById('keywords').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') startSearch();
+    });
+
+    function toast(message) {
+        const el = document.getElementById('toast');
+        el.textContent = message || '';
+        el.classList.add('show');
+        clearTimeout(toast.timer);
+        toast.timer = setTimeout(() => el.classList.remove('show'), 2200);
+    }
+
+    function updateBackTop() {
+        const top = window.scrollY || document.documentElement.scrollTop || 0;
+        document.getElementById('backTopBtn').classList.toggle('show', top > window.innerHeight);
+    }
+    
+    document.getElementById('backTopBtn').addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setTimeout(updateBackTop, 260);
+    });
+
+    window.addEventListener('scroll', updateBackTop, { passive: true });
+
+    window.addEventListener('keydown', (e) => {
+        const key = e.key;
+        
+        if (key === 'Escape' || key === 'Backspace') {
+            if (document.body.classList.contains('detail-active')) {
+                closeDetails();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return;
+            }
+            if (window.fm && window.fm.back) {
+                fm.back();
+            }
+        }
+        
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+            const active = document.activeElement;
+            if (!active || active.tagName === 'BODY') {
+                const first = document.querySelector('.focusable');
+                if (first) {
+                    e.preventDefault();
+                    first.focus();
+                }
+                return;
+            }
+            
+            const all = Array.from(document.querySelectorAll('.focusable')).filter(el => {
+                if (el.disabled) return false;
+                const style = window.getComputedStyle(el);
+                return style.display !== 'none' && style.visibility !== 'hidden';
+            });
+            
+            const idx = all.indexOf(active);
+            if (idx < 0) return;
+            
+            let best = null;
+            let bestScore = Infinity;
+            const rect = active.getBoundingClientRect();
+            const center = { x: rect.left + rect.width/2, y: rect.top + rect.height/2 };
+            
+            for (let i = 0; i < all.length; i++) {
+                if (i === idx) continue;
+                const r = all[i].getBoundingClientRect();
+                const c = { x: r.left + r.width/2, y: r.top + r.height/2 };
+                const dx = c.x - center.x;
+                const dy = c.y - center.y;
+                
+                let valid = false;
+                if (key === 'ArrowRight' && dx > 10 && Math.abs(dy) < Math.abs(dx) * 1.5) valid = true;
+                if (key === 'ArrowLeft' && dx < -10 && Math.abs(dy) < Math.abs(dx) * 1.5) valid = true;
+                if (key === 'ArrowDown' && dy > 10 && Math.abs(dx) < Math.abs(dy) * 1.5) valid = true;
+                if (key === 'ArrowUp' && dy < -10 && Math.abs(dx) < Math.abs(dy) * 1.5) valid = true;
+                
+                if (!valid) continue;
+                
+                const score = Math.abs(dx) + Math.abs(dy);
+                if (score < bestScore) {
+                    best = all[i];
+                    bestScore = score;
+                }
+            }
+            
+            if (best) {
+                e.preventDefault();
+                best.focus();
+                best.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            }
+        }
+    });
+
+    function lockViewportWidth() {
+        const width = Math.floor(window.innerWidth || document.documentElement.clientWidth || 0);
+        if (!width) return;
+        document.documentElement.style.width = width + 'px';
+        document.body.style.width = width + 'px';
+        document.body.style.maxWidth = width + 'px';
+    }
+    
+    window.addEventListener('resize', lockViewportWidth);
+    lockViewportWidth();
+</script>
+</body>
+</html>
