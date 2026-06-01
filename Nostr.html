@@ -657,6 +657,7 @@
       aspect-ratio: 2 / 3;
       width: 100%;
       object-fit: cover;
+      border-radius: var(--radius);
     }
 
     .poster-wrap {
@@ -673,9 +674,11 @@
     }
 
     .card > .poster {
-      width: calc(100% + 2px);
-      max-width: calc(100% + 2px);
-      margin: -1px -1px 0;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
     }
 
     .card-body {
@@ -783,9 +786,9 @@
     }
 
     .card.recent-card > .poster {
-      width: calc(100% + 2px);
-      max-width: calc(100% + 2px);
-      margin: -1px;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
     }
 
     .recent-card .card-body {
@@ -1052,16 +1055,22 @@
 
     .detail-cover {
       position: relative;
-      width: 100%;
+      width: fit-content;
       max-width: 100%;
-      height: 56.25vw;
-      min-height: 180px;
-      max-height: 42vh;
-      aspect-ratio: 16 / 9;
-      border-radius: var(--radius);
+      height: auto;
+      min-height: 120px;
+      max-height: 48vh;
+      border-radius: 8px;
       overflow: hidden;
       background: transparent;
-      margin: 14px 0;
+      margin: 14px auto;
+      -webkit-backface-visibility: hidden;
+      -webkit-transform: translate3d(0, 0, 0);
+      transform: translateZ(0);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .detail-cover.loading::before {
@@ -1075,7 +1084,9 @@
       background: linear-gradient(110deg, rgba(255, 255, 255, .04), rgba(255, 255, 255, .11), rgba(255, 255, 255, .04));
       background-size: 220% 100%;
       animation: cover-loading 1.25s ease-in-out infinite;
+      border-radius: var(--radius);
     }
+
 
     @keyframes cover-loading {
       0% { background-position: 120% 0; }
@@ -1083,18 +1094,16 @@
     }
 
     .detail-cover img {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+      position: relative;
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
-      object-position: left center;
       opacity: 0;
       transition: opacity .18s ease;
+      border-radius: 8px;
     }
 
     .detail-cover img.active {
@@ -1115,13 +1124,10 @@
     }
 
     .detail-cover.poster-mode img {
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      inset: 0;
       width: 100%;
-      height: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      border-radius: 12px;
       object-fit: cover !important;
       object-position: center 24%;
       z-index: 1;
@@ -1134,14 +1140,19 @@
     }
 
     html.tv-mode .detail-cover {
-      width: min(calc(100vw - 68px), calc(clamp(360px, 58vh, 680px) * 16 / 9));
-      max-width: none;
+      width: fit-content;
+      max-width: min(calc(100vw - 68px), 800px);
       height: auto;
       min-height: 180px;
-      max-height: none;
-      aspect-ratio: 16 / 9;
+      max-height: 58vh;
       margin-top: 0;
+      margin-left: 0;
+      border-radius: 12px;
+      overflow: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translateZ(0);
     }
+
 
     html.tv-mode #closeDetailBtn,
     #detailSheet.detail-large #closeDetailBtn {
@@ -2383,7 +2394,11 @@
         max-height: none;
         margin: 14px 0;
         border-radius: var(--radius);
+        overflow: hidden;
+        -webkit-backface-visibility: hidden;
+        transform: translateZ(0);
       }
+
 
       .grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
