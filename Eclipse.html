@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="zh-CN">
@@ -40,6 +41,7 @@
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{-webkit-tap-highlight-color:transparent}
+body{-webkit-user-select:none;user-select:none}
 
 :root{
   --bg:transparent;
@@ -47,15 +49,15 @@ html{-webkit-tap-highlight-color:transparent}
   --surface2:#1a1a1a;
   --text:#f0ede8;
   --muted:#595959;
-  --accent:#e8c97a;
-  --accent2:#c85c3a;
+  --accent:#7df4ff;
+  --accent2:#c45cff;
   --green:#3ddc84;
   --red:#ff453a;
   --yellow:#ffd60a;
   --blue:#6688aa;
   --nav-h:52px;
   --gut:12px;        /* 栅格间距：屏幕侧边留白 = 封面之间间距，保持均匀 */
-  --safe-t:env(safe-area-inset-top,0px);
+  --safe-t:max(var(--fm-safe-top,0px),env(safe-area-inset-top,0px));
   --safe-b:env(safe-area-inset-bottom,0px);
   --r:3px;
   --serif:-apple-system,BlinkMacSystemFont,'SF Pro Display','SF Pro Text','PingFang SC','Helvetica Neue',Arial,sans-serif;
@@ -115,20 +117,26 @@ html.fm-native #nav{
 }
 .ntab-lbl{line-height:1}
 .ntab.on{
-  color:var(--accent);
-  background:linear-gradient(135deg,rgba(232,201,122,.18) 0%,rgba(232,201,122,.08) 100%);
-  box-shadow:inset 0 0 0 1px rgba(232,201,122,.2);
+  background:none;
+  box-shadow:none;
   outline:none;
+  background-image:linear-gradient(90deg,#c45cff 0%,#7df4ff 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
 }
-.ntab.on .ntab-ico{opacity:1;filter:drop-shadow(0 0 4px rgba(232,201,122,.5))}
+.ntab.on .ntab-ico{opacity:1;color:#7df4ff;filter:drop-shadow(0 0 3px rgba(125,244,255,.5))}
 .ntab.on::after{
-  content:'›';
-  position:absolute;right:5px;top:50%;transform:translateY(-50%);
-  font-size:15px;color:var(--accent);opacity:.65;line-height:1;
+  content:'';
+  position:absolute;bottom:2px;left:10px;right:14px;height:2px;border-radius:1px;
+  background:linear-gradient(90deg,#b8fbff 0%,#7df4ff 50%,#4dcfe0 100%);
+  box-shadow:0 0 6px rgba(125,244,255,.5);
 }
-.ntab:hover{color:var(--text);background:rgba(255,255,255,.06);transform:translateY(-1px)}
+.ntab:hover{color:var(--text);background-color:rgba(255,255,255,.06);background-image:none;-webkit-text-fill-color:currentColor;transform:translateY(-1px)}
 .ntab:hover .ntab-ico{opacity:.8}
-.ntab:active{transform:scale(.94) translateY(0);background:rgba(232,201,122,.1)}
+.ntab:active{transform:scale(.94) translateY(0);background-color:rgba(125,244,255,.1);background-image:none;-webkit-text-fill-color:currentColor}
+.ntab.on:hover{background-color:transparent;background-image:linear-gradient(90deg,#c45cff 0%,#7df4ff 100%);-webkit-text-fill-color:transparent;color:transparent}
+.ntab.on:active{background-color:transparent;background-image:linear-gradient(90deg,#c45cff 0%,#7df4ff 100%);-webkit-text-fill-color:transparent;color:transparent}
 .ntab:focus{outline:none;color:var(--accent)}
 .nbtn{
   width:var(--nav-h);height:var(--nav-h);
@@ -136,7 +144,7 @@ html.fm-native #nav{
   background:none;border:none;cursor:pointer;color:var(--text);flex-shrink:0;
   transition:color .12s,transform .1s;border-radius:3px;
 }
-.nbtn:hover{color:var(--accent);transform:scale(1.12)}
+.nbtn:hover{color:#7df4ff;filter:drop-shadow(0 0 6px rgba(125,244,255,.4));transform:scale(1.12)}
 .nbtn:active{transform:scale(.9)}
 .nbtn:focus{outline:none;color:var(--accent)}
 .nbtn svg{width:23px;height:23px;stroke-width:2.4}
@@ -225,13 +233,31 @@ html.fm-native .hero-slide-grad{
 .hero-play-btn{
   display:inline-flex;align-items:center;gap:6px;
   height:32px;padding:0 16px;
-  background:var(--accent);color:#000;
+  color:#030d10;
   font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
-  border:none;cursor:pointer;border-radius:var(--r);width:fit-content;
-  box-shadow:0 2px 10px rgba(232,201,122,.25);
-  transition:background .12s,transform .12s,box-shadow .12s;
+  border:none;cursor:pointer;border-radius:999px;width:fit-content;
+  position:relative;isolation:isolate;overflow:hidden;
+  background:linear-gradient(135deg,#c45cff,#7df4ff,#c45cff);
+  background-size:200% 200%;
+  animation:btn-flow 3s ease infinite;
+  box-shadow:0 0 22px rgba(125,244,255,.35),0 0 8px rgba(196,92,255,.3);
+  transition:box-shadow .2s,transform .15s;
 }
-.hero-play-btn:hover{background:#f5de8a;transform:translateY(-2px);box-shadow:0 6px 20px rgba(232,201,122,.35)}
+.hero-play-btn::before{
+  content:'';position:absolute;inset:-3px;border-radius:999px;z-index:-1;
+  background:conic-gradient(from var(--btn-ang,0deg),#c45cff,#7df4ff,#c45cff,#7df4ff,#c45cff);
+  animation:btn-spin 4s linear infinite;
+  filter:blur(5px);opacity:.65;
+}
+.hero-play-btn::after{
+  content:'';position:absolute;inset:1.5px;border-radius:999px;z-index:-1;
+  background:linear-gradient(135deg,#c45cff,#7df4ff,#c45cff);
+  background-size:200% 200%;
+  animation:btn-flow 3s ease infinite;
+}
+.hero-play-btn svg,.hero-play-btn span{position:relative;z-index:1}
+.hero-play-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 0 34px rgba(125,244,255,.55),0 0 14px rgba(196,92,255,.45)}
+.hero-play-btn:active{transform:scale(.95);box-shadow:0 0 12px rgba(125,244,255,.3)}
 .hero-play-btn svg{width:10px;height:10px;flex-shrink:0}
 /* dots */
 #heroDots{
@@ -249,10 +275,10 @@ html.fm-native .hero-slide-grad{
 @media(min-width:1200px){#heroWrap{max-height:450px}.hero-title{font-size:clamp(22px,2.4vw,38px)}.ntab{font-size:16px;padding:6px 15px}}
 
 /* ── SECTION ── */
-.sec{padding:0 var(--gut) 24px;border-bottom:1px solid rgba(255,255,255,.04)}
+.sec{padding:0 var(--gut) 6px;scroll-margin-top:calc(var(--nav-h) + var(--safe-t) + 10px)}
 .sechd{
   display:flex;align-items:center;gap:10px;
-  padding:20px 0 12px;
+  padding:8px 0 6px;
 }
 .sectitle{
   font-family:var(--serif);font-size:19px;font-weight:600;letter-spacing:.04em;
@@ -280,6 +306,26 @@ html.fm-native .hero-slide-grad{
 @media(min-width:900px){.grid-land{grid-template-columns:repeat(5,1fr)}}
 @media(min-width:1200px){.grid-land{grid-template-columns:repeat(6,1fr)}}
 
+/* ── 首页分区：横向单行滑动（左右滑动查看，不换行；卡片宽度由 JS 写入 --card-w，与原网格列宽一致） ── */
+.sec .grid{
+  display:flex;
+  flex-wrap:nowrap;
+  overflow-x:auto;
+  overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  padding-bottom:2px;
+  gap:var(--gut);
+  overscroll-behavior-x:contain;
+  scroll-behavior:auto;
+}
+.sec .grid::-webkit-scrollbar{display:none}
+.sec .grid>*{
+  flex:0 0 var(--card-w,100px);
+  width:var(--card-w,100px);
+  min-width:0;
+}
+
 /* ── CARD ── */
 .card{
   cursor:pointer;position:relative;
@@ -288,7 +334,12 @@ html.fm-native .hero-slide-grad{
   -webkit-tap-highlight-color:transparent;
   transition:transform .14s cubic-bezier(.2,.8,.4,1);
 }
-.card:hover,.card:focus{transform:scale(1.06);z-index:3}
+.card:focus-visible{transform:scale(1.06);z-index:3}
+.card:active{transform:scale(.96)}
+@media (hover:hover) and (pointer:fine){
+  .card:hover{transform:scale(1.06);z-index:3}
+  .card:hover .card-overlay{opacity:1}
+}
 .card-img{
   position:relative;overflow:hidden;
   background:var(--surface2);
@@ -313,7 +364,7 @@ html.fm-native .hero-slide-grad{
   background:linear-gradient(180deg,transparent 55%,rgba(0,0,0,.8) 100%);
   opacity:0;transition:opacity .14s;
 }
-.card:hover .card-overlay,.card:focus .card-overlay{opacity:1}
+.card:focus-visible .card-overlay{opacity:1}
 
 /* rating badge */
 .card-rating{
@@ -357,7 +408,7 @@ html.fm-native .hero-slide-grad{
 .card-sub{display:none}
 .card-badge{
   display:inline-block;font-family:var(--mono);font-size:10px;
-  color:var(--accent2);background:rgba(200,92,58,.12);
+  color:var(--accent2);background:rgba(196,92,255,.12);
   padding:1px 4px;border-radius:2px;margin-top:3px;
 }
 
@@ -389,17 +440,31 @@ html.fm-native .hero-slide-grad{
   display:flex;align-items:center;gap:10px;
 }
 .srch-wrap{flex:1;position:relative}
+.srch-inp,.conn-field,input,textarea{-webkit-user-select:text;user-select:text}
+@keyframes srch-breathe{
+  0%,100%{box-shadow:0 0 0 1px rgba(125,244,255,.25),0 0 8px rgba(125,244,255,.12),0 0 18px rgba(125,244,255,.06)}
+  50%{box-shadow:0 0 0 1px rgba(125,244,255,.7),0 0 16px rgba(125,244,255,.38),0 0 36px rgba(125,244,255,.18)}
+}
+@keyframes srch-breathe-border{
+  0%,100%{border-color:rgba(125,244,255,.3)}
+  50%{border-color:rgba(125,244,255,.85)}
+}
 .srch-inp{
   width:100%;background:var(--surface);
-  border:1px solid rgba(255,255,255,.07);
-  border-radius:var(--r);color:var(--text);
+  border:1px solid rgba(125,244,255,.3);
+  border-radius:999px;color:var(--text);
   font-family:var(--serif);font-size:19px;
   padding:11px 52px 11px 42px;outline:none;
-  transition:border-color .12s;
+  transition:border-color .12s,box-shadow .12s;
   -webkit-appearance:none;appearance:none;
+  animation:srch-breathe 2.8s ease-in-out infinite, srch-breathe-border 2.8s ease-in-out infinite;
 }
 .srch-inp::-webkit-search-cancel-button{display:none}
-.srch-inp:focus{border-color:var(--accent)}
+.srch-inp:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px rgba(125,244,255,.9),0 0 20px rgba(125,244,255,.45),0 0 48px rgba(125,244,255,.2);
+  animation:none;
+}
 .srch-inp::placeholder{color:var(--muted)}
 .srch-ico{
   position:absolute;left:13px;top:50%;transform:translateY(-50%);
@@ -414,11 +479,11 @@ html.fm-native .hero-slide-grad{
 .srch-submit-btn{
   position:absolute;right:10px;top:50%;transform:translateY(-50%);
   background:var(--accent);border:none;cursor:pointer;
-  width:32px;height:32px;border-radius:6px;
+  width:32px;height:32px;border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   color:#000;transition:background .12s,transform .1s;flex-shrink:0;
 }
-.srch-submit-btn:hover{background:#f5de8a;transform:translateY(-50%) scale(1.06)}
+.srch-submit-btn:hover{background:#a0f7ff;transform:translateY(-50%) scale(1.06)}
 .srch-submit-btn:active{transform:translateY(-50%) scale(.93)}
 .srch-label{
   font-family:var(--mono);font-size:11px;letter-spacing:.2em;
@@ -499,7 +564,7 @@ html.search-active #s-search{
 }
 .srch-searching-spinner{
   width:30px;height:30px;border-radius:50%;
-  border:3px solid rgba(232,201,122,.15);
+  border:3px solid rgba(125,244,255,.15);
   border-top-color:var(--accent);
   animation:srch-spin .7s linear infinite;
 }
@@ -575,9 +640,11 @@ html.search-active #s-search{
   overflow-y:scroll;   /* 强制scroll而非auto，避免部分WebView失效 */
   overflow-x:hidden;
   -webkit-overflow-scrolling:touch;  /* iOS惯性滚动 */
+  scrollbar-width:none;
   transform:translateX(100%);
   transition:transform .26s cubic-bezier(.4,0,.2,1);
 }
+#det::-webkit-scrollbar{display:none}
 #det.on{transform:translateX(0)}
 
 /* ── 分类页（筛选 + 看更多）── */
@@ -648,7 +715,7 @@ html.search-active #s-search{
   font-family:var(--mono);letter-spacing:.05em;
   padding:3px 4px 3px 8px;border-radius:10px;transition:color .15s,background .15s;
 }
-.sec-more:hover{color:var(--accent);background:rgba(232,201,122,.08)}
+.sec-more:hover{color:var(--accent);background:rgba(125,244,255,.08)}
 .sec-more:active{transform:scale(.95)}
 .sec-more svg{width:13px;height:13px}
 .sechd.clickable{cursor:pointer}
@@ -674,7 +741,7 @@ html.search-active #s-search{
 .det-hero-img{
   position:absolute;top:0;left:0;
   width:100%;height:100%;object-fit:cover;object-position:center top;
-  filter:saturate(1.05) brightness(1.1);
+  filter:saturate(1.05) brightness(1.32);
   opacity:0;transition:opacity 1.2s ease;
 }
 .det-hero-img.active{opacity:1}
@@ -688,8 +755,8 @@ html.search-active #s-search{
   padding-left:14px;padding-right:14px;
   background:rgba(6,17,27,0);
   border-bottom:1px solid rgba(255,255,255,0);
-  -webkit-backdrop-filter:blur(0px) saturate(1.2);
-  backdrop-filter:blur(0px) saturate(1.2);
+  -webkit-backdrop-filter:none;
+  backdrop-filter:none;
   transition:background-color .15s linear,border-color .15s linear,backdrop-filter .15s linear,-webkit-backdrop-filter .15s linear;
   pointer-events:none;
 }
@@ -708,18 +775,11 @@ html.search-active #s-search{
   transition:opacity .2s linear,transform .2s linear;
 }
 #detNav.scrolled #detNavTitle{opacity:1;transform:translateY(0)}
-/* 头图随滚动收缩 + 渐隐，模拟视差吸顶 */
-.det-hero{
-  transition:opacity .15s linear,transform .15s linear;
-  transform-origin:center top;
-  will-change:opacity,transform;
-}
-/* 手机竖屏：全屏渐变遮罩 — 顶部更透明，让图片透出 */
+/* 手机竖屏：仅底部渐变压暗以便文字可读，不再对左侧整体压暗 */
 .det-hero::after{
   content:'';position:absolute;top:0;right:0;bottom:0;left:0;
   background:
-    linear-gradient(180deg,rgba(6,17,27,.1) 0%,rgba(6,17,27,.45) 40%,rgba(6,17,27,.92) 100%),
-    linear-gradient(90deg,rgba(6,17,27,.6) 0%,rgba(6,17,27,.05) 100%);
+    linear-gradient(180deg,rgba(6,17,27,0) 0%,rgba(6,17,27,0) 50%,rgba(6,17,27,.45) 70%,rgba(6,17,27,.92) 100%);
 }
 /* 宽屏桌面（≥1100）：左侧深色文字区，右侧图片大量透出 */
 @media(min-width:1100px){
@@ -738,7 +798,7 @@ html.search-active #s-search{
   min-height:100vh;
   min-height:100dvh;
   width:100%;
-  padding:calc(var(--safe-t) + 20px) 18px 48px;
+  padding:calc(var(--safe-t) + 20px) 14px 48px;
   box-sizing:border-box;
 }
 
@@ -749,8 +809,8 @@ html.search-active #s-search{
     flex-direction:column;
     width:100%;
     max-width:100%;
-    padding:calc(var(--safe-t) + 36px) 40px 64px 40px;
-    padding:calc(var(--safe-t) + 36px) clamp(34px,5vw,74px) 64px clamp(34px,5vw,74px);
+    padding:calc(var(--safe-t) + 36px) 28px 64px 28px;
+    padding:calc(var(--safe-t) + 36px) clamp(18px,2.6vw,38px) 64px clamp(18px,2.6vw,38px);
   }
 }
 
@@ -761,8 +821,8 @@ html.search-active #s-search{
     grid-template-columns:minmax(0,640px) 1fr;
     column-gap:0;
     align-items:start;
-    padding-left:60px;
-    padding-left:clamp(50px,6vw,98px);
+    padding-left:36px;
+    padding-left:clamp(30px,4vw,60px);
     padding-right:0;
   }
   .det-inner > *{
@@ -773,8 +833,8 @@ html.search-active #s-search{
 @media(min-width:1500px){
   .det-inner{
     grid-template-columns:minmax(0,760px) 1fr;
-    padding-left:80px;
-    padding-left:clamp(66px,7vw,122px);
+    padding-left:48px;
+    padding-left:clamp(40px,4.5vw,76px);
   }
 }
 
@@ -784,7 +844,7 @@ html.search-active #s-search{
     display:flex;
     flex-direction:column;
     max-width:100%;
-    padding:calc(var(--safe-t) + 12px) 20px 32px;
+    padding:calc(var(--safe-t) + 12px) 14px 32px;
   }
 }
 
@@ -817,17 +877,16 @@ html.search-active #s-search{
     width:100%;
     max-width:100%;
     column-gap:0;
-    padding:calc(var(--safe-t) + 36px) 40px 64px 40px;
-    padding:calc(var(--safe-t) + 36px) clamp(34px,5vw,74px) 64px clamp(34px,5vw,74px);
+    padding:calc(var(--safe-t) + 36px) 28px 64px 28px;
+    padding:calc(var(--safe-t) + 36px) clamp(18px,2.6vw,38px) 64px clamp(18px,2.6vw,38px);
   }
   .det-inner > *{ grid-column:auto; min-width:0; }
   /* 顶部留白露出剧照，而不是把它挤到右半屏 */
   .det-poster-row{ margin-top:0; padding-top:240px; padding-top:clamp(180px,34vh,360px); }
-  /* 渐变恢复成全屏纵向（顶部透出剧照、底部压暗文字），取消左重右透的横向渐变 */
+  /* 渐变改为纯纵向（顶部透出剧照、底部压暗文字），取消左重右透的横向渐变 */
   .det-hero::after{
     background:
-      linear-gradient(180deg,rgba(6,17,27,.1) 0%,rgba(6,17,27,.45) 40%,rgba(6,17,27,.92) 100%),
-      linear-gradient(90deg,rgba(6,17,27,.6) 0%,rgba(6,17,27,.05) 100%);
+      linear-gradient(180deg,rgba(6,17,27,0) 0%,rgba(6,17,27,.45) 40%,rgba(6,17,27,.92) 100%);
   }
 }
 
@@ -835,11 +894,11 @@ html.search-active #s-search{
 .det-title-block{flex:1;min-width:0;padding-bottom:4px}
 .det-eyebrow{
   font-family:var(--mono);font-size:11px;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--accent2);margin-bottom:6px;
+  text-transform:uppercase;color:var(--accent2);margin-bottom:16px;
   display:flex;align-items:center;gap:6px;
 }
 .det-eyebrow::before{content:'';display:inline-block;width:14px;height:1px;background:var(--accent2)}
-.det-logo-wrap{margin-bottom:6px;min-height:48px;display:flex;align-items:flex-end}
+.det-logo-wrap{margin-bottom:16px;min-height:48px;display:flex;align-items:flex-end}
 .det-logo-img{
   max-width:360px;max-height:130px;
   max-width:min(380px,80vw);max-height:clamp(82px,16vw,162px);
@@ -855,14 +914,14 @@ html.search-active #s-search{
 }
 .det-orig-title{
   font-family:var(--mono);font-size:13px;color:rgba(240,237,232,.4);
-  margin-bottom:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  margin-bottom:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
 .det-score-row{
   display:flex;align-items:baseline;gap:5px;margin-bottom:4px;
 }
 .det-score{
   font-family:var(--mono);font-size:24px;font-weight:700;color:var(--accent);
-  text-shadow:0 2px 8px rgba(232,201,122,.3);
+  text-shadow:0 2px 8px rgba(125,244,255,.3);
 }
 .det-score-max{
   font-family:var(--mono);font-size:13px;color:rgba(240,237,232,.35);
@@ -870,7 +929,7 @@ html.search-active #s-search{
 .det-votes{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:4px}
 
 /* meta pills */
-.det-pills{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 18px}
+.det-pills{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
 .det-pill{
   padding:4px 10px;border-radius:999px;
   color:var(--text);background:rgba(255,255,255,.1);
@@ -881,35 +940,76 @@ html.search-active #s-search{
   color:#fff;border-color:rgba(255,255,255,.4);
   background:rgba(255,255,255,.18);font-weight:700;
 }
+.det-pill-rating{
+  color:var(--accent);border-color:rgba(125,244,255,.45);
+  background:rgba(125,244,255,.12);font-weight:700;
+  letter-spacing:.02em;
+}
 
 /* action buttons */
-.det-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.det-actions{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center}
 .btn-p{
   display:inline-flex;align-items:center;gap:7px;
-  background:var(--accent);color:#000;
+  color:#051a1e;
   font-family:var(--mono);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
   border:none;cursor:pointer;padding:11px 20px;border-radius:999px;
-  transition:background .12s,transform .1s,box-shadow .12s;
-  box-shadow:0 4px 20px rgba(232,201,122,.3);
+  background:#7df4ff;
+  box-shadow:0 0 0 1px rgba(125,244,255,.4) inset,0 6px 22px rgba(125,244,255,.35);
+  transition:filter .12s,transform .1s,box-shadow .12s;
 }
-.btn-p:hover{background:#f0d890;transform:translateY(-1px);box-shadow:0 8px 28px rgba(232,201,122,.4)}
+.btn-p:hover{filter:brightness(1.08);transform:translateY(-1px);box-shadow:0 0 0 1px rgba(125,244,255,.5) inset,0 8px 32px rgba(125,244,255,.5)}
 .btn-p:active{transform:scale(.95)}
+
+/* ── 搜索播放按钮：霓虹流光版 ── */
+@property --btn-ang{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes btn-spin{to{--btn-ang:360deg}}
+@keyframes btn-flow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+#detPlayBtn{
+  position:relative;isolation:isolate;overflow:hidden;
+  color:#030d10;
+  background:linear-gradient(135deg,#c45cff,#7df4ff,#c45cff);
+  background-size:200% 200%;
+  animation:btn-flow 3s ease infinite;
+  box-shadow:0 0 22px rgba(125,244,255,.35),0 0 8px rgba(196,92,255,.3);
+  transition:box-shadow .2s,transform .15s;
+  touch-action:none;
+  outline:none;
+}
+#detPlayBtn::before{
+  content:'';position:absolute;inset:-3px;border-radius:999px;z-index:-1;
+  background:conic-gradient(from var(--btn-ang,0deg),#c45cff,#7df4ff,#c45cff,#7df4ff,#c45cff);
+  animation:btn-spin 4s linear infinite;
+  filter:blur(5px);opacity:.65;
+}
+#detPlayBtn::after{
+  content:'';position:absolute;inset:1.5px;border-radius:999px;z-index:-1;
+  background:linear-gradient(135deg,#c45cff,#7df4ff,#c45cff);
+  background-size:200% 200%;
+  animation:btn-flow 3s ease infinite;
+}
+#detPlayBtn svg,#detPlayBtn span{position:relative;z-index:1}
+#detPlayBtn:hover{
+  transform:translateY(-2px) scale(1.03);
+  box-shadow:0 0 34px rgba(125,244,255,.55),0 0 14px rgba(196,92,255,.45);
+  filter:none;
+}
+#detPlayBtn:active{transform:scale(.95);box-shadow:0 0 12px rgba(125,244,255,.3)}
 .btn-s{
   display:inline-flex;align-items:center;gap:7px;
-  background:rgba(255,255,255,.1);color:rgba(240,246,252,.92);
+  background:rgba(255,255,255,.07);color:rgba(240,246,252,.92);
   font-family:var(--mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;
-  border:1px solid rgba(255,255,255,.22);cursor:pointer;padding:11px 18px;border-radius:999px;
-  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.16);cursor:pointer;padding:11px 18px;border-radius:999px;
+  backdrop-filter:blur(12px);
   transition:background .12s,border-color .12s,transform .1s;
   box-shadow:0 1px 0 rgba(255,255,255,.18) inset,0 4px 16px rgba(0,0,0,.28);
 }
-.btn-s:hover{background:rgba(255,255,255,.17);border-color:rgba(255,255,255,.35);transform:translateY(-1px)}
+.btn-s:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.28);transform:translateY(-1px)}
 .btn-s:active{transform:scale(.95)}
 
 /* overview */
 .det-overview{
   font-size:14px;line-height:1.75;color:rgba(240,237,232,.75);
-  margin-bottom:8px;
+  margin-bottom:0;
 }
 .det-overview.clamped{
   display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;
@@ -919,7 +1019,7 @@ html.search-active #s-search{
   display:none;
   background:none;border:none;cursor:pointer;padding:0;
   font-family:var(--mono);font-size:12px;color:var(--accent);
-  letter-spacing:.05em;margin-bottom:24px;
+  letter-spacing:.05em;margin-top:6px;margin-bottom:16px;
 }
 .det-overview-toggle.show{display:inline-flex;align-items:center;gap:3px}
 .det-overview-toggle svg{width:11px;height:11px;transition:transform .2s}
@@ -939,7 +1039,7 @@ html.search-active #s-search{
 @media(min-width:1100px) and (pointer:fine){
   #detCast{
     grid-column:1 / -1 !important;
-    padding-right:clamp(50px,6vw,98px);
+    padding-right:clamp(30px,4vw,60px);
     box-sizing:border-box;
   }
 }
@@ -967,11 +1067,14 @@ html.search-active #s-search{
   cursor:pointer;transition:transform .14s;
   background:none;border:none;padding:0;outline:none;
 }
-.det-cast-card:hover{transform:scale(1.07)}
-.det-cast-card:hover .det-cast-img{border-color:rgba(255,255,255,.4)}
+.det-cast-card:active{transform:scale(.94)}
+@media (hover:hover) and (pointer:fine){
+  .det-cast-card:hover{transform:scale(1.07)}
+  .det-cast-card:hover .det-cast-img{border-color:rgba(255,255,255,.4)}
+}
 .det-cast-card.active .det-cast-img{
   border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(232,201,122,.5);
+  box-shadow:0 0 0 3px rgba(125,244,255,.5);
 }
 
 /* 圆形头像 */
@@ -1009,7 +1112,7 @@ html.search-active #s-search{
 @media(min-width:1100px) and (pointer:fine){
   #detPersonWorks{
     grid-column:1 / -1 !important;
-    padding-right:clamp(50px,6vw,98px);
+    padding-right:clamp(30px,4vw,60px);
     box-sizing:border-box;
   }
 }
@@ -1059,9 +1162,9 @@ html.search-active #s-search{
   font-family:var(--mono);font-size:13px;color:var(--muted);
   padding:20px 0 8px;
 }
-.det-cast-card:focus .det-cast-img{
+.det-cast-card:focus-visible .det-cast-img{
   border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(232,201,122,.4);
+  box-shadow:0 0 0 3px rgba(125,244,255,.4);
 }
 
 /* similar / recs */
@@ -1085,7 +1188,7 @@ html.search-active #s-search{
   #detRecs{
     grid-column:1 / -1 !important;
     width:100%;
-    padding-right:clamp(50px,6vw,98px);
+    padding-right:clamp(30px,4vw,60px);
     box-sizing:border-box;
   }
 }
@@ -1125,7 +1228,7 @@ html.search-active #s-search{
   background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
   color:#fff;cursor:pointer;transition:all .12s;
 }
-.pan-chip.on{background:rgba(232,201,122,.12);border-color:var(--accent);color:var(--accent)}
+.pan-chip.on{background:rgba(125,244,255,.12);border-color:var(--accent);color:var(--accent)}
 .pan-chip:hover{color:#fff;opacity:.8}
 .pan-list{
   display:grid;gap:8px;
@@ -1168,8 +1271,8 @@ html.search-active #s-search{
   background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
   color:rgba(240,237,232,.55);white-space:nowrap;
 }
-.pan-tag.score{color:var(--accent);border-color:rgba(232,201,122,.3);background:rgba(232,201,122,.08)}
-.pan-tag.quality{color:var(--accent);border-color:rgba(232,201,122,.3);background:rgba(232,201,122,.08);font-weight:700}
+.pan-tag.score{color:var(--accent);border-color:rgba(125,244,255,.3);background:rgba(125,244,255,.08)}
+.pan-tag.quality{color:var(--accent);border-color:rgba(125,244,255,.3);background:rgba(125,244,255,.08);font-weight:700}
 .pan-tag.dv{color:#b8a4f8;border-color:rgba(184,164,248,.35);background:rgba(184,164,248,.12);font-weight:700;letter-spacing:.02em}
 .pan-tag.hdrp{color:#f4a8d0;border-color:rgba(244,168,208,.3);background:rgba(244,168,208,.1);font-weight:700}
 .pan-tag.fhd{color:#7ec8e3;border-color:rgba(126,200,227,.3);background:rgba(126,200,227,.1);font-weight:700}
@@ -1367,63 +1470,11 @@ html.fm-native #ldr{ background:rgba(8,8,8,.4); }
 /* ══════════════════════════════════════════
    TV / 遥控器 专属样式
    仅在 body.tv-mode 下生效，不影响手机/桌面
+   焦点样式统一由下方「TV 性能优化」块定义
    ══════════════════════════════════════════ */
-body.tv-mode *:focus{ outline:none }
 
-/* 统一焦点环：金色描边 + 轻微放大 */
-body.tv-mode .tv-focusable:focus,
-body.tv-mode .tv-focusable.tv-focus{
-  outline: 2.5px solid var(--accent) !important;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(232,201,122,.22) !important;
-  z-index: 10;
-  position: relative;
-}
-
-/* 卡片焦点：放大 + 金色边框 */
-body.tv-mode .card.tv-focus{
-  transform: scale(1.10) !important;
-  outline: 2.5px solid var(--accent) !important;
-  box-shadow: 0 0 0 4px rgba(232,201,122,.25), 0 8px 32px rgba(0,0,0,.6) !important;
-  z-index: 20;
-}
+/* 聚焦时显示卡片浮层 */
 body.tv-mode .card.tv-focus .card-overlay{ opacity:1 }
-
-/* 导航 tab 焦点 */
-body.tv-mode .ntab.tv-focus{
-  color: var(--accent) !important;
-  background: rgba(232,201,122,.18) !important;
-  outline: 2px solid var(--accent) !important;
-  outline-offset: 1px;
-}
-
-/* 搜索结果条目焦点 */
-body.tv-mode .sli.tv-focus{
-  background: rgba(255,255,255,.14) !important;
-  outline: 2px solid var(--accent) !important;
-}
-
-/* 联想列表焦点 */
-body.tv-mode .srch-suggest-item.tv-focus,
-body.tv-mode .srch-hot li.tv-focus{
-  background: rgba(255,255,255,.1) !important;
-  color: var(--accent);
-}
-
-/* Hero 焦点 */
-body.tv-mode .hero-play-btn.tv-focus{
-  background: #f5de8a !important;
-  transform: translateY(-2px) scale(1.05) !important;
-  outline: 2px solid var(--accent) !important;
-}
-
-/* 详情页按钮焦点 */
-body.tv-mode .btn-p.tv-focus,
-body.tv-mode .btn-s.tv-focus{
-  outline: 2.5px solid var(--accent) !important;
-  outline-offset: 2px;
-  filter: brightness(1.2);
-}
 
 /* TV 游标指示器（屏幕右下角显示方向键提示，仅 TV 模式） */
 #tv-hint{
@@ -1435,53 +1486,120 @@ body.tv-mode .btn-s.tv-focus{
 body.tv-mode #tv-hint{ display:block }
 
 /* ══════════════════════════════════════════
-   TV 性能优化（参考开发文档 22.6 / 22.7）
-   - 关闭高成本视觉效果，优先稳定帧率
+   TV 性能优化
+   - 关闭所有高成本视觉效果，优先稳定帧率
    - 卡片自包含，缩小布局/样式影响范围
    - 焦点反馈不改尺寸/边框，避免布局抖动
+   - 彻底消除浏览器默认白色 outline
    ══════════════════════════════════════════ */
 
-/* 1. TV 模式关闭大面积 blur / backdrop-filter / 复杂阴影 / 图片 filter */
-body.tv-mode #nav{ backdrop-filter:none; background:rgba(8,8,8,.98); }
-body.tv-mode #srch{ backdrop-filter:none; background:rgba(8,8,8,.99); }
-body.tv-mode .conn-body{ backdrop-filter:none; background:rgba(17,17,17,.99); }
-body.tv-mode #quickpan{ backdrop-filter:none; }
-body.tv-mode .card-rating{ backdrop-filter:none; }
-body.tv-mode .det-hero img{ filter:none; }
-body.tv-mode body::before{ display:none; } /* 关扫描线叠层 */
+/* 0. 彻底清除浏览器默认焦点白框：TV 模式下所有元素一律 outline:none，
+      焦点样式由下方 .tv-focus 类统一接管，不依赖 :focus 伪类 */
+body.tv-mode *:focus{
+  outline: none !important;
+  box-shadow: none !important;
+}
 
-/* 2. 卡片 / 列表项自包含，减少重排范围 */
+/* 1a. 关闭大面积 backdrop-filter / blur / 图片 filter */
+body.tv-mode #nav{ backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(8,8,8,.98); }
+body.tv-mode #srch{ backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(8,8,8,.99); }
+body.tv-mode .conn-body{ backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(17,17,17,.99); }
+body.tv-mode #quickpan{ backdrop-filter:none; -webkit-backdrop-filter:none; background:rgba(6,17,27,.98); }
+body.tv-mode #panBlock{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+body.tv-mode .card-rating{ backdrop-filter:none; -webkit-backdrop-filter:none; }
+body.tv-mode .btn-s{ backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+body.tv-mode .card-tag,
+body.tv-mode .card-badge{ backdrop-filter:none !important; -webkit-backdrop-filter:none !important; }
+body.tv-mode .det-hero img{ filter:none; }
+/* 详情吸顶栏：关掉动画毛玻璃过渡，滚动后纯色背景 */
+body.tv-mode #detNav{
+  backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
+  transition: background-color .15s linear, border-color .15s linear;
+}
+body.tv-mode #detNav.scrolled{ background:rgba(6,17,27,.97); }
+
+/* 1b. 关闭持续重绘动画 */
+/* 搜索框呼吸光效（box-shadow + border 双动画，每帧都 repaint） */
+body.tv-mode .srch-inp{ animation:none; box-shadow:none; border-color:rgba(125,244,255,.35); }
+/* 播放按钮：流光 + 旋转霓虹环（conic+blur 持续合成层重绘） */
+body.tv-mode #detPlayBtn{ animation:none; box-shadow:none; }
+body.tv-mode #detPlayBtn::before{ display:none; }
+body.tv-mode #detPlayBtn::after{ animation:none; }
+body.tv-mode .hero-play-btn{ animation:none; box-shadow:none; }
+body.tv-mode .hero-play-btn::before{ display:none; }
+body.tv-mode .hero-play-btn::after{ animation:none; }
+/* 卡片状态点呼吸 + 声纳扩散（每张卡片都在跑，积累重绘面积大） */
+body.tv-mode .card-dot{ animation:none; }
+body.tv-mode .card-dot::after{ animation:none; display:none; }
+/* Hero 轮播背景 Ken Burns（8s transform，触发 GPU 合成层抖动） */
+body.tv-mode .hero-slide.active .hero-slide-bg{ transform:none !important; transition:none; }
+/* 扫描线叠层 */
+body.tv-mode body::before{ display:none; }
+
+/* 2. 卡片 / 列表项自包含，缩小 layout/style 影响范围 */
 body.tv-mode .card,
 body.tv-mode .sli,
 body.tv-mode .pan-item,
 body.tv-mode .det-cast-card,
-body.tv-mode .srch-suggest-item{
+body.tv-mode .srch-suggest-item,
+body.tv-mode .srch-hist-tag{
+  contain: layout style;
+  /* GPU 合成提示：焦点缩放走合成层，不触发主线程重绘/重排，遥控连续移动焦点时更顺滑 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+/* 2b. 网格/版块容器同样自包含：焦点切换时的局部重排不波及整页，
+       减少遥控器连续按键时的布局计算量 */
+body.tv-mode .grid,
+body.tv-mode .sec{
   contain: layout style;
 }
 
-/* 3. 焦点反馈：用 outline + 轻微 transform，不触发布局抖动
-   （覆盖上面用 box-shadow 的高成本写法，TV 下走更轻的样式）*/
+/* 3. 焦点反馈：统一走 .tv-focus 类，outline 描边 + 轻 transform，零 box-shadow */
 body.tv-mode .card.tv-focus{
-  transform: scale(1.06);
+  transform: translateZ(0) scale(1.06);
   outline: 3px solid var(--accent);
   outline-offset: -1px;
   box-shadow: none !important;
   z-index: 20;
+  will-change: transform;
 }
-body.tv-mode .tv-focusable.tv-focus,
-body.tv-mode .tv-focusable:focus{
-  box-shadow: none !important;
+body.tv-mode .tv-focusable.tv-focus{
   outline: 2.5px solid var(--accent) !important;
+  box-shadow: none !important;
+}
+body.tv-mode .ntab.tv-focus{
+  color: var(--accent) !important;
+  background: rgba(125,244,255,.15) !important;
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 1px;
+  box-shadow: none !important;
+}
+body.tv-mode .sli.tv-focus{
+  background: rgba(255,255,255,.12) !important;
+  outline: 2px solid var(--accent) !important;
+  box-shadow: none !important;
+}
+body.tv-mode .srch-suggest-item.tv-focus,
+body.tv-mode .srch-hot li.tv-focus{
+  background: rgba(255,255,255,.09) !important;
+  outline: 2px solid var(--accent) !important;
+  color: var(--accent);
+  box-shadow: none !important;
+}
+body.tv-mode .hero-play-btn.tv-focus{
+  outline: 2px solid var(--accent) !important;
+  transform: scale(1.04) !important;
+  box-shadow: none !important;
+  filter: brightness(1.12);
 }
 body.tv-mode .btn-p.tv-focus,
 body.tv-mode .btn-s.tv-focus{
-  filter: none;
-  background: rgba(232,201,122,.2);
-}
-body.tv-mode .hero-play-btn.tv-focus{
+  outline: 2.5px solid var(--accent) !important;
+  outline-offset: 2px;
   box-shadow: none !important;
+  filter: brightness(1.12);
 }
-/* 分类页：筛选标签 / 返回键 / 更多 的 TV 焦点高亮（用描边环，避免和选中态金底混淆）*/
 body.tv-mode .fil-tag.tv-focus,
 body.tv-mode .cat-back.tv-focus,
 body.tv-mode .sec-more.tv-focus,
@@ -1489,6 +1607,44 @@ body.tv-mode .sechd.tv-focus{
   outline: 2.5px solid var(--accent) !important;
   outline-offset: 2px;
   border-radius: 14px;
+  box-shadow: none !important;
+}
+body.tv-mode .det-cast-card.tv-focus .det-cast-img{
+  border-color: var(--accent);
+  box-shadow: none !important;
+}
+body.tv-mode .pan-item.tv-focus,
+body.tv-mode .pan-chip.tv-focus{
+  outline: 2px solid var(--accent) !important;
+  box-shadow: none !important;
+}
+
+/* ── TV 详情页专属微调 ──
+   1) 去掉遥控选中框（outline），只保留缩放/高亮，贴合按钮圆角和卡片本身造型
+   2) 整体内容往内收一些安全边距，避免被电视 overscan 裁切到边缘
+   3) 收紧顶部留白，让标题/简介/按钮组不至于堆在屏幕偏下位置 */
+body.tv-mode #det .btn-p.tv-focus,
+body.tv-mode #det .btn-s.tv-focus{
+  outline: none !important;
+}
+body.tv-mode #detRecsGrid .card.tv-focus{
+  outline: none !important;
+}
+body.tv-mode .det-inner{
+  padding-left: max(56px, 5vw) !important;
+  padding-right: max(56px, 5vw) !important;
+  /* 上下边距：原值继承自手机端窄边距(20px/48px)，电视上贴边明显，
+     这里按电视安全区放大，避免被 overscan 裁切、避免内容贴边 */
+  padding-top: max(40px, 4vh) !important;
+  padding-bottom: max(56px, 6vh) !important;
+}
+body.tv-mode #detNav{
+  padding-left: max(28px, 3vw) !important;
+  padding-right: max(28px, 3vw) !important;
+}
+body.tv-mode .det-poster-row{
+  padding-top: max(8px, 3vh) !important;
+  margin-top: max(8px, 3vh) !important;
 }
 
 
@@ -1503,6 +1659,7 @@ body.tv-mode .sechd.tv-focus{
 <div class="ntabs" id="ntabs">
 <button class="ntab on" data-sec="s-new" onclick="scrollSec('s-new')"><svg class="ntab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span class="ntab-lbl">最新上线</span></button>
 <button class="ntab" data-sec="s-movie" onclick="scrollSec('s-movie')"><svg class="ntab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg><span class="ntab-lbl">电影</span></button>
+<button class="ntab" data-sec="s-top" onclick="scrollSec('s-top')"><svg class="ntab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span class="ntab-lbl">高分精选</span></button>
 <button class="ntab" data-sec="s-cn" onclick="scrollSec('s-cn')"><svg class="ntab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg><span class="ntab-lbl">国产剧</span></button>
 <button class="ntab" data-sec="s-hk" onclick="scrollSec('s-hk')"><svg class="ntab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span class="ntab-lbl">港台剧</span></button>
 <button class="ntab" data-sec="s-jpkr" onclick="scrollSec('s-jpkr')"><svg class="ntab-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg><span class="ntab-lbl">日韩剧</span></button>
@@ -1588,7 +1745,7 @@ body.tv-mode .sechd.tv-focus{
   <span class="sectitle" id="srchResTitle">搜索结果</span>
   <div class="secline"></div>
   <span class="seccnt" id="cnt-search"></span>
-  <button onclick="closeSrchResult()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:4px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0">✕ 清除</button>
+  <button id="srchResClose" tabindex="0" class="tv-focusable" onclick="closeSrchResult()" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:4px 8px;border-radius:4px;white-space:nowrap;flex-shrink:0">✕ 清除</button>
 </div>
 <div id="srch-list"></div>
 </section>
@@ -1605,6 +1762,10 @@ body.tv-mode .sechd.tv-focus{
 <section class="sec" id="s-movie">
 <div class="sechd clickable" onclick="openCat('movie')"><span class="sectitle">电影</span><div class="secline"></div><span class="seccnt" id="cnt-movie"></span><span class="sec-more">更多<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span></div>
 <div class="grid" id="g-movie"></div>
+</section>
+<section class="sec" id="s-top">
+<div class="sechd clickable" onclick="openCat('top')"><span class="sectitle">高分精选</span><div class="secline"></div><span class="seccnt" id="cnt-top"></span><span class="sec-more">更多<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span></div>
+<div class="grid" id="g-top"></div>
 </section>
 <section class="sec" id="s-cn">
 <div class="sechd clickable" onclick="openCat('cn')"><span class="sectitle">国产剧</span><div class="secline"></div><span class="seccnt" id="cnt-cn"></span><span class="sec-more">更多<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span></div>
@@ -1698,6 +1859,21 @@ const IMG_W780 = 'https://image.tmdb.org/t/p/w1280';  // 升级到 w1280
 const IMG_ORIG = 'https://image.tmdb.org/t/p/original';
 const LANG = 'zh-CN';
 
+// 卡片封面统一使用 w780，电视大屏下海报不再发糊。
+// TV 端的卡顿不再靠裁切图片质量掩盖，改由「真正的可视区懒加载 + GPU 合成提示」解决
+// （见下方 lazyObserveImg 和 TV 性能优化 CSS 块）。
+// 注意 TV_MODE 在文件后段定义，这里在运行时（渲染发生在 boot 之后）读取，安全。
+function posterSrc(path, land){
+  if(!path) return '';
+  if(typeof TV_MODE !== 'undefined' && TV_MODE)
+    return 'https://image.tmdb.org/t/p/w780' + path;
+  return (land ? IMG_W780 : IMG_W500) + path;
+}
+function backdropSrc(path){
+  if(!path) return '';
+  return ((typeof TV_MODE !== 'undefined' && TV_MODE) ? 'https://image.tmdb.org/t/p/w1280' : IMG_ORIG) + path;
+}
+
 // ── SDK ──
 const IS_APP = !!window.fongmiBridge;
 const IS_TV  = window.fongmiClient ? window.fongmiClient.isLeanback : false;
@@ -1705,11 +1881,32 @@ const IS_TV  = window.fongmiClient ? window.fongmiClient.isLeanback : false;
 if((IS_APP || window.fongmiClient) && !document.documentElement.classList.contains('fm-native')){
   document.documentElement.classList.add('fm-native');
 }
+// 兜底：window.fongmiClient 有可能晚于本行同步执行的时机才注入完成
+// （常见于 WebView 被系统回收重建后的冷启动），会把 IS_TV/TV_MODE 永久误判为 false。
+// 后果：① posterSrc()/backdropSrc() 按非TV逻辑加载 original/w1280 大图，拖慢TV端首屏；
+//      ② 详情页 TV 安全边距（下方 body.tv-mode .det-inner，见 22.6/32.7 章节安全区要求）
+//        原本要等用户按一次遥控器方向键触发的 _tvEnable() 才生效，导致贴边。
+// 这里在桥接稍后就绪时主动补触发一次 TV 模式检测，不再只依赖用户按键。
+(function _tvLateDetect(){
+  function tryDetect(){
+    if(typeof TV_MODE !== 'undefined' && TV_MODE) return true;
+    if(window.fongmiClient && window.fongmiClient.isLeanback === true){
+      if(typeof _tvEnable === 'function') _tvEnable();
+      return true;
+    }
+    return false;
+  }
+  window.addEventListener('fmsdk', tryDetect);
+  var tries = 0;
+  var timer = setInterval(function(){
+    tries++;
+    if(tryDetect() || tries >= 10) clearInterval(timer);
+  }, 150); // 最多轮询约1.5秒，覆盖桥接延迟注入场景，不影响已同步注入的正常情况
+})();
 let siteKey = '';
 let heroData = null;
 let srchTimer = null;
 let detData = null;
-let _homeToolbarRestored = true;   // 主页工具栏状态；只有进入详情页才置 false，回主页时恢复
 
 let _nativeSdkWait = null;
 function waitForNativeSdk(timeout){
@@ -1766,7 +1963,12 @@ function sdk(){
     vod: async (siteKey, vodId, title)=>toast('原生播放：'+(title||vodId||siteKey||'')),
     pan: { check, play },
     check,
-    ui: { setToolbar: async ()=>{} },
+    ui: {
+      setToolbar: async ()=>{},
+      setChrome: async ()=>{},
+      restoreChrome: async ()=>{},
+      getViewport: async ()=>({ width: innerWidth, height: innerHeight, safeTop:0, safeRight:0, safeBottom:0, safeLeft:0, chromeMode:'normal', systemBarsHidden:false })
+    },
     cache: {
       get: async (key)=>localStorage.getItem('fm_'+key)||'',
       set: async (key,value)=>localStorage.setItem('fm_'+key,value),
@@ -1851,7 +2053,7 @@ function buildHeroSlide(item, idx){
   const overview = item.overview || '';
   const year = (item.release_date||item.first_air_date||'').slice(0,4);
   const rating = item.vote_average ? item.vote_average.toFixed(1) : '';
-  const bgUrl = backdrop ? resUrl(backdrop, IMG_ORIG) : '';
+  const bgUrl = backdropSrc(backdrop);
 
   return `<div class="hero-slide${idx===0?' active':''}" data-idx="${idx}" onclick="openDet(heroItems[${idx}])">
     <div class="hero-slide-bg" style="${bgUrl?`background-image:url(${bgUrl})`:''}"></div>
@@ -1892,12 +2094,13 @@ async function loadHeroLogos(items){
       const img = document.createElement('img');
       img.className = 'hero-logo-img';
       img.alt = item.title || item.name || '';
-      img.onload = ()=>{
-        if(title) title.classList.add('has-logo');
-        img.classList.add('loaded');
-      };
-      img.onerror = ()=>{ img.remove(); }; // 加载失败保留文字标题
-      img.src = IMG_ORIG + logo.file_path;
+      img.decoding = 'async';
+      // 对齐官方 logo-pending：先隐藏文字标题，避免「文字闪一下再变徽标」的跳动
+      if(title) title.classList.add('has-logo');
+      img.onload = ()=>{ img.classList.add('loaded'); };
+      img.onerror = ()=>{ img.remove(); if(title) title.classList.remove('has-logo'); }; // 失败恢复文字标题
+      // 徽标显示高度 ≤108px，用 w500 足够清晰且比 original 小很多，TV 上加载更快、更稳定出图
+      img.src = 'https://image.tmdb.org/t/p/w500' + logo.file_path;
       wrap.appendChild(img);
     }catch(e){ /* 静默失败，保留文字标题 */ }
   });
@@ -1927,6 +2130,7 @@ function goHero(idx){
 function resetHeroProgress(){
   const bar = document.getElementById('heroProgress');
   if(!bar) return;
+  if(typeof TV_MODE !== 'undefined' && TV_MODE) return;  // TV 模式不跑进度条动画
   bar.style.transition = 'none';
   bar.style.width = '0%';
   requestAnimationFrame(()=>{
@@ -1939,9 +2143,21 @@ function resetHeroProgress(){
 
 function startHeroTimer(){
   clearInterval(heroTimer);
+  // TV 模式：关闭自动轮播定时器。低端盒子上每 5s 的 DOM 切换 + 进度条动画
+  // 会占用主线程，和遥控按键事件抢时间片，是按键延迟的常见来源。
+  // 手动切换（点击 dot / 滑动）仍然可用，只是不再无人值守自动播放。
+  if(typeof TV_MODE !== 'undefined' && TV_MODE) return;
   heroTimer = setInterval(()=>goHero(heroCurrent+1), HERO_INTERVAL);
   resetHeroProgress();
 }
+
+// 页面切到后台（切 App / 锁屏 / 切 tab）时暂停轮播计时器；回到前台再续上。
+// 否则后台期间计时器仍在空跑，回来时可能一次性跳过好几张。
+document.addEventListener('visibilitychange', ()=>{
+  if(!heroItems || !heroItems.length) return;
+  if(document.hidden) clearInterval(heroTimer);
+  else startHeroTimer();
+});
 
 function initHeroCarousel(items){
   heroItems = items;
@@ -2018,8 +2234,18 @@ function cardHtml(item, land=false){
   const year = (item.release_date||item.first_air_date||'').slice(0,4);
   const rating = item.vote_average ? item.vote_average.toFixed(1) : '';
   const poster = land ? item.backdrop_path : item.poster_path;
-  const imgSrc = poster ? resUrl(poster, land ? IMG_W780 : IMG_W500) : '';
+  const imgSrc = posterSrc(poster, land);
   const bg = `hsla(${hue(item.id)},18%,13%,0.5)`;
+
+  // TV 端不依赖 <img loading="lazy">：部分电视盒子内核对原生懒加载支持不稳定，
+  // 整屏卡片一次性触发解码是遥控操作卡顿的主因之一。
+  // TV 端改用 data-src + IntersectionObserver（lazyObserveImg），真正进入可视区才赋值 src，
+  // 滚动/换源时按需解码，避免一次性堆叠大量 w780 大图解码任务。
+  const tvLazy = (typeof TV_MODE !== 'undefined' && TV_MODE);
+  const imgTag = imgSrc ? (tvLazy
+    ? `<img data-src="${imgSrc}" alt="" decoding="async" data-loading onload="this.classList.add('loaded');this.removeAttribute('data-loading')" onerror="this.remove()">`
+    : `<img src="${imgSrc}" alt="" loading="lazy" decoding="async" data-loading onload="this.classList.add('loaded');this.removeAttribute('data-loading')" onerror="this.remove()">`
+  ) : '';
 
   return `<div class="card" tabindex="0" role="button"
     data-id="${item.id}" data-tv="${isTV?1:0}"
@@ -2027,7 +2253,7 @@ function cardHtml(item, land=false){
     onkeydown="if(event.key==='Enter')openDet(ITEMS[${item.id}])"
     oncontextmenu="event.preventDefault();lpLongPress(${item.id})">
     <div class="card-img${land?' land':''}" style="background:${bg}">
-      ${imgSrc?`<img src="${imgSrc}" alt="" loading="lazy" decoding="async" data-loading onload="this.classList.add('loaded');this.removeAttribute('data-loading')">`:``}
+      ${imgTag}
       <div class="card-overlay"></div>
       ${rating?`<div class="card-rating">★${rating}</div>`:''}
       <div class="card-dot" id="dot-${item.id}"></div>
@@ -2042,10 +2268,44 @@ function cardHtml(item, land=false){
 // Global item registry
 const ITEMS = {};
 
+// ── TV 端图片可视区懒加载 ──
+// 卡片图片用 data-src 占位，真正进入可视区（包含横向滑动轨道）才赋值 src 触发解码。
+// 同一时间只解码屏幕附近的图，是 TV 端换源/翻页/滑动顺滑的关键，而不是靠裁切图片质量。
+let _imgLazyObserver = null;
+function lazyObserveImg(root){
+  if(!root || !root.querySelectorAll) return;
+  const imgs = root.querySelectorAll('img[data-src]');
+  if(!imgs.length) return;
+  if(!_imgLazyObserver){
+    _imgLazyObserver = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(!e.isIntersecting) return;
+        const img = e.target;
+        const src = img.getAttribute('data-src');
+        if(src){ img.src = src; img.removeAttribute('data-src'); }
+        _imgLazyObserver.unobserve(img);
+      });
+    }, { rootMargin: '700px 250px' });
+  }
+  imgs.forEach(img=>_imgLazyObserver.observe(img));
+}
+
+// 记录各轨道是否已经被用户滑动过（首次渲染后置true，重新进页面时loadAll会重置）
+const _gridScrolled = {};
 function renderGrid(gridId, cntId, items, land=false){
   items.forEach(i=>ITEMS[i.id]=i);
   const g = document.getElementById(gridId);
-  if(g) g.innerHTML = items.map(i=>cardHtml(i,land)).join('');
+  if(g){
+    const sl = g.scrollLeft;
+    g.innerHTML = items.map(i=>cardHtml(i,land)).join('');
+    lazyObserveImg(g);
+    // 已被用户滑动过的轨道：恢复位置；首次加载：从0开始
+    if(_gridScrolled[gridId] && sl) g.scrollLeft = sl;
+    // 监听用户首次滑动
+    if(!_gridScrolled[gridId]){
+      g.addEventListener('scroll', ()=>{ _gridScrolled[gridId] = true; }, {once:true, passive:true});
+    }
+  }
   const c = document.getElementById(cntId);
   if(c) c.textContent = items.length + ' 部';
 }
@@ -2059,9 +2319,13 @@ function relDate(offsetDays){
 }
 
 async function loadAll(){
+  // 重新进页面时清除滚动记录，让所有轨道回到起点
+  Object.keys(_gridScrolled).forEach(k=>delete _gridScrolled[k]);
+  updateHomeRails();
   // Skeletons
   document.getElementById('g-new').innerHTML   = sks(24);
   document.getElementById('g-movie').innerHTML = sks(24);
+  document.getElementById('g-top').innerHTML   = sks(24);
   document.getElementById('g-cn').innerHTML    = sks(20, true);
   document.getElementById('g-hk').innerHTML    = sks(20, true);
   document.getElementById('g-jpkr').innerHTML  = sks(20, true);
@@ -2097,6 +2361,8 @@ async function loadAll(){
     varCN1,    varCN2,
     varHK,     varTW,
     varKR,     varJP,
+    topMov1,   topMov2,
+    topTv1,    topTv2,
   ] = await Promise.allSettled([
     tmdb('/trending/all/week',  {page:'1'}),
     tmdb('/trending/movie/day', {page:'1'}),
@@ -2302,6 +2568,13 @@ async function loadAll(){
       'first_air_date.gte': relDate(-180),
       'first_air_date.lte': relDate(14),
     }),
+
+    // 高分精选：高分电影（vote_average>=7.5, vote_count>=200）
+    tmdb('/discover/movie', {sort_by:'vote_average.desc','vote_count.gte':'300','vote_average.gte':'7.5',page:'1'}),
+    tmdb('/discover/movie', {sort_by:'vote_average.desc','vote_count.gte':'300','vote_average.gte':'7.5',page:'2'}),
+    // 高分电视剧
+    tmdb('/discover/tv',    {sort_by:'vote_average.desc','vote_count.gte':'200','vote_average.gte':'7.5',page:'1'}),
+    tmdb('/discover/tv',    {sort_by:'vote_average.desc','vote_count.gte':'200','vote_average.gte':'7.5',page:'2'}),
   ]);
 
   // ── 合并各分类 ──
@@ -2343,6 +2616,10 @@ async function loadAll(){
   const heroSix = seededShuffle(heroPool, dateSeed).slice(0,6);
   if(heroSix.length) initHeroCarousel(heroSix);
 
+  // 高分精选：电影+电视剧混合，按评分排序后交叉合并
+  const topItems = merge(get(topMov1), get(topTv1), get(topMov2), get(topTv2))
+    .filter(i=>i.poster_path).slice(0,24);
+  renderGrid('g-top',   'cnt-top',   topItems);
   renderGrid('g-new',   'cnt-new',   newItems);
   renderGrid('g-movie', 'cnt-movie', movieItems);
   renderGrid('g-cn',    'cnt-cn',    cnItems,    true);
@@ -2378,6 +2655,14 @@ function gGenre(type){ return {key:'genre', label:'类型', kind:'genre', opts:[
 function gYear(){ return {key:'year', label:'年份', kind:'year', opts:[['全部','']].concat(CAT_YEARS.map(y=>[y,y]))}; }
 
 const CAT_CONFIG = {
+  top: { title:'高分精选', type:'movie', land:false,
+    base:{'vote_count.gte':'200','vote_average.gte':'7.5', sort_by:'vote_average.desc'},
+    groups:[
+      {key:'mtype',label:'类型',kind:'mtype',opts:[['全部','both'],['电影','movie'],['剧集','tv']]},
+      gGenre('movie'),
+      {key:'region',label:'地区',kind:'param',opts:[['全部',{}],['华语',{with_original_language:'zh'}],['欧美',{with_original_language:'en'}],['韩国',{with_original_language:'ko'}],['日本',{with_original_language:'ja'}]]},
+      gYear(),
+    ]},
   new: { title:'最新上线', type:'movie', land:false,
     base:{'vote_count.gte':'20'},
     groups:[
@@ -2435,6 +2720,11 @@ function _catEnsureObs(){
   if(!sc||!sentinel) return;
   _catObs=new IntersectionObserver(es=>{ if(es.some(e=>e.isIntersecting)) _catLoadNext(); }, {root:sc, rootMargin:'700px'});
   _catObs.observe(sentinel);
+  // 兜底：scroll 事件检测（修复横屏下 IntersectionObserver 失效问题）
+  sc.addEventListener('scroll', ()=>{
+    if(!_catState || _catState.done || _catState.loading) return;
+    if(sc.scrollTop + sc.clientHeight >= sc.scrollHeight - 300) _catLoadNext();
+  }, {passive:true});
 }
 
 function openCat(key){
@@ -2446,6 +2736,9 @@ function openCat(key){
   document.getElementById('catGrid').innerHTML = '';
   document.getElementById('catFoot').textContent = '';
   document.getElementById('catFoot').className = 'cat-foot';
+  // 重进页面：先清空筛选栏，让 renderCatFilters 不恢复旧滚动位置
+  const _cf = document.getElementById('catFilters');
+  if(_cf) _cf.innerHTML = '';
   renderCatFilters();
   const sc=document.getElementById('catScroll'); if(sc) sc.scrollTop=0;
   document.getElementById('cat').classList.add('on');
@@ -2457,6 +2750,12 @@ function openCat(key){
 
 function renderCatFilters(){
   if(!_catState) return;
+  // 保存各行当前滚动位置
+  const container = document.getElementById('catFilters');
+  const scrollMap = {};
+  if(container){
+    container.querySelectorAll('.fil-row').forEach((row, i) => { scrollMap[i] = row.scrollLeft; });
+  }
   const html = _catState.cfg.groups.map(g=>{
     const tags = g.opts.map((o,i)=>{
       const on = _catState.sel[g.key]===i ? ' on' : '';
@@ -2464,7 +2763,11 @@ function renderCatFilters(){
     }).join('');
     return `<div class="fil-row"><span class="fil-label">${esc(g.label)}</span>${tags}</div>`;
   }).join('');
-  document.getElementById('catFilters').innerHTML = html;
+  if(container){
+    container.innerHTML = html;
+    // 恢复各行滚动位置
+    container.querySelectorAll('.fil-row').forEach((row, i) => { if(scrollMap[i]) row.scrollLeft = scrollMap[i]; });
+  }
 }
 
 function setCatFilter(gkey, idx){
@@ -2472,7 +2775,6 @@ function setCatFilter(gkey, idx){
   if(_catState.sel[gkey]===idx) return;
   _catState.sel[gkey]=idx;
   renderCatFilters();
-  const sc=document.getElementById('catScroll'); if(sc) sc.scrollTop=0;
   // 重置并重新加载第一页（释放旧的 in-flight 锁，旧请求会因 token 失配被丢弃）
   _catState.page=0; _catState.totalPages=1; _catState.done=false; _catState.count=0;
   _catState.token++; _catState.seen=new Set(); _catState.loading=false;
@@ -2544,6 +2846,7 @@ async function _catLoadNext(){
     });
     const grid=document.getElementById('catGrid');
     if(grid) grid.insertAdjacentHTML('beforeend', frag.join(''));
+    lazyObserveImg(grid);
     _catState.page = page;
     _catState.totalPages = maxTotal;
     _catState.count += added;
@@ -2562,10 +2865,11 @@ async function _catLoadNext(){
 }
 
 // 内容不足一屏时自动续加载，保证 sentinel 能再次进入视口
+// +400 余量修复横屏下 clientHeight 极小导致误判"已够一屏"的问题
 function _catMaybeFill(){
   if(!_catState || _catState.done || _catState.loading) return;
   const sc=document.getElementById('catScroll');
-  if(sc && sc.scrollHeight <= sc.clientHeight + 80) _catLoadNext();
+  if(sc && sc.scrollHeight <= sc.clientHeight + 400) _catLoadNext();
 }
 
 function _doCloseCat(){
@@ -2596,13 +2900,30 @@ const secObs = new IntersectionObserver(entries=>{
     }
   });
 },{rootMargin:'-40% 0px -55% 0px'});
-['s-new','s-movie','s-cn','s-hk','s-jpkr','s-us','s-doc','s-ani','s-var'].forEach(id=>{
+['s-new','s-movie','s-top','s-cn','s-hk','s-jpkr','s-us','s-doc','s-ani','s-var'].forEach(id=>{
   const el = document.getElementById(id);
   if(el) secObs.observe(el);
 });
 
 // ── SEARCH ──
-const HOT = ['星际穿越','流浪地球','肖申克的救赎','寄生虫','蜘蛛侠','复仇者联盟','黑暗骑士','千与千寻'];
+const HOT_POOL = [
+  '星际穿越','流浪地球','肖申克的救赎','寄生虫','蜘蛛侠','复仇者联盟','黑暗骑士','千与千寻',
+  '泰坦尼克号','盗梦空间','楚门的世界','搏击俱乐部','阿甘正传','美丽人生','辛德勒的名单',
+  '指环王','哈利·波特','星球大战','变形金刚','速度与激情',
+  '天空之城','幽灵公主','龙猫','红猪','悬崖上的金鱼姬',
+  '釜山行','与神同行','寄生上流','82年生的金智英','经典之作',
+  '哪吒之魔童降世','姜子牙','长安三万里','大鱼海棠','西游记之大圣归来',
+  '唐探','误杀','消失的她','孤注一掷','年会不能停',
+  '繁花','狂飙','山海情','漫长的季节','白夜追凶',
+  '权力的游戏','绝命毒师','纸牌屋','西部世界','黑镜',
+  '鱿鱼游戏','顶楼','虽然是精神病但没关系','请回答1988','我的解放日志',
+];
+function _shuffleHot(){
+  const pool = HOT_POOL.slice();
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  return pool.slice(0,8);
+}
+let HOT = _shuffleHot();
 
 function openSrch(){
   const overlay = document.getElementById('srch');
@@ -2611,6 +2932,7 @@ function openSrch(){
   inp.value = '';
   _lastSuggestKw = '';
   clearTimeout(_suggestTimer);
+  HOT = _shuffleHot();
   showHome();
   try{ _enterFullscreen(); }catch(e){}
   if(location.hash !== '#search') history.pushState({eclipse:'search'}, '', '#search');
@@ -2630,7 +2952,7 @@ function closeSrch(){
 
 // ── SEARCH HISTORY ──
 const HIST_KEY = 'eclipse_srch_hist';
-const HIST_MAX = 20;
+const HIST_MAX = 10;
 
 function loadHist(){
   try{ return JSON.parse(localStorage.getItem(HIST_KEY)||'[]'); }catch(e){ return []; }
@@ -2721,6 +3043,18 @@ function getPinyinInitials(text){
 // 判断输入 kw 是否纯拼音首字母（全为 a-z 且长度 ≤ 8）
 function isPinyinInitialQuery(kw){
   return /^[a-z]{1,8}$/i.test(kw);
+}
+
+// 去除标题中的「第x季/Season x/SxAB季/特别篇」等季号后缀，得到可被 TMDB /search 接口匹配到的纯剧名
+// 例：「怪奇物语 第四季」→「怪奇物语」；「Stranger Things Season 4」→「Stranger Things」
+function stripSeasonSuffix(title){
+  let s = String(title || '').trim();
+  s = s.replace(/[\s·:：\-—]*第\s*[0-9一二三四五六七八九十百]+\s*季\s*$/u, '');
+  s = s.replace(/[\s·:：\-—]*Season\s*\d+\s*$/i, '');
+  s = s.replace(/[\s·:：\-—]*S\d{1,2}\s*$/i, '');
+  s = s.replace(/[\s·:：\-—]*(特别篇|总集篇|番外篇)\s*$/u, '');
+  s = s.trim();
+  return s || String(title || '').trim();
 }
 
 // 从候选标题列表中找出拼音首字母匹配的项
@@ -2855,7 +3189,9 @@ function renderSuggest(kw, results, localMatches){
       if(!ini.includes(kw.toLowerCase()) && !directMatch) continue;
     }
     seen.add(t.toLowerCase());
-    titles.push({label:t, exact:false, src:'tmdb'});
+    // 剧名可能带「第x季/Season x」后缀（TMDB 分季条目），搜索时按纯剧名查，否则 /search 接口匹配不到
+    const searchKw = stripSeasonSuffix(t);
+    titles.push({label:t, exact:false, src:'tmdb', searchKw});
     if(titles.length >= 9) break;
   }
 
@@ -2880,9 +3216,9 @@ function renderSuggest(kw, results, localMatches){
   body.innerHTML = `<ul class="srch-suggest-list" id="suggestList">
     ${titles.map((t,i)=>`
     <li class="srch-suggest-item${t.exact?' active':''}" tabindex="0"
-      data-idx="${i}" data-kw="${esc(t.label)}"
-      onclick="tapSuggest('${esc(t.label).replace(/'/g,'\\\'')}')"
-      onkeydown="if(event.key==='Enter')tapSuggest('${esc(t.label).replace(/'/g,'\\\'')}')">
+      data-idx="${i}" data-kw="${esc(t.searchKw||t.label)}"
+      onclick="tapSuggest('${esc(t.searchKw||t.label).replace(/'/g,'\\\'')}')"
+      onkeydown="if(event.key==='Enter')tapSuggest('${esc(t.searchKw||t.label).replace(/'/g,'\\\'')}')">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         ${srcIcon[t.src]||srcIcon.query}
       </svg>
@@ -3086,6 +3422,9 @@ function _clearDetBackdrop(){
 function _startDetBackdrop(backdrops, token){
   _clearDetBackdrop();
   if(!backdrops || backdrops.length < 2) return;  // 少于2张不轮播
+  // TV 模式：只保留首张静态背景，不创建额外图层、不跑定时器。
+  // 低端盒子内存小，同时持有多张 w1280 大图 + 每5s切换重绘是常见卡顿来源。
+  if(typeof TV_MODE !== 'undefined' && TV_MODE) return;
   _detBdToken = token;
   const hero = document.getElementById('detHero');
   if(!hero) return;
@@ -3132,7 +3471,7 @@ async function openDet(item){
   const poster = item.poster_path;
   const backdrop = item.backdrop_path;
   const bg = `hsla(${hue(item.id)},18%,13%,0.5)`;
-  const backdropUrl = backdrop ? resUrl(backdrop, IMG_ORIG) : '';
+  const backdropUrl = backdropSrc(backdrop);
 
   const panel = document.getElementById('det');
   const inner = document.getElementById('detInner');
@@ -3145,39 +3484,36 @@ async function openDet(item){
 
   inner.innerHTML = `
     <div class="det-hero" id="detHero">
-      ${backdrop ? `<img class="det-hero-img active" src="${resUrl(backdrop, IMG_ORIG)}" alt="" loading="eager">` : ``}
+      ${backdrop ? `<img class="det-hero-img active" src="${backdropSrc(backdrop)}" alt="" loading="eager">` : ``}
     </div>
 
     <div class="det-inner">
       <div class="det-poster-row">
         <div class="det-title-block" style="padding-bottom:4px;width:100%">
           <div class="det-eyebrow">${isTV ? '剧集' : '电影'}</div>
+          <div class="det-orig-title" id="detOrigTitle"></div>
           <div class="det-logo-wrap" id="detLogoWrap">
             <div class="det-title det-title-fallback" id="detTitleFallback">${esc(title)}</div>
           </div>
-          <div class="det-orig-title" id="detOrigTitle"></div>
-          <div class="det-score-row">
-            <span class="det-score sk" style="width:52px;height:22px;border-radius:3px">&nbsp;</span>
-          </div>
         </div>
-      </div>
-      <div class="det-pills" id="detPills">
-        <span class="det-pill sk" style="width:50px;height:22px">&nbsp;</span>
-        <span class="det-pill sk" style="width:70px;height:22px">&nbsp;</span>
       </div>
       <div class="det-actions">
         <button class="btn-p" id="detContinueBtn" onclick="detContinue()" style="display:none">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
           <span id="detContinueText">继续观看</span>
         </button>
-        <button class="btn-p" id="detPlayBtn" onclick="detPlay()">
+        <button class="btn-p" id="detPlayBtn" oncontextmenu="detPlayLongPress(event)" onpointerdown="detPlayPressStart(event)" onpointerup="detPlayPressEnd(event)" onpointercancel="detPlayPressEnd(event)" title="单击播放最优资源，长按聚合搜索播放">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-14 9V3z"/></svg>
-          <span id="detPlayText">搜索播放</span>
+          <span id="detPlayText">播放</span>
         </button>
         <button class="btn-s" id="panSearchBtn" onclick="openPanSearch()">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.2 18.3h11.6a4.1 4.1 0 0 0 .42-8.18 6.2 6.2 0 0 0-11.9 1.68A3.28 3.28 0 0 0 6.2 18.3Z"/></svg>
           盘搜
         </button>
+      </div>
+      <div class="det-pills" id="detPills">
+        <span class="det-pill sk" style="width:50px;height:22px">&nbsp;</span>
+        <span class="det-pill sk" style="width:70px;height:22px">&nbsp;</span>
       </div>
       <div class="det-overview sk" id="detOverview" style="height:80px;border-radius:4px"></div>
       <button class="det-overview-toggle" id="detOverviewToggle" onclick="toggleOverview()">
@@ -3199,10 +3535,13 @@ async function openDet(item){
     </div>`;
 
   panel.classList.add('on');
-  try{ _enterFullscreen(); }catch(e){ try{ sdk().ui.setToolbar(false); }catch(_){} _homeToolbarRestored = false; }
+  try{ _enterFullscreen(); }catch(e){}
 
   // 继续观看：拉历史匹配（并行，不阻塞详情加载）
   _checkDetContinue(item);
+
+  // ── 后台静默盘搜：载入详情页自动开始，不展开面板 ──
+  _bgPanSearch(title);
 
   // Load full details
   try{
@@ -3251,7 +3590,7 @@ async function openDet(item){
     const year = (det.release_date||det.first_air_date||'').slice(0,4);
     const rating = det.vote_average ? det.vote_average.toFixed(1) : '';
     const voteCount = det.vote_count ? det.vote_count.toLocaleString() : '';
-    const genres = (det.genres||[]).map(g=>g.name).slice(0,4);
+    const genres = (det.genres||[]).map(g=>g.name).filter(n=>/[\u4e00-\u9fff]/.test(n)).slice(0,4);
     const overview = det.overview || item.overview || '';
     const runtime = det.runtime ? `${det.runtime} min` : '';
     const eps = det.number_of_episodes || 0;
@@ -3266,18 +3605,11 @@ async function openDet(item){
     const origEl = document.getElementById('detOrigTitle');
     if(origEl && origTitle && origTitle !== title) origEl.textContent = origTitle;
 
-    // Score
-    const scoreRow = inner.querySelector('.det-score-row');
-    if(scoreRow){
-      scoreRow.innerHTML = rating
-        ? `<span class="det-score">★ ${rating}</span><span class="det-score-max">/ 10</span><span class="det-votes">${voteCount} votes</span>`
-        : '';
-    }
-
-    // Pills
+    // Pills (rating as first pill)
     const pillsEl = document.getElementById('detPills');
     if(pillsEl){
       pillsEl.innerHTML = [
+        rating && `<span class="det-pill det-pill-rating">★ ${rating}</span>`,
         year && `<span class="det-pill strong">${year}</span>`,
         runtime && `<span class="det-pill">${runtime}</span>`,
         seasons && `<span class="det-pill">${seasons}季 ${eps}集</span>`,
@@ -3350,6 +3682,7 @@ async function openDet(item){
       recsEl.innerHTML = `
         <div class="det-recs-label">猜你喜欢</div>
         <div class="det-recs-grid" id="detRecsGrid">${recItems.map(i=>cardHtml(i)).join('')}</div>`;
+      lazyObserveImg(recsEl);
       requestAnimationFrame(()=>requestAnimationFrame(updateRecsGrid));
     }
   }catch(e){
@@ -3444,6 +3777,7 @@ async function loadPersonWorks(person){
     });
 
     rail.innerHTML = works.map(w=>cardHtml(ITEMS[w.id])).join('');
+    lazyObserveImg(rail);
     updatePersonWorksGrid();
   }catch(e){
     console.warn('loadPersonWorks error', e);
@@ -3469,17 +3803,18 @@ function updatePersonWorksGrid(){
   else if(vw >= 640) { cols=5;  gut=14; }
   else if(vw >= 480) { cols=4;  gut=12; }
   else               { cols=3;  gut=12; }
-  const cardW = Math.floor((vw - gut*2 - gut*(cols-1)) / cols);
+  const avail = rail.clientWidth || (rail.parentElement && rail.parentElement.clientWidth) || (vw - gut*2);
+  const cardW = Math.max(60, Math.floor((avail - gut*(cols-1)) / cols));
   rail.style.setProperty('--card-w', cardW+'px');
 }
 window.addEventListener('resize', updatePersonWorksGrid);
 
-// ── RECS GRID：卡片宽度 & 间距 = 首页同视口下的统一值（--gut 体系）──
+// ── RECS GRID：卡片宽度按"推荐区实际可用宽度"铺满，横版正好 cols 张（与首页列数一致）──
 function updateRecsGrid(){
   const g = document.getElementById('detRecsGrid');
   if(!g) return;
   const vw = window.innerWidth;
-  // 首页断点：列数 + 统一间距 gut（gut 同时是屏边留白与卡片间距）
+  // 列数沿用首页断点（与首页同视口下列数一致）
   let cols, gut;
   if(vw >= 1600){ cols=11; gut=20; }
   else if(vw >= 1200){ cols=9;  gut=18; }
@@ -3487,13 +3822,48 @@ function updateRecsGrid(){
   else if(vw >= 640) { cols=5;  gut=14; }
   else if(vw >= 480) { cols=4;  gut=12; }
   else               { cols=3;  gut=12; }
-  // 首页单张卡片像素宽（左右留白 = gut，卡片间距 = gut）
-  const cardW = Math.floor((vw - gut*2 - gut*(cols-1)) / cols);
+  // 用推荐区实际可用宽度（已扣掉详情页左右内边距）计算。
+  // 每张卡片右侧带 margin=gut，可见行应为 cols 张 + (cols-1) 个间距正好等于可用宽度，
+  // 这样第 cols+1 张连同它前面的间距一起被推到屏幕外，不会露出几像素的边
+  const avail = g.clientWidth || (g.parentElement && g.parentElement.clientWidth) || (vw - gut*2);
+  const cardW = Math.max(60, Math.floor((avail - gut*(cols-1)) / cols));
   g.style.setProperty('--card-w', cardW + 'px');
   // 间距交给 CSS 的 var(--gut)，与首页完全一致（不再内联覆盖）
   g.style.removeProperty('gap');
 }
 window.addEventListener('resize', updateRecsGrid);
+
+// ── 首页分区横向滑动：卡片宽度按视口断点与原网格列数保持一致 ──
+// （.sec .grid 现为 flex 单行布局，宽度不再由 grid-template-columns 决定，需 JS 计算后写入 --card-w）
+function updateHomeRails(){
+  const vw = window.innerWidth;
+  let cols, gut;
+  if(vw >= 1600){ cols=11; gut=20; }
+  else if(vw >= 1200){ cols=9;  gut=18; }
+  else if(vw >= 900) { cols=7;  gut=16; }
+  else if(vw >= 640) { cols=5;  gut=14; }
+  else if(vw >= 480) { cols=4;  gut=12; }
+  else               { cols=3;  gut=12; }
+  const cardW = Math.floor((vw - gut*2 - gut*(cols-1)) / cols);
+
+  let lcols;
+  if(vw >= 1200){ lcols=6; }
+  else if(vw >= 900) { lcols=5; }
+  else if(vw >= 640) { lcols=4; }
+  else if(vw >= 480) { lcols=3; }
+  else               { lcols=2; }
+  const cardWLand = Math.floor((vw - gut*2 - gut*(lcols-1)) / lcols);
+
+  ['g-new','g-movie','g-top','g-doc','g-ani'].forEach(id=>{
+    const g = document.getElementById(id);
+    if(g) g.style.setProperty('--card-w', cardW+'px');
+  });
+  ['g-cn','g-hk','g-jpkr','g-us','g-var'].forEach(id=>{
+    const g = document.getElementById(id);
+    if(g) g.style.setProperty('--card-w', cardWLand+'px');
+  });
+}
+window.addEventListener('resize', updateHomeRails);
 
 function _doCloseDet(){
   const panel = document.getElementById('det');
@@ -3516,31 +3886,6 @@ function toggleOverview(){
   document.getElementById('detOverviewToggleText').textContent = open ? '收起' : '展开';
 }
 
-
-// ── 详情页吸顶导航 + 头图视差 ──
-(function(){
-  let raf = 0;
-  function onDetScroll(){
-    if(raf) return;
-    raf = requestAnimationFrame(()=>{
-      raf = 0;
-      const panel = document.getElementById('det');
-      const nav = document.getElementById('detNav');
-      const hero = document.getElementById('detHero');
-      if(!panel || !nav) return;
-      const y = panel.scrollTop;
-      if(y > 24) nav.classList.add('scrolled');
-      else nav.classList.remove('scrolled');
-      if(hero){
-        const p = Math.min(y / 280, 1);
-        hero.style.opacity = String(1 - p * 0.85);
-        const scale = 1 - p * 0.08;
-        hero.style.transform = 'scale(' + scale + ')';
-      }
-    });
-  }
-  document.getElementById('det').addEventListener('scroll', onDetScroll, {passive:true});
-})();
 
 // ── HISTORY 哨兵 ──
 // 栈结构示例（从底到顶）：[sentinel, detail, pan]
@@ -3566,84 +3911,285 @@ function _isOn(id){ const el = document.getElementById(id); return !!el && el.cl
 function _srchResultOpen(){ const el = document.getElementById('s-search'); return !!el && el.style.display !== 'none'; }
 function _anyModalOpen(){ return _isOn('panBlock') || _isOn('det') || _isOn('cat') || _isOn('srch') || _srchResultOpen(); }
 
-// ── 工具栏 / 全屏（沉浸）模型 ──
-// 规则：
-//  · TV 端：首页加载时不全屏；进入详情/任意子页面后全屏。
-//  · 其他移动端：启动即全屏（含首页）。
-//  · 退出全屏的唯一方式 = 已在主页时再按一次返回；其它任何地方的返回只关闭当前层、保持全屏。
-let _fsOn = false;                                  // 当前是否处于全屏（工具栏隐藏）
-function _setToolbar(show){ try{ sdk().ui.setToolbar(show); }catch(e){} }
-function _applyFs(on){
-  _fsOn = !!on;
-  _setToolbar(!on);                                 // 全屏 = 隐藏工具栏
-  _homeToolbarRestored = !on;                       // 兼容旧标志
+// ── 工具栏 / Chrome 模型（官方 setChrome API）──
+function isHomeFullscreenEnabled(){
+  return !window._uiPrefs || window._uiPrefs.homeFullscreenEnabled !== false;
 }
-function _enterFullscreen(){ if(!_fsOn) _applyFs(true); }   // 进入子页面时调用
-function _exitFullscreen(){  if(_fsOn) _applyFs(false); }   // 仅主页返回时调用
+function _setNativeToolbarVisible(visible){
+  try{
+    const ui = sdk().ui || {};
+    if(TV_MODE && ui.setChrome){
+      ui.setChrome({ mode: visible ? (isHomeFullscreenEnabled() ? 'edge' : 'tv-normal') : 'tv-full' });
+      return;
+    }
+    if(!TV_MODE && ui.setChrome){
+      ui.setChrome({
+        mode: visible ? (isHomeFullscreenEnabled() ? 'edge' : 'normal') : 'immersive',
+        statusBarStyle: 'light',
+        navigationBarStyle: 'light',
+        restoreAffordance: visible ? 'auto' : 'none',
+        startup: visible
+      });
+      return;
+    }
+    if(ui.setToolbar) ui.setToolbar(visible);
+  }catch(e){}
+}
+function _syncChromeForRoute(){
+  _setNativeToolbarVisible(!_anyModalOpen());
+}
 function _resumeHomeHero(){
   try{ if(typeof heroItems !== 'undefined' && heroItems && heroItems.length) startHeroTimer(); }catch(e){}
 }
-// 启动时按设备类型决定首页初始全屏状态
-function _initFsForHome(){
-  if(typeof TV_MODE !== 'undefined' && TV_MODE) _applyFs(false);  // TV：首页不全屏
-  else _applyFs(true);                                            // 移动端：首页即全屏
-  _resumeHomeHero();
-  _ensureHome();                                                  // 补哨兵，保证首个返回可被拦截
-}
 
-// 关闭某一层后：若已回到主页则恢复轮播并补哨兵（保持全屏不变！），仍在下层模态则什么都不做
+// 打开子页面时调用：隐藏 toolbar
+function _enterFullscreen(){ _setNativeToolbarVisible(false); }
+// 关闭子页面后，若回到主页则恢复 toolbar
 function _afterCloseStay(){
-  if(_anyModalOpen()) return;     // 还在更下层的模态（如详情开在结果页之上），保留历史与全屏
-  _resumeHomeHero();              // 回到主页：恢复轮播，但保持全屏
-  _ensureHome();                  // 补哨兵，使「下一次」主页返回可用于退出全屏
+  if(_anyModalOpen()) return;
+  _resumeHomeHero();
+  _setNativeToolbarVisible(true);
+  _ensureHome();
 }
 
 window.addEventListener('popstate', (e)=>{
-  // 1) 有模态层 → 关最顶层，保持全屏，本次返回到此结束（「其他地方不退出全屏」）
+  // 1) 有模态层 → 关最顶层，本次返回到此结束
   if(_isOn('panBlock')){ _doClosePanSearch(); _afterCloseStay(); return; }
   if(_isOn('det')){ _doCloseDet(); _afterCloseStay(); return; }
   if(_isOn('cat')){ _doCloseCat(); _afterCloseStay(); return; }
   if(_isOn('srch') || _srchResultOpen()){
-    _doCloseSrch();      // 关搜索框覆盖层（若开着）
-    clearSrchResult();   // 关结果列表 + 去掉 search-active 模糊
+    _doCloseSrch();
+    clearSrchResult();
     _afterCloseStay();
     return;
   }
-  // 2) 已在主页（无模态可关）：
-  if(_fsOn){
-    _exitFullscreen();   // 仅此处退出全屏（显示工具栏）
-    _resumeHomeHero();
-    _ensureHome();       // 消费掉这次返回，留在 App
-    return;
-  }
-  // 3) 主页且已非全屏：不再补哨兵，放行让返回交由宿主（退出 App）
+  // 2) 已在主页（无模态可关）：放行让返回交由宿主（退出 App）
   _resumeHomeHero();
 });
 
-// 移动端默认沉浸式：主页退出全屏后，点击任意内容自动重新进入全屏。
-// 仅在「移动端 + 当前非全屏 + 处于主页」时触发；已全屏则不处理，
-// 因此不影响「主页按返回退出全屏、再按返回退出 App」的流程。
-document.addEventListener('click', ()=>{
-  if(typeof TV_MODE !== 'undefined' && TV_MODE) return;  // 仅移动端
-  if(_fsOn) return;                                       // 已是全屏，无需处理
-  if(_anyModalOpen()) return;                             // 只在主页时
-  _enterFullscreen();
-}, true);
+// ── 后台静默盘搜 ──
+// 只启动搜索、不展开 panBlock 面板；结果存入 panState 供 detPlay() 直接消费
+function _bgPanSearch(kw){
+  if(!kw) return;
+  // 已有同片结果则不重复搜
+  if(panState.keyword === kw && panState.results.length > 0) return;
+  // 重置状态并静默搜索
+  resetPanState();
+  doSearchPan(kw);
+}
 
+// ── 长按计时器 ──
+let _playLongTimer = null;
+let _playLongFired = false;
+let _playPressX = 0;
+let _playPressY = 0;
+
+// ── 单击播放的"重新选择"计时 ──
+// 首次单击：固定播夸克/百度排名前5的第一个；
+// 1 分钟内再次单击：视为"重新选择"，从前5里随机挑一个播放。
+let _detPlayLastClickAt = 0;
+const DET_PLAY_RESELECT_WINDOW = 60000; // 1 分钟
+
+function detPlayPressStart(e){
+  // 阻止触摸端 300ms 延迟 & 系统长按菜单
+  e.preventDefault();
+  if(e.button && e.button !== 0) return;
+  // 捕获指针：即使手指移出按钮再松开，pointerup/cancel 仍会回到本元素，
+  // 否则长按计时器不被清除会误触发聚合搜索
+  try{ e.currentTarget.setPointerCapture && e.currentTarget.setPointerCapture(e.pointerId); }catch(_){}
+  _playLongFired = false;
+  _playPressX = e.clientX;
+  _playPressY = e.clientY;
+  _playLongTimer = setTimeout(()=>{
+    _playLongFired = true;
+    // 触觉反馈（部分 Android WebView 支持）
+    if(navigator.vibrate) navigator.vibrate(30);
+    _fallbackSearch();
+  }, 500);
+}
+
+function detPlayPressEnd(e){
+  const btn = document.getElementById('detPlayBtn');
+  if(btn){ btn.blur(); }
+  if(_playLongTimer){ clearTimeout(_playLongTimer); _playLongTimer = null; }
+  if(_playLongFired){ _playLongFired = false; return; }
+  const dx = Math.abs((e.clientX||0) - _playPressX);
+  const dy = Math.abs((e.clientY||0) - _playPressY);
+  if(dx > 10 || dy > 10) return;
+  detPlay();
+}
+
+function detPlayLongPress(e){ e.preventDefault(); }
+
+// ── 单击：播放盘搜最高画质资源 ──
 function detPlay(){
   if(!detData) return;
-  const title = detData.title || detData.name || '';
-  if(!title){ toast('没有影片标题'); return; }
   if(!window.fm){ toast('播放功能需在 App 内使用'); return; }
+
+  // 有盘搜结果 → 取排名第一的直接播放
+  if(panState.results && panState.results.length > 0){
+    _playTopPanResult();
+    return;
+  }
+
+  // 结果还在加载中 → 等待最多 6 秒
+  if(panState.loading){
+    const btn = document.getElementById('detPlayBtn');
+    const txt = document.getElementById('detPlayText');
+    if(txt) txt.textContent = '搜索中…';
+    if(btn) btn.disabled = true;
+    let waited = 0;
+    const poll = setInterval(()=>{
+      waited += 300;
+      if(panState.results && panState.results.length > 0){
+        clearInterval(poll);
+        if(btn) btn.disabled = false;
+        if(txt) txt.textContent = '播放';
+        _playTopPanResult();
+      } else if(!panState.loading || waited >= 6000){
+        clearInterval(poll);
+        if(btn) btn.disabled = false;
+        if(txt) txt.textContent = '播放';
+        if(waited >= 6000 || !panState.loading){
+          // 盘搜无结果，降级到原生搜索播放
+          _fallbackSearch();
+        }
+      }
+    }, 300);
+    return;
+  }
+
+  // 盘搜未启动或无结果，降级到原生搜索播放
+  _fallbackSearch();
+}
+
+// 取排序第一条（排序逻辑与 renderPanUI 一致）播放
+// sortedCandidates 可选：传入已排好序的候选列表（用于自动换源）
+function _playTopPanResult(sortedCandidates, _tryIndex){
+  const QUALITY_KEYWORDS = [
+    {re:/\bDV\b|dolby.?vision|杜比视界/i, score:10},
+    {re:/hdr10\+|hdr10plus/i,                           score:9},
+    {re:/hdr(?!10\+)|hlg|hdr10(?!\+)/i,               score:8},
+    {re:/4k|2160p|uhd/i,                                score:7},
+    {re:/remux/i,                                        score:6},
+    {re:/blu[\-.]?ray/i,                                score:5},
+    {re:/高码|高码率/i,                                   score:4},
+    {re:/vivid/i,                                        score:4},
+    {re:/杜比(?!视界)|atmos/i,                           score:3},
+    {re:/120fps|120p/i,                                  score:2},
+    {re:/60fps|60p/i,                                    score:1},
+    {re:/1080p|1080i|全高清|fhd/i,                       score:2},
+    {re:/720p/i,                                         score:1},
+    {re:/480p|576p/i,                                    score:0},
+    {re:/sdr/i,                                          score:0},
+  ];
+  const getQuality = r => {
+    const t = String(r.title||'');
+    let count=0, score=0;
+    for(const q of QUALITY_KEYWORDS){ if(q.re.test(t)){count++;score+=q.score;} }
+    return {count,score};
+  };
+  const PAN_HEALTH_PRI_LOC = {ok:0,uncertain:1,pending:2,idle:3,locked:4,unsupported:5,bad:99};
+  const getHPri = r => {
+    const h = panState.health[panHealthKey(r)];
+    const p = PAN_HEALTH_PRI_LOC[(h&&h.state)||'idle'];
+    return p===undefined ? 99 : p;
+  };
+
+  // 只在 夸克 / 百度 / 115 三个网盘里选，其余网盘排除。
+  const PAN_PLAY_SET = new Set(['quark','baidu','115']);
+  // 画质相同时的网盘次序：夸克/百度(0) > 115(1)
+  const PAN_PLAY_PRI = r => {
+    const t = panNormType(r.diskType);
+    if(t === 'quark' || t === 'baidu') return 0;
+    if(t === '115') return 1;
+    return 2;
+  };
+
+  // 构建/复用已排序候选列表
+  let isFreshPick = false;
+  if(!sortedCandidates){
+    isFreshPick = true;
+    const candidates = panState.results.filter(r => {
+      const h = panState.health[panHealthKey(r)];
+      if(h && h.state === 'bad') return false;
+      return PAN_PLAY_SET.has(panNormType(r.diskType));   // 仅保留三个网盘
+    });
+    candidates.sort((a,b)=>{
+      // 1) 画质关键字优先（命中组合数 → 权重总和），播最优画质
+      const qa=getQuality(a), qb=getQuality(b);
+      if(qb.count!==qa.count) return qb.count-qa.count;
+      if(qb.score!==qa.score) return qb.score-qa.score;
+      // 2) 同画质时按网盘次序（夸克/百度 → 115）
+      const pd = PAN_PLAY_PRI(a) - PAN_PLAY_PRI(b); if(pd) return pd;
+      const sd=(b._score||0)-(a._score||0); if(sd) return sd;
+      const hd=getHPri(a)-getHPri(b); if(hd) return hd;
+      return (b.updatedAt||0)-(a.updatedAt||0);
+    });
+    sortedCandidates = candidates;
+  }
+
+  let idx = _tryIndex || 0;
+  // 首次进入（非自动换源）时：只在夸克/百度排名前5里选——
+  // 1 分钟内未再点击 → 固定播第1个；1 分钟内重新点击 → 随机挑前5之一。
+  if(isFreshPick){
+    const top5 = sortedCandidates.filter(r => {
+      const t = panNormType(r.diskType);
+      return t === 'quark' || t === 'baidu';
+    }).slice(0, 5);
+    const now = Date.now();
+    const isReselect = _detPlayLastClickAt > 0 && (now - _detPlayLastClickAt) < DET_PLAY_RESELECT_WINDOW;
+    _detPlayLastClickAt = now;
+    if(top5.length){
+      const pick = isReselect ? top5[Math.floor(Math.random()*top5.length)] : top5[0];
+      const pickIdx = sortedCandidates.indexOf(pick);
+      idx = pickIdx >= 0 ? pickIdx : 0;
+    }
+  }
+  const best = sortedCandidates[idx];
+  if(!best){
+    // 首次就没有可播的三网盘资源 → 降级原生搜索播放；换源到底则提示
+    if(idx === 0) _fallbackSearch();
+    else toast('所有资源均无法播放');
+    return;
+  }
+
+  let qualLabel = '';
+  for(const q of QUALITY_KEYWORDS){ if(q.re.test(String(best.title||''))){ qualLabel=q.label||''; break; } }
+  const idxLabel = idx > 0 ? ` (第${idx+1}源)` : '';
+  toast(qualLabel ? `播放 ${qualLabel}${idxLabel}` : `播放最优资源${idxLabel}`);
+
+  // ── 4 秒超时自动换源 ──
+  // 判断依据：App 打开播放器时页面会被隐藏（document.hidden=true）
+  // 若 4 秒内页面仍可见，说明播放未启动，自动切下一条
+  let _switchTimer = null;
+  let _visHandler = null;
+  const _cleanup = () => {
+    if(_switchTimer){ clearTimeout(_switchTimer); _switchTimer=null; }
+    if(_visHandler){ document.removeEventListener('visibilitychange', _visHandler); _visHandler=null; }
+  };
+  _visHandler = () => {
+    if(document.hidden) _cleanup(); // 页面隐藏 = 播放器已启动，成功
+  };
+  document.addEventListener('visibilitychange', _visHandler);
+  _switchTimer = setTimeout(()=>{
+    _cleanup();
+    if(document.hidden) return; // 双重保险：已在后台则不切
+    toast(`资源未响应，尝试第${idx+2}源…`);
+    _playTopPanResult(sortedCandidates, idx+1);
+  }, 4000);
+
+  playPanResult(best);
+}
+
+function _fallbackSearch(){
+  const title = detData ? (detData.title||detData.name||'') : '';
+  if(!title){ toast('没有影片标题'); return; }
   try{
-    // 与 demo 一致：发起原生聚合搜索并直接播放（direct:true）
-    // App 会在各站源搜索该片名并自动进入播放，而非用 TMDB id 点播某个固定站点
     const r = sdk().search(title, { direct: true });
     if(r && r.catch) r.catch(e=>toast('搜索播放失败：'+(e.message||'unknown')));
     toast('已发起搜索播放');
-  }catch(e){
-    toast('搜索播放失败：'+(e.message||'unknown'));
-  }
+  }catch(e){ toast('搜索播放失败：'+(e.message||'unknown')); }
 }
 
 // ── 继续观看（移植自 demo，适配 TMDB detData）──
@@ -3761,7 +4307,7 @@ document.addEventListener('keydown', e=>{
 
   if(e.key==='Escape'||e.key==='Back'){
     if(srchOpen){ closeSrch(); return; }
-    if(detOpen){ closeDet(); return; }
+    if(detOpen){ history.back(); return; }  // 详情由 openDet 的 pushState 入栈，回退即触发 popstate→_doCloseDet
     // 搜索结果页：返回键 = 清除按钮（沉浸式同款逻辑）
     if(srchResultVisible){ e.preventDefault(); closeSrchResult(); return; }
   }
@@ -3988,6 +4534,7 @@ function resetPanState(){
   if(panState.flushTimer){ clearTimeout(panState.flushTimer); panState.flushTimer=0; }
   Object.assign(panState,{loading:false,keyword:'',results:[],activeType:'',health:{},pending:{},viewToken:'',pollTimers:[],focusKey:'',focusMode:''});
   panState.queued.clear(); panState.inFlight.clear();
+  _detPlayLastClickAt = 0;
 }
 
 
@@ -4275,16 +4822,21 @@ function renderPanUI(){
   // DV/HDR10+ > HDR10/HLG > 4K/2160P > 高码率 > 杜比全景声 > 1080P > 720P > SDR
   // score:0 的只显示标签不影响排序；同 score 下组合命中数多的排前面
   const QUALITY_KEYWORDS = [
-    {re:/dv|dolby.?vision|杜比视界/i,          score:10, label:'DolbyVision',  cls:'dv'},
-    {re:/hdr10\+|hdr10plus/i,                  score:9,  label:'HDR10+',       cls:'hdrp'},
-    {re:/hdr(?!10\+)|hlg|hdr10(?!\+)/i,        score:8,  label:'HDR'},
-    {re:/4k|2160p|uhd/i,                       score:7,  label:'4K'},
-    {re:/高码|高码率/i,                          score:6,  label:'高码'},
-    {re:/杜比(?!视界)|atmos/i,                  score:5,  label:'杜比'},
-    {re:/1080p|1080i|全高清|fhd/i,              score:4,  label:'1080P',        cls:'fhd'},
-    {re:/720p/i,                               score:3,  label:'720P',         cls:'hd'},
-    {re:/480p|576p/i,                          score:2,  label:'SD',           cls:'sd'},
-    {re:/sdr/i,                                score:1,  label:'SDR'},
+    {re:/\bDV\b|dolby.?vision|杜比视界/i, score:10, label:'DolbyVision', cls:'dv'},
+    {re:/hdr10\+|hdr10plus/i,                           score:9,  label:'HDR10+',      cls:'hdrp'},
+    {re:/hdr(?!10\+)|hlg|hdr10(?!\+)/i,               score:8,  label:'HDR'},
+    {re:/4k|2160p|uhd/i,                                score:7,  label:'4K'},
+    {re:/remux/i,                                        score:6,  label:'REMUX'},
+    {re:/blu[\-.]?ray/i,                                score:5,  label:'BluRay'},
+    {re:/高码|高码率/i,                                   score:4,  label:'高码'},
+    {re:/vivid/i,                                        score:4,  label:'Vivid'},
+    {re:/杜比(?!视界)|atmos/i,                           score:3,  label:'杜比全景声'},
+    {re:/120fps|120p/i,                                  score:2,  label:'120fps'},
+    {re:/60fps|60p/i,                                    score:1,  label:'60fps'},
+    {re:/1080p|1080i|全高清|fhd/i,                       score:2,  label:'1080P',        cls:'fhd'},
+    {re:/720p/i,                                         score:1,  label:'720P',         cls:'hd'},
+    {re:/480p|576p/i,                                    score:0,  label:'SD',           cls:'sd'},
+    {re:/sdr/i,                                          score:0,  label:'SDR'},
   ];
   const getQualityInfo = r => {
     const title = String(r.title || '');
@@ -4888,6 +5440,7 @@ function _tvEnable(){
 // 当某层打开时，只在该层内导航
 
 let _tvFocus = null;  // 当前 tv-focus 元素
+let _srchResLastCard = null;  // 搜索结果页：记住从哪张卡片按上去到清除按钮，清除按钮按下要回到这张卡片
 
 function _tvEl(el){
   return el && el.offsetParent !== null && !el.disabled;
@@ -4940,7 +5493,7 @@ function _tvGetItems(){
     return [...document.querySelectorAll('#cat .cat-back, #catFilters .fil-tag, #catGrid .card')].filter(_tvEl);
   }
   if(srchResultVisible){
-    return [...document.querySelectorAll('#srch-list .sli')].filter(_tvEl);
+    return [...document.querySelectorAll('#s-search #srchResClose, #srch-list .sli')].filter(_tvEl);
   }
   const tabs = [...document.querySelectorAll('.ntab')].filter(_tvEl);
   const activeTab = document.querySelector('.ntab.on');
@@ -4958,45 +5511,116 @@ function _tvGetItems(){
   return [...tabs, ...more, ...cards];
 }
 
-// ── 快速路径：主页 grid 卡片用索引导航 ──
-// 返回 null 表示当前不在 grid 内，需走几何兜底
+// ── 快速路径：主页 grid 卡片用索引导航（支持跨版块上下贯穿）──
+// 返回 null 表示当前不在可快速导航的元素上，需走几何兜底
+// 整个过程只查询「当前/相邻」一两个网格，不做全页几何搜索，避免卡顿
+function _secGrid(sec){ return sec ? sec.querySelector('.grid') : null; }
+function _secCards(sec){
+  const g = _secGrid(sec);
+  return g ? [...g.querySelectorAll('.card')].filter(_tvEl) : [];
+}
+// 相邻「有卡片的版块」：dir = 'next' | 'prev'，跳过空版块与分类页
+function _adjSec(sec, dir){
+  let s = sec;
+  while(s){
+    s = dir==='next' ? s.nextElementSibling : s.previousElementSibling;
+    if(!s) return null;
+    if(!s.classList || !s.classList.contains('sec')) continue;
+    if(s.closest('#cat')) continue;
+    if(_secCards(s).length) return s;
+  }
+  return null;
+}
+// 取版块中尽量保持列位置的卡片（跨版块时列数可能不同，做夹取）
+function _secCardAtCol(sec, col){
+  const cards = _secCards(sec);
+  if(!cards.length) return null;
+  const isLand = _secGrid(sec).classList.contains('grid-land');
+  const cols = _tvCols(isLand);
+  return cards[Math.min(col, cols-1, cards.length-1)] || cards[0];
+}
+// 取版块最后一行、尽量保持列位置的卡片（用于向上跨入上一版块）
+function _secLastRowAtCol(sec, col){
+  const cards = _secCards(sec);
+  if(!cards.length) return null;
+  const isLand = _secGrid(sec).classList.contains('grid-land');
+  const cols = _tvCols(isLand);
+  const lastRowStart = Math.floor((cards.length-1)/cols)*cols;
+  return cards[Math.min(lastRowStart+col, cards.length-1)] || cards[cards.length-1];
+}
+
 function _tvGridFastNav(cur, dir){
-  if(!cur || !cur.classList.contains('card')) return null;
-  // 当前卡片所在的 grid（同一 section 的 .grid）
+  if(!cur || !cur.classList) return null;
+  if(cur.closest && cur.closest('#cat')) return null;  // 分类页交给几何寻路
+
+  // —— 焦点在「更多」入口 ——
+  if(cur.classList.contains('sec-more')){
+    const sec = cur.closest('.sec');
+    if(dir==='down'){ return _secCards(sec)[0] || (_adjSec(sec,'next') && _secCards(_adjSec(sec,'next'))[0]) || cur; }
+    if(dir==='up'){
+      const prev = _adjSec(sec,'prev');
+      if(prev) return _secCards(prev)[0] || cur;
+      return document.querySelector('.ntab.on') || document.querySelector('.ntab') || cur;
+    }
+    return cur; // 左右不动
+  }
+
+  // —— 焦点在卡片 ——
+  if(!cur.classList.contains('card')) return null;
   const grid = cur.closest('.grid');
   if(!grid) return null;
-  // 分类页网格不走这套（它没有 ntab、上面是筛选标签），交给几何寻路在分类页元素内导航
-  if(grid.closest('#cat')) return null;
+  const sec = grid.closest('.sec');
   const cards = [...grid.querySelectorAll('.card')].filter(_tvEl);
   const idx = cards.indexOf(cur);
   if(idx < 0) return null;
+
+  // 首页分区现为单行横向滑动：每个版块只有一行，左右在本行内移动，
+  // 上下用于跨版块（不再有"同版块下一行"的概念）
+  if(sec){
+    if(dir==='left')  return idx>0 ? cards[idx-1] : cur;
+    if(dir==='right') return idx<cards.length-1 ? cards[idx+1] : cur;
+    if(dir==='down'){
+      const ns = _adjSec(sec,'next');
+      return ns ? (_secCards(ns)[0] || cur) : cur;
+    }
+    if(dir==='up'){
+      const more = sec.querySelector('.sec-more');
+      if(more && _tvEl(more)) return more;
+      const ps = _adjSec(sec,'prev');
+      if(ps) return _secCards(ps)[0] || cur;
+      return document.querySelector('.ntab.on') || document.querySelector('.ntab') || cur;
+    }
+    return null;
+  }
+
+  // 兜底：其它仍为多行 grid 的区域（理论上已被前面 #cat 判断排除）
   const isLand = grid.classList.contains('grid-land');
   const cols = _tvCols(isLand);
+  const col = idx % cols;
 
   if(dir==='left'){
-    // 行首向左 → 不动（保持，或交给几何兜底跳 tab，这里返回 self 阻止乱跳）
-    if(idx % cols === 0) return cur;
+    if(col === 0) return cur;            // 行首向左不动
     return cards[idx-1] || cur;
   }
   if(dir==='right'){
-    if(idx % cols === cols-1) return cur;
+    if(col === cols-1) return cur;       // 行尾向右不动
     return cards[idx+1] || cur;
   }
   if(dir==='down'){
     const nxt = cards[idx+cols];
-    if(nxt) return nxt;
-    return cur; // 已是最后一行
+    if(nxt) return nxt;                   // 同版块下一行
+    const ns = _adjSec(sec,'next');       // 最后一行 → 跨到下一版块（保持列位置）
+    if(ns) return _secCardAtCol(ns, col);
+    return cur;                           // 已是末版块末行
   }
   if(dir==='up'){
-    if(idx < cols){
-      // 首行向上 → 先到本版块的「更多」入口，没有再回导航 tab
-      const sec = grid.closest('.sec');
-      const more = sec && sec.querySelector('.sec-more');
-      if(more && _tvEl(more)) return more;
-      const tab = document.querySelector('.ntab.on') || document.querySelector('.ntab');
-      return tab || cur;
-    }
-    return cards[idx-cols] || cur;
+    if(idx >= cols) return cards[idx-cols] || cur;  // 同版块上一行
+    // 首行向上 → 本版块「更多」入口；没有再跨到上一版块最后一行；再没有回 tab
+    const more = sec && sec.querySelector('.sec-more');
+    if(more && _tvEl(more)) return more;
+    const ps = _adjSec(sec,'prev');
+    if(ps) return _secLastRowAtCol(ps, col);
+    return document.querySelector('.ntab.on') || document.querySelector('.ntab') || cur;
   }
   return null;
 }
@@ -5052,10 +5676,27 @@ function _tvSetFocus(el, scroll=true){
   }
   _tvFocus = el;
   if(!el) return;
+  // 搜索结果页：记住最近聚焦过的结果卡片，清除按钮按下键时优先回到它（而不是纯几何最近邻）
+  if(el.classList && el.classList.contains('sli') && el.closest && el.closest('#srch-list')){
+    _srchResLastCard = el;
+  }
   el.classList.add('tv-focus');
   // 原生 focus 不触发滚动，滚动统一走 rAF
   if(el.focus){ try{ el.focus({ preventScroll:true }); }catch(_){ } }
   if(scroll) _tvScheduleScroll(el);
+}
+
+// 统一激活（对齐官方 demo activateFocusedElement）：
+// 程序化 el.click() 只派发合成 click，不会触发 pointerdown/pointerup，
+// 因此对「只绑 pointer 事件、无 onclick」的控件需按其逻辑动作直接路由。
+function _tvActivate(el){
+  if(!el) return false;
+  // 播放按钮只监听 pointerdown/up（长按=聚合搜索，单击=播放最优），click() 对它无效 → 直接走单击
+  if(el.id === 'detPlayBtn'){
+    if(typeof detPlay === 'function'){ detPlay(); return true; }
+  }
+  if(typeof el.click === 'function'){ el.click(); return true; }
+  return false;
 }
 
 // 初始化：页面加载完成后给首个元素聚焦（数据慢加载时重试，确保 OK 有落点）
@@ -5101,9 +5742,18 @@ function _tvKeydown(e){
   // 是否遥控键：收到即认定处于 TV 环境，自动启用（兼容不报 isLeanback 的盒子）
   const _isRemote = /^Arrow/.test(key) || key === 'Enter' || key === 'Escape' || key === 'GoBack' || key === 'Back';
   if(!TV_MODE){
-    // 仅「方向键」这种明确的遥控导航才自动启用 TV 模式；
-    // Enter/Escape/Back 在非 TV 环境一律放行交给普通处理，避免手机软键盘的搜索/回车把移动端误切成 TV 模式。
+    // 方向键 / GoBack：明确的遥控导航 → 启用 TV 模式
     if(/^Arrow/.test(key) || key === 'GoBack'){ _tvEnable(); }
+    // OK 键：仅当焦点已落在可导航元素上（排除文字输入框）才认定为遥控并启用，
+    // 这样不报 isLeanback 的盒子按 OK 也能用；手机软键盘回车（焦点在输入框）不会误切 TV。
+    else if(key === 'Enter'){
+      const ae = document.activeElement;
+      const inText = ae && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA' || ae.isContentEditable);
+      const target = (_tvFocus && _tvEl(_tvFocus)) ? _tvFocus
+                   : (ae && ae !== document.body && _tvEl(ae)) ? ae : null;
+      if(!inText && target){ _tvEnable(); }
+      else { return; }
+    }
     else { return; }
   }
   const srchOpen = document.getElementById('srch').classList.contains('on');
@@ -5125,6 +5775,12 @@ function _tvKeydown(e){
     const dir = DIR_KEYS[key];
     const cur = _tvFocus && _tvEl(_tvFocus) ? _tvFocus : null;
 
+    // 搜索结果页：清除按钮按下键 → 回到记住的来源卡片（仍有效时），而非几何最近邻
+    if(cur && cur.id === 'srchResClose' && dir === 'down' && _srchResLastCard && _tvEl(_srchResLastCard)){
+      _tvSetFocus(_srchResLastCard);
+      return;
+    }
+
     // 快速路径：主页 grid 卡片用索引计算，避免全局几何搜索
     if(cur){
       const fast = _tvGridFastNav(cur, dir);
@@ -5143,15 +5799,19 @@ function _tvKeydown(e){
   if(key === 'Enter'){
     e.preventDefault();
     e.stopPropagation();   // 阻止冒泡到元素自身的内联 onkeydown，避免 openDet 双触发
-    // 校验当前焦点仍可见有效；失效/为空则先把焦点落到当前层第一个可导航元素
+    // 解析激活目标：优先 _tvFocus，其次原生 activeElement（对齐官方），再次当前层首项
     let el = (_tvFocus && _tvEl(_tvFocus)) ? _tvFocus : null;
     if(!el){
-      const items = _tvGetItems();
-      if(items.length) _tvSetFocus(items[0]);   // 让用户看到焦点落点，再按一次 OK 即可激活
-      return;
+      const ae = document.activeElement;
+      if(ae && ae !== document.body && _tvEl(ae)) el = ae;
     }
-    // ntab / 卡片 / 按钮 / 筛选标签 一律用 click 激活
-    el.click();
+    if(!el){
+      const items = _tvGetItems();
+      if(items.length) el = items[0];
+    }
+    if(!el) return;
+    _tvSetFocus(el, false);   // 焦点对齐到将要激活的元素
+    _tvActivate(el);          // 单次 OK 即激活（播放按钮等 pointer 控件已路由，不再需要按两次）
     return;
   }
 
@@ -5205,6 +5865,11 @@ function _tvWatchPanels(){
 // 窗口尺寸变化时让列数缓存失效（resize 在 TV 上极少发生，开销可忽略）
 window.addEventListener('resize', ()=>{ _tvColCache.w = 0; }, {passive:true});
 
+// 横竖屏切换后重新检测分类页内容是否足够，修复横屏时卡在 20 条不加载的问题
+window.addEventListener('orientationchange', ()=>{
+  setTimeout(()=>{ _catMaybeFill(); }, 350);
+}, {passive:true});
+
 // 注册 TV 键盘拦截（在现有 keydown 之前处理）
 document.addEventListener('keydown', _tvKeydown, true); // capture 阶段，优先于现有 handler
 
@@ -5231,11 +5896,32 @@ async function boot(){
   await loadConnConfig();
   setupMirrorDefaults();
   loadAll();
-  try{ _initFsForHome(); }catch(e){}   // 首页全屏初始化：TV 不全屏 / 移动端全屏
+  try{ _syncChromeForRoute(); }catch(e){}   // 首页 chrome 初始化
   _tvInit();
   setTimeout(()=>restorePanPlaybackReturn().catch(()=>{}), 300);
 }
+// 根据 chromeMode 调整顶部安全区：有原生 Toolbar 时归零（Toolbar 已避让），
+// 全屏时用 --fm-safe-top（状态栏高度）。
+function _applySafeTop(mode){
+  const hasToolbar = mode === 'normal' || mode === 'tv-normal' || mode === 'tv-overlay';
+  document.documentElement.style.setProperty(
+    '--safe-t',
+    hasToolbar ? '0px' : 'max(var(--fm-safe-top,0px),env(safe-area-inset-top,0px))'
+  );
+}
+window.addEventListener('fmviewport', function(e){
+  _applySafeTop((e.detail || {}).chromeMode || '');
+});
+// 初始化时主动读一次，避免首帧 fmviewport 尚未触发时顶部间距偏大
+(function(){
+  if(!window.fm) return;
+  try{
+    fm.ui.getViewport().then(function(vp){ _applySafeTop((vp || {}).chromeMode || ''); }).catch(function(){});
+  }catch(e){}
+})();
+
 boot();
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"a866d1d793064965be308d7a818e3f78","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
