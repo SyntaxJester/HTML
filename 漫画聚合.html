@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+	<meta name="theme-color" content="#0b0814" />
+	<title>无限漫画</title>
+	<script>
+		(function () {
+		  if (window.fongmiBridge || window.fongmiClient) document.documentElement.classList.add('fm-native');
+		  if (typeof Promise !== 'undefined' && !Promise.allSettled) {
+		    Promise.allSettled = function (ps) {
+		      return Promise.all(Array.prototype.map.call(ps, function (p) {
+		        return Promise.resolve(p).then(
+		          function (v) { return { status: 'fulfilled', value: v }; },
+		          function (r) { return { status: 'rejected', reason: r }; }
+		        );
+		      }));
+		    };
+		  }
+		})();
+	</script>
+	<style>
+		*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+		html{-webkit-tap-highlight-color:transparent;overflow-x:hidden;width:100%}
+		html,body{background:#0b0814;color:#f2f0f7;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','SF Pro Display','Helvetica Neue',Arial,sans-serif;-webkit-font-smoothing:antialiased;width:100%;max-width:100vw;overflow-x:hidden}
+		body{min-height:100vh;position:relative;-webkit-user-select:none;user-select:none;overflow-x:hidden;overflow-y:auto;overscroll-behavior-x:none}
+		:root{--bg:#0b0814;--card:#16122a;--card2:#1c1733;--line:rgba(255,255,255,.08);--text:#f2f0f7;--muted:#8b849c;--purple:#8b5cf6;--purple2:#a78bfa;--grad:linear-gradient(135deg,#7c3aed 0%,#a855f7 55%,#c026d3 100%);--fm-safe-top:0px;--safe-t:max(var(--fm-safe-top),env(safe-area-inset-top,0px));--safe-b:env(safe-area-inset-bottom,0px);--top-h:52px;--bot-h:56px;--gut:10px;--cols:3}
+		@media (orientation:landscape) and (min-width:600px){:root{--cols:7}}
+		@media (orientation:portrait){:root{--cols:3}}
+		body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 80% 50% at 18% -8%,rgba(139,92,246,.22) 0%,transparent 55%),radial-gradient(ellipse 60% 40% at 92% 8%,rgba(192,132,252,.12) 0%,transparent 50%)}
+		#topbar{position:fixed;top:0;left:0;right:0;z-index:100;height:calc(var(--top-h) + var(--safe-t));padding:var(--safe-t) 12px 0;display:flex;align-items:center;gap:8px;background:rgba(11,8,20,.92);border-bottom:1px solid rgba(255,255,255,.06)}
+		.logo{font-size:17px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;flex-shrink:0}
+		.logo small{display:block;margin-top:1px;font-size:10px;font-weight:500;background:none;-webkit-text-fill-color:var(--muted);color:var(--muted)}
+		.top-spacer{flex:1}
+		.src-wrap{position:relative;flex-shrink:0}
+		.src-btn{height:32px;padding:0 10px;border-radius:999px;border:1px solid rgba(167,139,250,.35);background:rgba(139,92,246,.15);color:var(--purple2);font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:4px;max-width:110px}
+		.src-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+		.src-menu{position:absolute;right:0;top:calc(100% + 6px);min-width:140px;background:#1a1530;border:1px solid rgba(167,139,250,.25);border-radius:12px;padding:6px;display:none;box-shadow:0 12px 32px rgba(0,0,0,.45);z-index:120}
+		.src-menu.on{display:block}
+		.src-item{display:block;width:100%;text-align:left;padding:10px 12px;border:none;border-radius:8px;background:transparent;color:var(--text);font-size:13px;cursor:pointer}
+		.src-item.on{background:rgba(139,92,246,.22);color:var(--purple2)}
+		.src-item:active{background:rgba(255,255,255,.06)}
+		.icon-btn{width:36px;height:36px;border-radius:50%;border:none;cursor:pointer;background:rgba(255,255,255,.06);color:var(--text);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+		.icon-btn svg{width:18px;height:18px}
+		#main{position:relative;z-index:1;width:100%;max-width:100%;overflow-x:hidden;padding-top:calc(var(--top-h) + var(--safe-t) + 10px);padding-bottom:calc(var(--bot-h) + var(--safe-b) + 18px)}
+		.search-wrap{padding:0 14px 12px}
+		.search-box{display:flex;align-items:center;gap:10px;height:40px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);cursor:pointer}
+		.search-box svg{width:17px;height:17px;color:var(--muted);flex-shrink:0}
+		.search-box span{font-size:13px;color:var(--muted)}
+		.hero-wrap{padding:0 14px 16px;width:100%;overflow:hidden}
+		.hero{position:relative;border-radius:16px;overflow:hidden;height:0;padding-top:46%;background:var(--card);box-shadow:0 10px 32px rgba(88,28,135,.22);width:100%}
+		@supports (aspect-ratio:1/1){.hero{height:auto;padding-top:0;aspect-ratio:21/10}}
+		.hero-slide{position:absolute;inset:0;opacity:0;transition:opacity .55s;cursor:pointer}
+		.hero-slide.on{opacity:1}
+		.hero-slide img{width:100%;height:100%;object-fit:cover}
+		.hero-mask{position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,8,20,.86) 0%,rgba(11,8,20,.28) 48%,transparent 72%),linear-gradient(0deg,rgba(11,8,20,.72) 0%,transparent 42%)}
+		.hero-body{position:absolute;left:0;bottom:0;padding:16px 18px;max-width:72%;z-index:2}
+		.hero-title{font-size:18px;font-weight:800;margin-bottom:4px;text-shadow:0 2px 10px rgba(0,0,0,.5)}
+		.hero-sub{font-size:11px;color:rgba(242,240,247,.7)}
+		.hero-dots{position:absolute;bottom:10px;right:14px;display:flex;gap:5px;z-index:3}
+		.hero-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.28);border:none;padding:0}
+		.hero-dot.on{width:14px;border-radius:3px;background:var(--purple2)}
+		.sec{padding:0 14px 18px;width:100%;overflow:hidden}
+		.sec-hd{display:flex;align-items:center;margin-bottom:10px}
+		.sec-title{font-size:15px;font-weight:700;display:flex;align-items:center}
+		.sec-title::before{content:'';display:inline-block;width:3px;height:13px;border-radius:2px;background:var(--grad);margin-right:8px}
+		.sec-more{margin-left:auto;font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer}
+		.grid{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:var(--gut);width:100%}
+		.g-card{cursor:pointer;min-width:0;width:100%}
+		.g-img{position:relative;border-radius:11px;overflow:hidden;width:100%;height:0;padding-top:140%;background:var(--card2)}
+		@supports (aspect-ratio:1/1){.g-img{height:auto;padding-top:0;aspect-ratio:5/7}}
+		.g-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .25s}
+		.g-img img.ok,.g-img img[src^="blob:"]{opacity:1}
+		.g-name{font-size:12px;font-weight:600;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%}
+		.h-scroll{display:flex;gap:10px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px;width:100%;overscroll-behavior-x:contain}
+		.h-scroll::-webkit-scrollbar{display:none}
+		.h-card{flex:0 0 104px;width:104px;cursor:pointer;min-width:104px}
+		.h-img{position:relative;border-radius:11px;overflow:hidden;width:100%;height:0;padding-top:140%;background:var(--card2)}
+		@supports (aspect-ratio:1/1){.h-img{height:auto;padding-top:0;aspect-ratio:5/7}}
+		.h-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .25s}
+		.h-img img.ok,.h-img img[src^="blob:"]{opacity:1}
+		.h-rank{position:absolute;top:0;left:0;z-index:2;min-width:20px;height:20px;padding:0 5px;background:var(--grad);color:#fff;font-size:10px;font-weight:800;border-radius:11px 0 9px 0;display:flex;align-items:center;justify-content:center}
+		.h-name{font-size:12px;font-weight:600;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+		.sk{background:linear-gradient(90deg,#16122a 25%,#1e1a35 50%,#16122a 75%);background-size:200% 100%;animation:sk 1.4s infinite linear;border-radius:11px}
+		@keyframes sk{to{background-position:-200% 0}}
+		.sk-hero{position:absolute;inset:0;border-radius:16px}
+		.sk-card{height:0;padding-top:140%}
+		#botnav{position:fixed;left:0;right:0;bottom:0;z-index:100;height:calc(var(--bot-h) + var(--safe-b));padding-bottom:var(--safe-b);display:flex;align-items:stretch;background:rgba(14,10,24,.94);border-top:1px solid rgba(255,255,255,.06)}
+		.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:10px}
+		.bn svg{width:21px;height:21px}
+		.bn.on{color:var(--purple2)}
+		.panel{position:fixed;inset:0;z-index:140;background:#0b0814;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateX(100%);transition:transform .26s;padding-bottom:calc(var(--bot-h) + var(--safe-b) + 16px);overscroll-behavior-x:none}
+		.panel.on{transform:translateX(0)}
+		.panel-hd{position:sticky;top:0;z-index:5;height:calc(var(--top-h) + var(--safe-t));padding:var(--safe-t) 12px 0;display:flex;align-items:center;gap:8px;background:rgba(11,8,20,.95);border-bottom:1px solid var(--line)}
+		.panel-hd h2{font-size:16px;font-weight:700}
+		.panel-body{padding:14px;overflow-x:hidden;width:100%}
+		.cat-tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+		.cat-tag{padding:6px 12px;border-radius:999px;font-size:12px;cursor:pointer;background:rgba(255,255,255,.06);border:1px solid transparent;color:var(--text)}
+		.cat-tag.on{background:rgba(139,92,246,.22);border-color:rgba(167,139,250,.35);color:var(--purple2)}
+		#srch{position:fixed;inset:0;z-index:200;background:#0b0814;display:flex;flex-direction:column;transform:translateY(-105%);transition:transform .28s;overflow:hidden}
+		#srch.on{transform:translateY(0)}
+		.srch-top{padding:calc(var(--safe-t) + 10px) 14px 10px;display:flex;align-items:center;gap:10px;background:rgba(11,8,20,.98);border-bottom:1px solid var(--line);flex-shrink:0}
+		.srch-inp-wrap{flex:1;position:relative;min-width:0}
+		.srch-inp{width:100%;height:40px;padding:0 12px 0 38px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(167,139,250,.28);color:var(--text);font-size:15px;outline:none;-webkit-user-select:text;user-select:text;-webkit-appearance:none}
+		.srch-inp:focus{border-color:var(--purple2);box-shadow:0 0 0 3px rgba(139,92,246,.14)}
+		.srch-ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none}
+		.srch-cancel{flex-shrink:0;border:none;background:none;color:var(--muted);font-size:14px;padding:8px 2px;cursor:pointer}
+		.srch-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:12px 14px calc(24px + var(--safe-b));-webkit-overflow-scrolling:touch}
+		.sli{display:flex;gap:12px;padding:11px;border-radius:12px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05)}
+		.sli img{width:52px;height:70px;object-fit:cover;border-radius:8px;background:var(--card2);flex-shrink:0}
+		.sli-t{font-size:14px;font-weight:600;margin-bottom:4px}
+		.sli-m{font-size:11px;color:var(--muted)}
+		#det{position:fixed;inset:0;z-index:160;background:#0b0814;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateX(100%);transition:transform .26s}
+		#det.on{transform:translateX(0)}
+		.det-hero{position:relative;width:100%;height:48vh;min-height:240px;max-height:420px;overflow:hidden;background:#120e1f}
+		.det-hero img{width:100%;height:100%;object-fit:cover;object-position:center 20%}
+		.det-hero-mask{position:absolute;inset:0;background:linear-gradient(180deg,rgba(11,8,20,.15) 0%,rgba(11,8,20,.35) 40%,rgba(11,8,20,.92) 78%,#0b0814 100%),linear-gradient(90deg,rgba(11,8,20,.55) 0%,transparent 55%)}
+		.det-nav{position:absolute;top:0;left:0;right:0;z-index:3;padding:calc(var(--safe-t) + 8px) 12px 0;display:flex;align-items:center}
+		.det-back{width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.45);border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+		.det-overlay{position:absolute;left:0;right:0;bottom:0;z-index:2;padding:0 16px 16px;display:flex;gap:14px;align-items:flex-end}
+		.det-cover{width:96px;height:128px;border-radius:10px;object-fit:cover;flex-shrink:0;box-shadow:0 8px 28px rgba(0,0,0,.55);background:var(--card)}
+		.det-meta{flex:1;min-width:0;padding-bottom:2px}
+		.det-title{font-size:20px;font-weight:800;line-height:1.2;margin-bottom:6px;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+		.det-sub{font-size:12px;color:rgba(242,240,247,.7);margin-bottom:4px}
+		.det-stat{font-size:12px;color:var(--purple2)}
+		.det-body{padding:8px 14px calc(28px + var(--safe-b))}
+		.det-actions{display:flex;gap:10px;margin-bottom:14px}
+		.btn-read{flex:1.2;height:44px;border:none;border-radius:12px;cursor:pointer;background:var(--grad);color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 6px 22px rgba(124,58,237,.38);min-width:0}
+		.btn-ghost{height:44px;padding:0 12px;border-radius:12px;cursor:pointer;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;flex-shrink:0;min-width:72px}
+		.btn-follow{height:44px;padding:0 12px;border-radius:12px;cursor:pointer;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:var(--text);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;flex-shrink:0;min-width:72px}
+		.btn-follow.on{background:rgba(139,92,246,.22);border-color:rgba(167,139,250,.45);color:var(--purple2)}
+		.btn-read{flex:1.2}
+		.follow-empty{text-align:center;padding:48px 16px;color:var(--muted);font-size:13px;line-height:1.7}
+		.f-row{display:flex;gap:12px;padding:12px;border-radius:12px;margin-bottom:8px;cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.05);align-items:center}
+		.f-row img{width:52px;height:70px;object-fit:cover;border-radius:8px;background:var(--card2);flex-shrink:0}
+		.f-row-t{font-size:14px;font-weight:600;margin-bottom:4px}
+		.f-row-m{font-size:11px;color:var(--muted)}
+		.f-del{margin-left:auto;flex-shrink:0;width:32px;height:32px;border-radius:50%;border:none;background:rgba(255,255,255,.06);color:var(--muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+		.det-desc{font-size:13px;line-height:1.65;color:rgba(242,240,247,.65);margin-bottom:18px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+		.det-desc.exp{-webkit-line-clamp:unset;display:block}
+		.ch-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+		.ch-item{padding:10px 4px;text-align:center;font-size:11px;line-height:1.25;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.06);border-radius:8px;cursor:pointer;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+		.ch-item:active{background:rgba(139,92,246,.18)}
+		#reader{position:fixed;inset:0;z-index:180;background:#000;display:none;overflow:hidden}
+		#reader.on{display:block}
+		.rd-scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-top:calc(var(--safe-t) + 48px);padding-bottom:calc(var(--safe-b) + 64px)}
+		.rd-pages{display:flex;flex-direction:column;align-items:center}
+		.rd-pages img{width:100%;max-width:900px;height:auto;display:block;background:#111}
+		.rd-bar{position:fixed;top:0;left:0;right:0;z-index:10;height:calc(var(--safe-t) + 48px);padding:var(--safe-t) 12px 0;display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.88);border-bottom:1px solid rgba(255,255,255,.06);transition:transform .2s,opacity .2s}
+		.rd-bar.hide{transform:translateY(-100%);opacity:0;pointer-events:none}
+		.rd-back{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+		.rd-title{flex:1;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+		.rd-foot{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:10px 16px calc(10px + var(--safe-b));display:flex;gap:10px;justify-content:center;background:rgba(0,0,0,.9);border-top:1px solid rgba(255,255,255,.06);transition:transform .2s,opacity .2s}
+		.rd-foot.hide{transform:translateY(100%);opacity:0;pointer-events:none}
+		.rd-btn{min-width:110px;padding:11px 22px;border-radius:999px;border:none;font-size:13px;font-weight:700;cursor:pointer;background:var(--grad);color:#fff}
+		.rd-btn:disabled{opacity:.35}
+		.toast{position:fixed;left:50%;bottom:calc(var(--bot-h) + var(--safe-b) + 20px);transform:translateX(-50%);z-index:300;background:rgba(20,16,36,.94);color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .2s;max-width:82%;text-align:center;border:1px solid rgba(167,139,250,.22)}
+		.toast.on{opacity:1}
+		.empty{text-align:center;padding:40px 16px;color:var(--muted);font-size:13px;line-height:1.7}
+		.loading{display:flex;flex-direction:column;align-items:center;padding:48px 0;gap:12px;color:var(--muted)}
+		.spinner{width:26px;height:26px;border:2.5px solid rgba(139,92,246,.2);border-top-color:var(--purple2);border-radius:50%;animation:spin .7s linear infinite}
+		@keyframes spin{to{transform:rotate(360deg)}}
+		.retry-btn{margin-top:10px;padding:8px 20px;border-radius:999px;border:1px solid var(--purple2);background:transparent;color:var(--purple2);font-size:13px;cursor:pointer}
+		html.layer-open #main,html.layer-open #topbar,html.layer-open #botnav{visibility:hidden;pointer-events:none}
+	</style>
+</head>
+<body>
+	<header id="topbar">
+		<div class="logo">无限漫画<small id="logoSub">万千漫画 · 一站看尽</small></div>
+		<div class="top-spacer"></div>
+		<div class="src-wrap">
+			<button class="src-btn" type="button" id="srcBtn"><span id="srcLabel">瓜子漫画</span>
+				<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+					<path d="M6 9l6 6 6-6" />
+				</svg>
+			</button>
+			<div class="src-menu" id="srcMenu">
+				<button class="src-item on" type="button" data-src="guazi">瓜子漫画</button>
+				<button class="src-item" type="button" data-src="jm18">禁漫天堂</button>
+			</div>
+		</div>
+		<button class="icon-btn" id="btnRefresh" type="button" aria-label="刷新">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="M21 12a9 9 0 11-2.3-6M21 3v6h-6" />
+			</svg>
+		</button>
+	</header>
+	<main id="main">
+		<div class="search-wrap">
+			<div class="search-box" id="openSrch" role="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<circle cx="11" cy="11" r="7" />
+					<path d="M20 20l-3.5-3.5" />
+				</svg><span>搜索漫画、作者、标签</span></div>
+		</div>
+		<div class="hero-wrap">
+			<div class="hero" id="hero">
+				<div class="sk sk-hero"></div>
+			</div>
+		</div>
+		<section class="sec">
+			<div class="sec-hd">
+				<div class="sec-title">今日主推</div>
+			</div>
+			<div class="h-scroll" id="g-feat"></div>
+		</section>
+		<section class="sec">
+			<div class="sec-hd">
+				<div class="sec-title">今日热门</div><button class="sec-more" type="button" id="moreRank">全部 ›</button>
+			</div>
+			<div class="grid" id="g-hot"></div>
+		</section>
+		<section class="sec">
+			<div class="sec-hd">
+				<div class="sec-title">最近更新</div>
+			</div>
+			<div class="grid" id="g-latest"></div>
+		</section>
+	</main>
+	<nav id="botnav">
+		<button class="bn on" type="button" data-tab="home"><svg viewBox="0 0 24 24" fill="currentColor">
+				<path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3z" />
+			</svg>首页</button>
+		<button class="bn" type="button" data-tab="rank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+			</svg>排行</button>
+		<button class="bn" type="button" data-tab="cat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<rect x="3" y="3" width="7" height="7" rx="1.5" />
+				<rect x="14" y="3" width="7" height="7" rx="1.5" />
+				<rect x="3" y="14" width="7" height="7" rx="1.5" />
+				<rect x="14" y="14" width="7" height="7" rx="1.5" />
+			</svg>分类</button>
+		<button class="bn" type="button" data-tab="follow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<path d="M12 21s-7-4.5-7-10a4 4 0 017-2.5A4 4 0 0119 11c0 5.5-7 10-7 10z" />
+			</svg>追更</button>
+		<button class="bn" type="button" data-tab="srch"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<circle cx="11" cy="11" r="7" />
+				<path d="M20 20l-3.5-3.5" />
+			</svg>搜索</button>
+	</nav>
+	<div class="panel" id="panel-rank">
+		<div class="panel-hd"><button class="icon-btn" type="button" id="rankBack"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+					<path d="M15 18l-6-6 6-6" />
+				</svg></button>
+			<h2>排行榜</h2>
+		</div>
+		<div class="panel-body">
+			<div class="grid" id="g-rank"></div>
+		</div>
+	</div>
+	<div class="panel" id="panel-cat">
+		<div class="panel-hd"><button class="icon-btn" type="button" id="catBack"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+					<path d="M15 18l-6-6 6-6" />
+				</svg></button>
+			<h2>分类</h2>
+		</div>
+		<div class="panel-body">
+			<div class="cat-tags" id="catTags"></div>
+			<div class="grid" id="g-cat"></div>
+		</div>
+	</div>
+	<div class="panel" id="panel-follow">
+		<div class="panel-hd"><button class="icon-btn" type="button" id="followBack"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+					<path d="M15 18l-6-6 6-6" />
+				</svg></button>
+			<h2>我的追更</h2>
+		</div>
+		<div class="panel-body" id="followBody">
+			<div class="follow-empty">还没有追更，去详情页点「追更」吧</div>
+		</div>
+	</div>
+	<div id="srch">
+		<div class="srch-top">
+			<div class="srch-inp-wrap"><svg class="srch-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<circle cx="11" cy="11" r="7" />
+					<path d="M20 20l-3.5-3.5" />
+				</svg><input class="srch-inp" id="srchInp" type="search" placeholder="搜索漫画…" enterkeyhint="search" /></div><button class="srch-cancel" type="button" id="srchCancel">取消</button>
+		</div>
+		<div class="srch-body" id="srchBody">
+			<div class="empty">输入关键词后回车搜索</div>
+		</div>
+	</div>
+	<div id="det">
+		<div id="detInner"></div>
+	</div>
+	<div id="reader">
+		<div class="rd-bar" id="rdBar"><button class="rd-back" type="button" id="rdBack"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+					<path d="M15 18l-6-6 6-6" />
+				</svg></button>
+			<div class="rd-title" id="rdTitle"></div>
+		</div>
+		<div class="rd-scroll" id="rdScroll">
+			<div class="rd-pages" id="rdPages"></div>
+		</div>
+		<div class="rd-foot" id="rdFoot"><button class="rd-btn" type="button" id="rdPrev">上一章</button><button class="rd-btn" type="button" id="rdNext">下一章</button></div>
+	</div>
+	<div class="toast" id="toast"></div>
+	<script>
+		(function () {
+		  'use strict';
+		
+		  var SOURCES = {
+		    guazi: {
+		      key: 'guazi',
+		      name: '瓜子漫画',
+		      base: 'https://www.guazimanhua.com',
+		      cats: [
+		        { id: '25', name: '玄幻' }, { id: '42', name: '都市' }, { id: '9', name: '恋爱' }, { id: '13', name: '热血' },
+		        { id: '23', name: '古风' }, { id: '8', name: '穿越' }, { id: '15', name: '搞笑' }, { id: '30', name: '冒险' },
+		        { id: '29', name: '校园' }, { id: '31', name: '奇幻' }, { id: '148', name: '系统' }, { id: '97', name: '逆袭' }
+		      ]
+		    },
+		    jm18: {
+		      key: 'jm18',
+		      name: '禁漫天堂',
+		      base: 'https://18mh.net',
+		      cats: [
+		        { id: 'rb', name: '日本H漫' }, { id: 'hg', name: '韩国H漫' }, { id: 'jq', name: '剧情' }, { id: 'xy', name: '校园' },
+		        { id: 'aq', name: '爱情' }, { id: 'bl', name: 'BL' }, { id: 'qh', name: '奇幻' }, { id: 'tj', name: '调教' },
+		        { id: 'tr', name: '同人' }, { id: 'dp', name: '短篇' }, { id: 'db', name: '单本' }, { id: 'll', name: '乱伦' }
+		      ]
+		    }
+		  };
+		
+		  var srcKey = 'guazi';
+		  try {
+		    var saved = localStorage.getItem('comic_src');
+		    if (saved && SOURCES[saved]) srcKey = saved;
+		  } catch (e) {}
+		
+		  function S() { return SOURCES[srcKey]; }
+		
+		  var homeData = { feat: [], hot: [], latest: [] };
+		  var rankData = [];
+		  var curChapters = [];
+		  var curChIdx = -1;
+		  var barVisible = true;
+		  var heroTimer = 0;
+		  var heroIdx = 0;
+		  var lastMode = '';
+		  var stack = [];
+		
+		  /* ── 追更本地收藏 ── */
+		  function followKey() { return 'comic_follow_v1'; }
+		  function loadFollows() {
+		    try {
+		      var raw = localStorage.getItem(followKey());
+		      var arr = raw ? JSON.parse(raw) : [];
+		      return Array.isArray(arr) ? arr : [];
+		    } catch (e) { return []; }
+		  }
+		  function saveFollows(arr) {
+		    try { localStorage.setItem(followKey(), JSON.stringify(arr)); } catch (e) {}
+		  }
+		  function isFollowed(src, id) {
+		    var list = loadFollows();
+		    for (var i = 0; i < list.length; i++) {
+		      if (list[i].src === src && String(list[i].id) === String(id)) return true;
+		    }
+		    return false;
+		  }
+		  function toggleFollow(item) {
+		    var list = loadFollows();
+		    var idx = -1;
+		    for (var i = 0; i < list.length; i++) {
+		      if (list[i].src === item.src && String(list[i].id) === String(item.id)) { idx = i; break; }
+		    }
+		    if (idx >= 0) {
+		      list.splice(idx, 1);
+		      saveFollows(list);
+		      toast('已取消追更');
+		      return false;
+		    }
+		    list.unshift({
+		      src: item.src,
+		      id: String(item.id),
+		      title: item.title || '',
+		      cover: item.cover || '',
+		      srcName: item.srcName || '',
+		      ts: Date.now()
+		    });
+		    saveFollows(list);
+		    toast('已加入追更');
+		    return true;
+		  }
+		  function renderFollowList() {
+		    var body = document.getElementById('followBody');
+		    if (!body) return;
+		    var list = loadFollows();
+		    if (!list.length) {
+		      body.innerHTML = '<div class="follow-empty">还没有追更<br>在详情页点左侧「追更」即可收藏</div>';
+		      return;
+		    }
+		    var h = '';
+		    for (var i = 0; i < list.length; i++) {
+		      var it = list[i];
+		      h += '<div class="f-row" data-src="' + esc(it.src) + '" data-id="' + esc(it.id) + '">' +
+		        '<img src="' + esc(imgSrc(it.cover)) + '" referrerpolicy="no-referrer" onerror="this.style.opacity=.2"/>' +
+		        '<div style="min-width:0;flex:1"><div class="f-row-t">' + esc(it.title) + '</div>' +
+		        '<div class="f-row-m">' + esc(it.srcName || it.src) + '</div></div>' +
+		        '<button class="f-del" type="button" data-src="' + esc(it.src) + '" data-id="' + esc(it.id) + '" title="取消追更">×</button></div>';
+		    }
+		    body.innerHTML = h;
+		    var rows = body.querySelectorAll('.f-row');
+		    for (var r = 0; r < rows.length; r++) {
+		      rows[r].addEventListener('click', function (e) {
+		        if (e.target.closest && e.target.closest('.f-del')) return;
+		        var s = this.getAttribute('data-src');
+		        var id = this.getAttribute('data-id');
+		        if (s && s !== srcKey) {
+		          switchSource(s);
+		          setTimeout(function () { openDet(id); }, 400);
+		        } else {
+		          openDet(id);
+		        }
+		      });
+		    }
+		    var dels = body.querySelectorAll('.f-del');
+		    for (var d = 0; d < dels.length; d++) {
+		      dels[d].addEventListener('click', function (e) {
+		        e.stopPropagation();
+		        var s = this.getAttribute('data-src');
+		        var id = this.getAttribute('data-id');
+		        toggleFollow({ src: s, id: id });
+		        renderFollowList();
+		      });
+		    }
+		    hydrateJmImages(body);
+		  }
+		
+		
+		  function toast(m) {
+		    var el = document.getElementById('toast');
+		    el.textContent = m;
+		    el.classList.add('on');
+		    clearTimeout(toast._t);
+		    toast._t = setTimeout(function () { el.classList.remove('on'); }, 2400);
+		  }
+		  function esc(s) {
+		    return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		  }
+		  function absUrl(base, u) {
+		    if (!u) return '';
+		    u = String(u).trim();
+		    if (/^https?:\/\//i.test(u)) return u;
+		    if (u.indexOf('//') === 0) return 'https:' + u;
+		    if (u.charAt(0) === '/') return base + u;
+		    return base + '/' + u;
+		  }
+		  function decodeHtml(s) {
+		    return String(s || '')
+		      .replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+		      .replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+		      .replace(/&#(\d+);/g, function (_, n) { return String.fromCharCode(+n); });
+		  }
+		
+		  function applySafeTop(mode) {
+		    var hasToolbar = mode === 'normal' || mode === 'tv-normal' || mode === 'tv-overlay';
+		    document.documentElement.style.setProperty('--safe-t', hasToolbar ? '0px' : 'max(var(--fm-safe-top, 0px), env(safe-area-inset-top, 0px))');
+		  }
+		  window.addEventListener('fmviewport', function (e) {
+		    var d = (e && e.detail) || {};
+		    if (d.safeTop != null) document.documentElement.style.setProperty('--fm-safe-top', Number(d.safeTop) + 'px');
+		    applySafeTop(d.chromeMode || '');
+		  });
+		  function initViewport() {
+		    if (!window.fm || !fm.ui || typeof fm.ui.getViewport !== 'function') return;
+		    try {
+		      fm.ui.getViewport().then(function (vp) {
+		        vp = vp || {};
+		        if (vp.safeTop != null) document.documentElement.style.setProperty('--fm-safe-top', Number(vp.safeTop) + 'px');
+		        applySafeTop(vp.chromeMode || '');
+		      }).catch(function () {});
+		    } catch (e) {}
+		  }
+		  function waitForNativeSdk(timeout) {
+		    if (window.fm || !window.fongmiBridge) return Promise.resolve(!!window.fm);
+		    return new Promise(function (resolve) {
+		      var t0 = Date.now();
+		      var t = setInterval(function () {
+		        if (window.fm || Date.now() - t0 > (timeout || 2000)) { clearInterval(t); resolve(!!window.fm); }
+		      }, 50);
+		    });
+		  }
+		  function sdk() { return window.fm || {}; }
+		
+		  function fetchText(url, referer) {
+		    var headers = {
+		      'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36',
+		      'Accept': 'text/html,application/xhtml+xml',
+		      'Referer': referer || (S().base + '/')
+		    };
+		    if (window.fm && typeof sdk().req === 'function') {
+		      return sdk().req(url, { responseType: 'text', timeout: 22, headers: headers }).then(function (r) {
+		        if (r && r.error) throw new Error(r.error);
+		        var body = r && (r.body != null ? r.body : r.data);
+		        if (typeof body === 'string' && body.length > 80) { lastMode = 'fm.req'; return body; }
+		        throw new Error('空响应');
+		      }).catch(function () { return fetchFallback(url); });
+		    }
+		    return fetchFallback(url);
+		  }
+		  function fetchFallback(url) {
+		    return fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', headers: { 'Accept': 'text/html' } })
+		      .then(function (resp) {
+		        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+		        lastMode = 'fetch';
+		        return resp.text();
+		      })
+		      .catch(function () {
+		        return fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url)).then(function (resp) {
+		          if (!resp.ok) throw new Error('代理失败');
+		          lastMode = 'proxy';
+		          return resp.text();
+		        });
+		      })
+		      .catch(function () { throw new Error('无法获取页面（请在 FongMi App 内打开）'); });
+		  }
+		
+		  function imgSrc(url) {
+		    if (!url) return '';
+		    url = absUrl(S().base, url);
+		    if (window.fm && typeof sdk().res === 'function') {
+		      try {
+		        var g = sdk().res(url, { headers: { Referer: S().base + '/' } });
+		        if (g) return g;
+		      } catch (e) {}
+		    }
+		    return url;
+		  }
+		
+		
+		  /* 禁漫天堂整图 AES-128-CBC（与站点 lazyload.js 一致，算法已对 NIST/实图校验） */
+		  var JM_KEY_STR = 'f5d965df75336270';
+		  var JM_IV_STR = '97b60394abc2fbe1';
+		  var jmBlobCache = {};
+		  var __AES = (function () {
+		    var Sbox = [99,124,119,123,242,107,111,197,48,1,103,43,254,215,171,118,202,130,201,125,250,89,71,240,173,212,162,175,156,164,114,192,183,253,147,38,54,63,247,204,52,165,229,241,113,216,49,21,4,199,35,195,24,150,5,154,7,18,128,226,235,39,178,117,9,131,44,26,27,110,90,160,82,59,214,179,41,227,47,132,83,209,0,237,32,252,177,91,106,203,190,57,74,76,88,207,208,239,170,251,67,77,51,133,69,249,2,127,80,60,159,168,81,163,64,143,146,157,56,245,188,182,218,33,16,255,243,210,205,12,19,236,95,151,68,23,196,167,126,61,100,93,25,115,96,129,79,220,34,42,144,136,70,238,184,20,222,94,11,219,224,50,58,10,73,6,36,92,194,211,172,98,145,149,228,121,231,200,55,109,141,213,78,169,108,86,244,234,101,122,174,8,186,120,37,46,28,166,180,198,232,221,116,31,75,189,139,138,112,62,181,102,72,3,246,14,97,53,87,185,134,193,29,158,225,248,152,17,105,217,142,148,155,30,135,233,206,85,40,223,140,161,137,13,191,230,66,104,65,153,45,15,176,84,187,22];
+		    var InvSbox = new Array(256);
+		    for (var i = 0; i < 256; i++) InvSbox[Sbox[i]] = i;
+		    var Rcon = [0x8d,0x01,0x02,0x04,0x08,0x10,0x20,0x40,0x80,0x1b,0x36];
+		    function gmul(a, b) {
+		      var p = 0;
+		      for (var i = 0; i < 8; i++) {
+		        if (b & 1) p ^= a;
+		        var hi = a & 0x80;
+		        a = (a << 1) & 0xff;
+		        if (hi) a ^= 0x1b;
+		        b >>= 1;
+		      }
+		      return p;
+		    }
+		    function keyExpansion(key) {
+		      var w = new Array(44);
+		      for (var i = 0; i < 4; i++) {
+		        w[i] = ((key[4 * i] << 24) | (key[4 * i + 1] << 16) | (key[4 * i + 2] << 8) | key[4 * i + 3]) >>> 0;
+		      }
+		      for (var i = 4; i < 44; i++) {
+		        var temp = w[i - 1];
+		        if (i % 4 === 0) {
+		          temp = ((temp << 8) | (temp >>> 24)) >>> 0;
+		          temp = ((Sbox[(temp >>> 24) & 0xff] << 24) |
+		            (Sbox[(temp >>> 16) & 0xff] << 16) |
+		            (Sbox[(temp >>> 8) & 0xff] << 8) |
+		            (Sbox[temp & 0xff])) >>> 0;
+		          temp = (temp ^ ((Rcon[i / 4] << 24) >>> 0)) >>> 0;
+		        }
+		        w[i] = (w[i - 4] ^ temp) >>> 0;
+		      }
+		      return w;
+		    }
+		    function addRoundKey(state, w, rnd) {
+		      for (var c = 0; c < 4; c++) {
+		        var k = w[rnd * 4 + c];
+		        state[0][c] ^= (k >>> 24) & 0xff;
+		        state[1][c] ^= (k >>> 16) & 0xff;
+		        state[2][c] ^= (k >>> 8) & 0xff;
+		        state[3][c] ^= k & 0xff;
+		      }
+		    }
+		    function invSubBytes(state) {
+		      for (var r = 0; r < 4; r++)
+		        for (var c = 0; c < 4; c++)
+		          state[r][c] = InvSbox[state[r][c]];
+		    }
+		    function invShiftRows(state) {
+		      var t = state[1][3]; state[1][3] = state[1][2]; state[1][2] = state[1][1]; state[1][1] = state[1][0]; state[1][0] = t;
+		      t = state[2][0]; state[2][0] = state[2][2]; state[2][2] = t;
+		      t = state[2][1]; state[2][1] = state[2][3]; state[2][3] = t;
+		      t = state[3][0]; state[3][0] = state[3][1]; state[3][1] = state[3][2]; state[3][2] = state[3][3]; state[3][3] = t;
+		    }
+		    function invMixColumns(state) {
+		      for (var c = 0; c < 4; c++) {
+		        var a = state[0][c], b = state[1][c], d = state[2][c], e = state[3][c];
+		        state[0][c] = gmul(a, 14) ^ gmul(b, 11) ^ gmul(d, 13) ^ gmul(e, 9);
+		        state[1][c] = gmul(a, 9) ^ gmul(b, 14) ^ gmul(d, 11) ^ gmul(e, 13);
+		        state[2][c] = gmul(a, 13) ^ gmul(b, 9) ^ gmul(d, 14) ^ gmul(e, 11);
+		        state[3][c] = gmul(a, 11) ^ gmul(b, 13) ^ gmul(d, 9) ^ gmul(e, 14);
+		      }
+		    }
+		    function decryptBlock(input, w, out, off) {
+		      var state = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
+		      for (var c = 0; c < 4; c++) {
+		        state[0][c] = input[off + 4 * c];
+		        state[1][c] = input[off + 4 * c + 1];
+		        state[2][c] = input[off + 4 * c + 2];
+		        state[3][c] = input[off + 4 * c + 3];
+		      }
+		      addRoundKey(state, w, 10);
+		      for (var rnd = 9; rnd >= 1; rnd--) {
+		        invShiftRows(state);
+		        invSubBytes(state);
+		        addRoundKey(state, w, rnd);
+		        invMixColumns(state);
+		      }
+		      invShiftRows(state);
+		      invSubBytes(state);
+		      addRoundKey(state, w, 0);
+		      for (var c = 0; c < 4; c++) {
+		        out[off + 4 * c] = state[0][c];
+		        out[off + 4 * c + 1] = state[1][c];
+		        out[off + 4 * c + 2] = state[2][c];
+		        out[off + 4 * c + 3] = state[3][c];
+		      }
+		    }
+		    function decryptCbc(u8, keyStr, ivStr) {
+		      var key = [], iv = [], i;
+		      for (i = 0; i < keyStr.length; i++) key.push(keyStr.charCodeAt(i) & 255);
+		      for (i = 0; i < ivStr.length; i++) iv.push(ivStr.charCodeAt(i) & 255);
+		      var w = keyExpansion(key);
+		      var len = u8.length - (u8.length % 16);
+		      var out = new Uint8Array(len);
+		      var prev = iv.slice();
+		      for (i = 0; i < len; i += 16) {
+		        decryptBlock(u8, w, out, i);
+		        for (var j = 0; j < 16; j++) {
+		          out[i + j] ^= prev[j];
+		          prev[j] = u8[i + j];
+		        }
+		      }
+		      return out;
+		    }
+		    return { decryptCbc: decryptCbc };
+		  })();
+		
+		  function isPlainImageBytes(u8) {
+		    if (!u8 || u8.length < 12) return false;
+		    return (u8[0] === 0xff && u8[1] === 0xd8 && u8[2] === 0xff) ||
+		      (u8[0] === 0x89 && u8[1] === 0x50 && u8[2] === 0x4e && u8[3] === 0x47) ||
+		      (u8[0] === 0x47 && u8[1] === 0x49 && u8[2] === 0x46) ||
+		      (u8[0] === 0x52 && u8[1] === 0x49 && u8[2] === 0x46 && u8[3] === 0x46);
+		  }
+		  function sniffMime(u8) {
+		    if (u8[0] === 0xff && u8[1] === 0xd8) return 'image/jpeg';
+		    if (u8[0] === 0x89 && u8[1] === 0x50) return 'image/png';
+		    if (u8[0] === 0x47 && u8[1] === 0x49) return 'image/gif';
+		    if (u8[0] === 0x52 && u8[1] === 0x49) return 'image/webp';
+		    return 'image/jpeg';
+		  }
+		  function u8FromBase64(str) {
+		    var raw = String(str || '');
+		    if (raw.indexOf('base64,') >= 0) raw = raw.split('base64,').pop();
+		    raw = raw.replace(/\s+/g, '');
+		    if (!raw) throw new Error('empty b64');
+		    var bin = atob(raw);
+		    var u8 = new Uint8Array(bin.length);
+		    for (var i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i) & 255;
+		    return u8;
+		  }
+		  function parseBinBody(r) {
+		    if (r == null) throw new Error('bin empty');
+		    /* 直接字符串（有的壳 resolve 就是 base64） */
+		    if (typeof r === 'string') {
+		      if (r.length < 32) throw new Error('bin short');
+		      return u8FromBase64(r);
+		    }
+		    if (r.error) throw new Error(String(r.error));
+		    var body = r.body != null ? r.body : (r.data != null ? r.data : (r.content != null ? r.content : r.result));
+		    if (body instanceof ArrayBuffer) return new Uint8Array(body);
+		    if (body && body.byteLength != null && body.buffer) {
+		      return new Uint8Array(body.buffer, body.byteOffset || 0, body.byteLength);
+		    }
+		    if (typeof body === 'string' && body.length > 32) return u8FromBase64(body);
+		    if (body && typeof body === 'object') {
+		      var inner = body.body || body.data || body.content || body.base64;
+		      if (typeof inner === 'string' && inner.length > 32) return u8FromBase64(inner);
+		    }
+		    if (Array.isArray(r) && r.length > 32) return new Uint8Array(r);
+		    if (Array.isArray(body) && body.length > 32) return new Uint8Array(body);
+		    throw new Error('bin empty type=' + (typeof body));
+		  }
+		  /* FongMi 文档：responseType 仅支持 text / json / base64（base64=原始字节） */
+		  function fetchBin(url) {
+		    var headers = {
+		      'User-Agent': 'Mozilla/5.0 (Linux; Android 12) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile Safari/537.36',
+		      'Referer': S().base + '/',
+		      'Accept': '*/*'
+		    };
+		    if (window.fm && typeof sdk().req === 'function') {
+		      return sdk().req(url, { responseType: 'base64', timeout: 30, headers: headers })
+		        .then(parseBinBody)
+		        .catch(function (e1) {
+		          return sdk().req(url, { responseType: 'text', timeout: 30, headers: headers }).then(function (r) {
+		            /* 有些壳把 base64 当 text 返回 */
+		            return parseBinBody(r);
+		          });
+		        })
+		        .catch(function () { return fetchBinFallback(url); });
+		    }
+		    return fetchBinFallback(url);
+		  }
+		  function fetchBinFallback(url) {
+		    return fetch(url, { method: 'GET', mode: 'cors', credentials: 'omit', headers: { 'Accept': '*/*' } })
+		      .then(function (resp) {
+		        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+		        return resp.arrayBuffer();
+		      })
+		      .then(function (ab) { return new Uint8Array(ab); });
+		  }
+		  function decryptJmBytes(u8) {
+		    if (isPlainImageBytes(u8)) return u8;
+		    try {
+		      var dec = __AES.decryptCbc(u8, JM_KEY_STR, JM_IV_STR);
+		      if (isPlainImageBytes(dec)) return dec;
+		    } catch (e) {}
+		    return u8;
+		  }
+		  var _jmFailToast = 0;
+		  function jmDecryptToBlobUrl(url) {
+		    if (!url) return Promise.resolve('');
+		    url = absUrl(S().base, url);
+		    if (jmBlobCache[url]) return Promise.resolve(jmBlobCache[url]);
+		    return fetchBin(url).then(function (u8) {
+		      if (!u8 || !u8.length) throw new Error('empty img');
+		      var dec = decryptJmBytes(u8);
+		      if (!isPlainImageBytes(dec)) {
+		        throw new Error('decrypt fail head=' + (u8[0] & 255) + ',' + (dec[0] & 255) + ' len=' + u8.length);
+		      }
+		      var mime = sniffMime(dec);
+		      var blob;
+		      try {
+		        blob = new Blob([dec], { type: mime });
+		      } catch (e1) {
+		        try {
+		          blob = new Blob([dec.buffer.slice(dec.byteOffset, dec.byteOffset + dec.byteLength)], { type: mime });
+		        } catch (e2) {
+		          /* data URL fallback */
+		          var CHUNK = 0x8000, s = '';
+		          for (var i = 0; i < dec.length; i += CHUNK) {
+		            s += String.fromCharCode.apply(null, dec.subarray(i, Math.min(i + CHUNK, dec.length)));
+		          }
+		          return 'data:' + mime + ';base64,' + btoa(s);
+		        }
+		      }
+		      var obj = URL.createObjectURL(blob);
+		      jmBlobCache[url] = obj;
+		      return obj;
+		    }).catch(function (err) {
+		      try { console.warn('[jm img]', url.slice(0, 80), err && err.message); } catch (e) {}
+		      if (!_jmFailToast) {
+		        _jmFailToast = 1;
+		        try { toast('禁漫图片: ' + ((err && err.message) || '加载失败')); } catch (e2) {}
+		      }
+		      return '';
+		    });
+		  }
+		  function hydrateJmImages(root) {
+		    if (srcKey !== 'jm18' || !root) return;
+		    var imgs = root.querySelectorAll('img[data-jm]:not([data-jm-done])');
+		    if (!imgs.length) return;
+		    var list = [];
+		    for (var i = 0; i < imgs.length; i++) list.push(imgs[i]);
+		    var cursor = 0, running = 0, maxC = 4;
+		    function pump() {
+		      while (running < maxC && cursor < list.length) {
+		        (function (img) {
+		          var u = img.getAttribute('data-jm');
+		          if (!u) { cursor++; return; }
+		          img.setAttribute('data-jm-done', '1');
+		          running++; cursor++;
+		          jmDecryptToBlobUrl(u).then(function (blobUrl) {
+		            running--;
+		            if (!blobUrl) {
+		              img.style.opacity = '0.2';
+		            } else {
+		              img.onload = function () { img.classList.add('ok'); };
+		              img.onerror = function () { img.style.opacity = '0.2'; };
+		              img.src = blobUrl;
+		            }
+		            pump();
+		          }).catch(function () {
+		            running--;
+		            img.style.opacity = '0.2';
+		            pump();
+		          });
+		        })(list[cursor]);
+		      }
+		    }
+		    pump();
+		  }
+		  function cardImgTag(cover) {
+		    var u = absUrl(S().base, cover);
+		    if (srcKey === 'jm18' && u) {
+		      return '<img data-jm="' + esc(u) + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" loading="lazy" referrerpolicy="no-referrer"/>';
+		    }
+		    return '<img src="' + esc(imgSrc(u)) + '" loading="lazy" referrerpolicy="no-referrer" onload="this.classList.add(\'ok\')" onerror="this.style.opacity=.2"/>';
+		  }
+		
+		  /* ── parsers ── */
+		  function parseGuaziList(html) {
+		    var base = SOURCES.guazi.base;
+		    var items = [];
+		    var seen = {};
+		    function push(id, title, cover) {
+		      id = String(id || '').trim();
+		      if (!id || seen[id]) return;
+		      seen[id] = 1;
+		      title = decodeHtml(String(title || '').replace(/漫画封面$/, '').replace(/最新更新封面$/, '').trim()) || ('漫画 ' + id);
+		      items.push({ id: id, title: title, cover: absUrl(base, cover) });
+		    }
+		    var m, b, idM, tM, cM;
+		    var cardRe = /<article[^>]*class="[^"]*(?:comic-card|update-card)[^"]*"[^>]*>([\s\S]*?)<\/article>/gi;
+		    while ((m = cardRe.exec(html))) {
+		      b = m[1];
+		      idM = b.match(/comic\.php\?id=(\d+)/);
+		      if (!idM) continue;
+		      tM = b.match(/<h3[^>]*>\s*<a[^>]*>([^<]+)/i) || b.match(/alt="([^"]+)"/i);
+		      cM = b.match(/(?:src|data-src|data-original)="([^"]+)"/i);
+		      push(idM[1], tM && tM[1], cM && cM[1]);
+		    }
+		    var wrapRe = /<a[^>]*class="[^"]*cover-wrap[^"]*"[^>]*href="[^"]*comic\.php\?id=(\d+)"[^>]*>([\s\S]*?)<\/a>/gi;
+		    while ((m = wrapRe.exec(html))) {
+		      b = m[2];
+		      cM = b.match(/(?:src|data-src)="([^"]+)"/i);
+		      tM = b.match(/alt="([^"]+)"/i);
+		      push(m[1], tM && tM[1], cM && cM[1]);
+		    }
+		    if (items.length < 3) {
+		      var re = /href="(?:https?:\/\/(?:www\.)?guazimanhua\.com)?\/comic\.php\?id=(\d+)"[\s\S]{0,500}?<img[^>]+(?:src|data-src)="([^"]+)"[^>]*(?:alt="([^"]*)")?/gi;
+		      while ((m = re.exec(html))) push(m[1], m[3], m[2]);
+		    }
+		    var re2 = /<img[^>]+(?:src|data-src)="([^"]+)"[^>]*(?:alt="([^"]*)")?[\s\S]{0,280}?comic\.php\?id=(\d+)/gi;
+		    while ((m = re2.exec(html))) push(m[3], m[2], m[1]);
+		    var h3re = /<h3[^>]*>\s*<a[^>]*href="[^"]*comic\.php\?id=(\d+)"[^>]*>([^<]+)<\/a>/gi;
+		    var tm = {};
+		    while ((m = h3re.exec(html))) tm[m[1]] = m[2];
+		    for (var i = 0; i < items.length; i++) if (tm[items[i].id]) items[i].title = decodeHtml(tm[items[i].id].trim());
+		    try {
+		      var ldRe = /<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi;
+		      while ((m = ldRe.exec(html))) {
+		        var data = JSON.parse(m[1]);
+		        var list = Array.isArray(data) ? data : [data];
+		        for (var j = 0; j < list.length; j++) {
+		          var els = (list[j] && list[j].itemListElement) || [];
+		          for (var k = 0; k < els.length; k++) {
+		            var el = els[k];
+		            var idM2 = String(el.url || '').match(/id=(\d+)/);
+		            if (!idM2) continue;
+		            if (seen[idM2[1]]) {
+		              for (var t = 0; t < items.length; t++) if (items[t].id === idM2[1] && el.name) items[t].title = el.name;
+		            } else push(idM2[1], el.name, '');
+		          }
+		        }
+		      }
+		    } catch (e) {}
+		    return items;
+		  }
+		
+		  function parseJm18List(html) {
+		    var base = SOURCES.jm18.base;
+		    var items = [];
+		    var seen = {};
+		    function push(id, title, cover) {
+		      id = String(id || '').trim();
+		      if (!id || seen[id]) return;
+		      seen[id] = 1;
+		      title = decodeHtml(String(title || '').trim()) || ('漫画 ' + id);
+		      items.push({ id: id, title: title, cover: absUrl(base, cover) });
+		    }
+		    var m;
+		    /* data-src + alt */
+		    var re = /href="\/comic\/detail\/(\d+)"[\s\S]{0,900}?data-src="([^"]+)"[\s\S]{0,200}?alt="([^"]*)"/gi;
+		    while ((m = re.exec(html))) push(m[1], m[3], m[2]);
+		    /* h2 title after link */
+		    var re2 = /href="\/comic\/detail\/(\d+)"[\s\S]{0,1200}?<h2[^>]*>([^<]+)/gi;
+		    while ((m = re2.exec(html))) {
+		      if (seen[m[1]]) {
+		        for (var i = 0; i < items.length; i++) {
+		          if (items[i].id === m[1] && (!items[i].title || items[i].title.indexOf('漫画 ') === 0))
+		            items[i].title = decodeHtml(m[2].trim());
+		        }
+		      }
+		    }
+		    /* fallback any detail + img */
+		    if (items.length < 3) {
+		      var re3 = /href="\/comic\/detail\/(\d+)"[\s\S]{0,600}?(?:data-src|src)="(https?:\/\/[^"]+)"/gi;
+		      while ((m = re3.exec(html))) push(m[1], '', m[2]);
+		    }
+		    return items;
+		  }
+		
+		  function parseList(html) {
+		    return srcKey === 'jm18' ? parseJm18List(html) : parseGuaziList(html);
+		  }
+		
+		  function parseGuaziSection(html, id) {
+		    var m = html.match(new RegExp('<section[^>]*id="' + id + '"[^>]*>([\\s\\S]*?)</section>', 'i'));
+		    return m ? parseGuaziList(m[1]) : [];
+		  }
+		
+		  function dedupeById(list, excludeIds) {
+		    var out = [];
+		    var seen = {};
+		    excludeIds = excludeIds || {};
+		    for (var i = 0; i < list.length; i++) {
+		      var id = list[i].id;
+		      if (seen[id] || excludeIds[id]) continue;
+		      seen[id] = 1;
+		      out.push(list[i]);
+		    }
+		    return out;
+		  }
+		
+		  function hCard(c, i) {
+		    return '<div class="h-card" data-id="' + esc(c.id) + '"><div class="h-img">' +
+		      (i != null ? '<span class="h-rank">' + (i + 1) + '</span>' : '') +
+		      '<img src="' + esc(imgSrc(c.cover)) + '" loading="lazy" referrerpolicy="no-referrer" onload="this.classList.add(\'ok\')" onerror="this.style.opacity=.2"/></div>' +
+		      '<div class="h-name">' + esc(c.title) + '</div></div>';
+		  }
+		  function gCard(c) {
+		    return '<div class="g-card" data-id="' + esc(c.id) + '"><div class="g-img"><img src="' + esc(imgSrc(c.cover)) + '" loading="lazy" referrerpolicy="no-referrer" onload="this.classList.add(\'ok\')" onerror="this.style.opacity=.2"/></div><div class="g-name">' + esc(c.title) + '</div></div>';
+		  }
+		  function bindCards(root) {
+		    var nodes = root.querySelectorAll('[data-id]');
+		    for (var i = 0; i < nodes.length; i++) {
+		      (function (el) {
+		        el.addEventListener('click', function () { openDet(el.getAttribute('data-id')); });
+		      })(nodes[i]);
+		    }
+		  }
+		
+		  function renderHero(list) {
+		    var el = document.getElementById('hero');
+		    if (!list || !list.length) { el.innerHTML = '<div class="empty" style="padding:36px">暂无轮播</div>'; return; }
+		    var slides = list.slice(0, 6);
+		    var html = '';
+		    for (var i = 0; i < slides.length; i++) {
+		      var c = slides[i];
+		      html += '<div class="hero-slide' + (i === 0 ? ' on' : '') + '" data-i="' + i + '" data-id="' + esc(c.id) + '">' +
+		        (srcKey === 'jm18' ? '<img data-jm="' + esc(absUrl(S().base, c.cover)) + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""/>' : '<img src="' + esc(imgSrc(c.cover)) + '" alt="" referrerpolicy="no-referrer"/>') + '<div class="hero-mask"></div>' +
+		        '<div class="hero-body"><div class="hero-title">' + esc(c.title) + '</div><div class="hero-sub">' + esc(S().name) + ' · 点击阅读</div></div></div>';
+		    }
+		    html += '<div class="hero-dots">';
+		    for (var d = 0; d < slides.length; d++) html += '<button class="hero-dot' + (d === 0 ? ' on' : '') + '" type="button" data-i="' + d + '"></button>';
+		    html += '</div>';
+		    el.innerHTML = html;
+		    var slideNodes = el.querySelectorAll('.hero-slide');
+		    for (var s = 0; s < slideNodes.length; s++) slideNodes[s].addEventListener('click', function () { openDet(this.getAttribute('data-id')); });
+		    var dots = el.querySelectorAll('.hero-dot');
+		    for (var x = 0; x < dots.length; x++) {
+		      dots[x].addEventListener('click', function (e) { e.stopPropagation(); goHero(+this.getAttribute('data-i')); });
+		    }
+		    heroIdx = 0;
+		    clearInterval(heroTimer);
+		    heroTimer = setInterval(function () { goHero((heroIdx + 1) % slides.length); }, 4500);
+		    hydrateJmImages(el);
+		  }
+		  function goHero(i) {
+		    var el = document.getElementById('hero');
+		    var slides = el.querySelectorAll('.hero-slide');
+		    var dots = el.querySelectorAll('.hero-dot');
+		    if (!slides.length) return;
+		    if (slides[heroIdx]) slides[heroIdx].classList.remove('on');
+		    if (dots[heroIdx]) dots[heroIdx].classList.remove('on');
+		    heroIdx = i;
+		    if (slides[heroIdx]) slides[heroIdx].classList.add('on');
+		    if (dots[heroIdx]) dots[heroIdx].classList.add('on');
+		  }
+		
+		  function loadHome() {
+		    document.getElementById('g-feat').innerHTML = Array(6).fill('<div class="h-card"><div class="sk sk-card"></div></div>').join('');
+		    document.getElementById('g-hot').innerHTML = Array(6).fill('<div class="g-card"><div class="sk sk-card"></div></div>').join('');
+		    document.getElementById('g-latest').innerHTML = Array(6).fill('<div class="g-card"><div class="sk sk-card"></div></div>').join('');
+		    rankData = [];
+		
+		    if (srcKey === 'jm18') {
+		      return Promise.all([
+		        fetchText(S().base + '/comic/hot'),
+		        fetchText(S().base + '/comic/freshest'),
+		        fetchText(S().base + '/comic/newest')
+		      ]).then(function (arr) {
+		        homeData.hot = parseJm18List(arr[0]);
+		        homeData.latest = parseJm18List(arr[1]);
+		        var newest = parseJm18List(arr[2]);
+		        var hotIds = {};
+		        for (var i = 0; i < homeData.hot.length; i++) hotIds[homeData.hot[i].id] = 1;
+		        homeData.feat = dedupeById(newest.concat(homeData.latest), hotIds).slice(0, 12);
+		        if (!homeData.feat.length) homeData.feat = homeData.hot.slice(0, 12);
+		        if (!homeData.hot.length && !homeData.latest.length) throw new Error('解析为空');
+		        renderHomeGrids();
+		      }).catch(homeFail);
+		    }
+		
+		    return fetchText(S().base + '/').then(function (html) {
+		      var hot = parseGuaziSection(html, 'hot');
+		      var latest = parseGuaziSection(html, 'latest');
+		      var all = parseGuaziList(html);
+		      homeData.hot = hot.length ? hot : all.slice(0, 12);
+		      var hotIds = {};
+		      for (var i = 0; i < homeData.hot.length; i++) hotIds[homeData.hot[i].id] = 1;
+		      var feat = dedupeById(all, hotIds);
+		      if (feat.length < 6) feat = dedupeById(all, {});
+		      homeData.feat = feat.slice(0, 12);
+		      homeData.latest = latest.length ? latest : dedupeById(all, hotIds).slice(0, 18);
+		      if (!all.length) throw new Error('解析为空');
+		      renderHomeGrids();
+		    }).catch(homeFail);
+		  }
+		  function renderHomeGrids() {
+		    renderHero(homeData.feat.slice(0, 6));
+		    var gf = document.getElementById('g-feat');
+		    var hf = '';
+		    for (var f = 0; f < Math.min(10, homeData.feat.length); f++) hf += hCard(homeData.feat[f], f);
+		    gf.innerHTML = hf;
+		    bindCards(gf);
+		    var gh = document.getElementById('g-hot');
+		    gh.innerHTML = homeData.hot.slice(0, 12).map(gCard).join('');
+		    bindCards(gh);
+		    var gl = document.getElementById('g-latest');
+		    gl.innerHTML = homeData.latest.slice(0, 12).map(gCard).join('');
+		    bindCards(gl);
+		  }
+		  function homeFail(e) {
+		    var msg = e.message || String(e);
+		    ['g-feat', 'g-hot', 'g-latest'].forEach(function (id) {
+		      document.getElementById(id).innerHTML = '<div class="empty">加载失败<br>' + esc(msg) +
+		        '<br><button class="retry-btn" type="button" onclick="window.__reload()">重试</button></div>';
+		    });
+		    toast('加载失败：' + msg);
+		  }
+		  window.__reload = loadHome;
+		
+		  function loadRank() {
+		    var g = document.getElementById('g-rank');
+		    g.innerHTML = Array(12).fill('<div class="g-card"><div class="sk sk-card"></div></div>').join('');
+		    var url = srcKey === 'jm18' ? (S().base + '/comic/rank') : (S().base + '/top.php?type=sale');
+		    return fetchText(url).then(function (html) {
+		      rankData = parseList(html);
+		      if (!rankData.length && srcKey === 'guazi') {
+		        return fetchText(S().base + '/top.php?type=new').then(function (html2) {
+		          rankData = parseList(html2);
+		        });
+		      }
+		    }).then(function () {
+		      g.innerHTML = rankData.map(gCard).join('') || '<div class="empty">暂无</div>';
+		      bindCards(g);
+		    }).catch(function (e) {
+		      g.innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
+		    });
+		  }
+		
+		  function loadCat(cid) {
+		    var g = document.getElementById('g-cat');
+		    g.innerHTML = Array(9).fill('<div class="g-card"><div class="sk sk-card"></div></div>').join('');
+		    var url = srcKey === 'jm18'
+		      ? (S().base + '/comic/all/' + cid)
+		      : (S().base + '/category.php?cid=' + cid);
+		    return fetchText(url).then(function (html) {
+		      var items = parseList(html);
+		      g.innerHTML = items.length ? items.map(gCard).join('') : '<div class="empty">该分类暂无数据</div>';
+		      bindCards(g);
+		    }).catch(function (e) {
+		      g.innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
+		    });
+		  }
+		
+		  function renderCatTags() {
+		    var tagsEl = document.getElementById('catTags');
+		    var cats = S().cats;
+		    var tagHtml = '';
+		    for (var ci = 0; ci < cats.length; ci++) {
+		      tagHtml += '<button class="cat-tag' + (ci === 0 ? ' on' : '') + '" type="button" data-cid="' + cats[ci].id + '">' + cats[ci].name + '</button>';
+		    }
+		    tagsEl.innerHTML = tagHtml;
+		    if (cats.length) loadCat(cats[0].id);
+		  }
+		
+		  /* route */
+		  function syncLayerClass() {
+		    var open = document.getElementById('det').classList.contains('on') ||
+		      document.getElementById('reader').classList.contains('on') ||
+		      document.getElementById('srch').classList.contains('on') ||
+		      document.getElementById('panel-rank').classList.contains('on') ||
+		      document.getElementById('panel-cat').classList.contains('on') ||
+		      document.getElementById('panel-follow').classList.contains('on');
+		    if (open) document.documentElement.classList.add('layer-open');
+		    else document.documentElement.classList.remove('layer-open');
+		  }
+		  function pushRoute(name, openFn) {
+		    stack.push(name);
+		    try { history.pushState({ comic: name, n: stack.length }, '', '#' + name); } catch (e) {}
+		    if (openFn) openFn();
+		    syncLayerClass();
+		  }
+		  function closeRoute(name) {
+		    if (name === 'det') document.getElementById('det').classList.remove('on');
+		    else if (name === 'reader') closeReaderUI();
+		    else if (name === 'srch') document.getElementById('srch').classList.remove('on');
+		    else if (name === 'rank') document.getElementById('panel-rank').classList.remove('on');
+		    else if (name === 'cat') document.getElementById('panel-cat').classList.remove('on');
+		    else if (name === 'follow') document.getElementById('panel-follow').classList.remove('on');
+		    syncLayerClass();
+		  }
+		  function popRoute() {
+		    if (!stack.length) { syncLayerClass(); return false; }
+		    var name = stack.pop();
+		    closeRoute(name);
+		    if (name === 'rank' || name === 'cat' || name === 'srch' || name === 'follow') setTab('home');
+		    return true;
+		  }
+		  window.addEventListener('popstate', function () { popRoute(); });
+		  function setTab(tab) {
+		    var bns = document.querySelectorAll('.bn');
+		    for (var i = 0; i < bns.length; i++) {
+		      if (bns[i].getAttribute('data-tab') === tab) bns[i].classList.add('on');
+		      else bns[i].classList.remove('on');
+		    }
+		  }
+		
+		  /* source switch */
+		  function updateSrcUI() {
+		    document.getElementById('srcLabel').textContent = S().name;
+		    document.getElementById('logoSub').textContent = S().name + ' · 当前源';
+		    var items = document.querySelectorAll('.src-item');
+		    for (var i = 0; i < items.length; i++) {
+		      if (items[i].getAttribute('data-src') === srcKey) items[i].classList.add('on');
+		      else items[i].classList.remove('on');
+		    }
+		  }
+		  function switchSource(key) {
+		    if (!SOURCES[key] || key === srcKey) {
+		      document.getElementById('srcMenu').classList.remove('on');
+		      return;
+		    }
+		    srcKey = key;
+		    try { localStorage.setItem('comic_src', key); } catch (e) {}
+		    document.getElementById('srcMenu').classList.remove('on');
+		    updateSrcUI();
+		    while (stack.length) popRoute();
+		    setTab('home');
+		    renderCatTags();
+		    toast('已切换：' + S().name);
+		    loadHome();
+		  }
+		  document.getElementById('srcBtn').addEventListener('click', function (e) {
+		    e.stopPropagation();
+		    document.getElementById('srcMenu').classList.toggle('on');
+		  });
+		  document.getElementById('srcMenu').addEventListener('click', function (e) {
+		    var item = e.target.closest ? e.target.closest('.src-item') : null;
+		    if (item) switchSource(item.getAttribute('data-src'));
+		  });
+		  document.addEventListener('click', function () {
+		    document.getElementById('srcMenu').classList.remove('on');
+		  });
+		
+		  document.getElementById('botnav').addEventListener('click', function (e) {
+		    var bn = e.target.closest ? e.target.closest('.bn') : null;
+		    if (!bn) return;
+		    var tab = bn.getAttribute('data-tab');
+		    if (tab === 'home') {
+		      while (stack.length) popRoute();
+		      try { history.pushState({ comic: 'home' }, '', '#home'); } catch (err) {}
+		      setTab('home');
+		      window.scrollTo(0, 0);
+		      return;
+		    }
+		    if (tab === 'rank') {
+		      setTab('rank');
+		      if (stack.indexOf('rank') < 0) {
+		        pushRoute('rank', function () {
+		          document.getElementById('panel-rank').classList.add('on');
+		          if (!rankData.length) loadRank();
+		        });
+		      }
+		      return;
+		    }
+		    if (tab === 'cat') {
+		      setTab('cat');
+		      if (stack.indexOf('cat') < 0) {
+		        pushRoute('cat', function () { document.getElementById('panel-cat').classList.add('on'); });
+		      }
+		      return;
+		    }
+		    if (tab === 'follow') {
+		      setTab('follow');
+		      if (stack.indexOf('follow') < 0) {
+		        pushRoute('follow', function () {
+		          document.getElementById('panel-follow').classList.add('on');
+		          renderFollowList();
+		        });
+		      } else {
+		        renderFollowList();
+		      }
+		      return;
+		    }
+		    if (tab === 'srch') openSearch();
+		  });
+		  document.getElementById('moreRank').addEventListener('click', function () {
+		    setTab('rank');
+		    pushRoute('rank', function () {
+		      document.getElementById('panel-rank').classList.add('on');
+		      if (!rankData.length) loadRank();
+		    });
+		  });
+		  document.getElementById('rankBack').addEventListener('click', function () { history.back(); });
+		  document.getElementById('catBack').addEventListener('click', function () { history.back(); });
+		  document.getElementById('followBack').addEventListener('click', function () { history.back(); });
+		  document.getElementById('btnRefresh').addEventListener('click', function () { loadHome(); });
+		
+		  document.getElementById('catTags').addEventListener('click', function (e) {
+		    var t = e.target.closest ? e.target.closest('.cat-tag') : null;
+		    if (!t) return;
+		    var tags = document.querySelectorAll('.cat-tag');
+		    for (var i = 0; i < tags.length; i++) tags[i].classList.remove('on');
+		    t.classList.add('on');
+		    loadCat(t.getAttribute('data-cid'));
+		  });
+		
+		  function openSearch() {
+		    setTab('srch');
+		    if (stack.indexOf('srch') < 0) {
+		      pushRoute('srch', function () {
+		        document.getElementById('srch').classList.add('on');
+		        setTimeout(function () { document.getElementById('srchInp').focus(); }, 120);
+		      });
+		    } else document.getElementById('srch').classList.add('on');
+		  }
+		  document.getElementById('openSrch').addEventListener('click', openSearch);
+		  document.getElementById('srchCancel').addEventListener('click', function () { history.back(); });
+		  document.getElementById('srchInp').addEventListener('keydown', function (e) {
+		    if (e.key === 'Enter') { e.preventDefault(); doSearch(this.value.replace(/^\s+|\s+$/g, '')); }
+		  });
+		  function doSearch(q) {
+		    if (!q) return;
+		    var body = document.getElementById('srchBody');
+		    body.innerHTML = '<div class="loading"><div class="spinner"></div><div>搜索中…</div></div>';
+		    var url = srcKey === 'jm18'
+		      ? (S().base + '/comic/all?key_word=' + encodeURIComponent(q) + '&page=1')
+		      : (S().base + '/index.php/search?key=' + encodeURIComponent(q));
+		    fetchText(url).then(function (html) {
+		      var items = parseList(html);
+		      if (!items.length) { body.innerHTML = '<div class="empty">无结果</div>'; return; }
+		      var h = '';
+		      for (var i = 0; i < items.length; i++) {
+		        var c = items[i];
+		        h += '<div class="sli" data-id="' + esc(c.id) + '">' + cardImgTag(c.cover) + '<div><div class="sli-t">' + esc(c.title) + '</div><div class="sli-m">' + esc(S().name) + '</div></div></div>';
+		      }
+		      body.innerHTML = h;
+		      var nodes = body.querySelectorAll('.sli');
+		      for (var n = 0; n < nodes.length; n++) {
+		        nodes[n].addEventListener('click', function () { openDet(this.getAttribute('data-id')); });
+		      }
+		      hydrateJmImages(body);
+		    }).catch(function (e) {
+		      body.innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
+		    });
+		  }
+		
+		  function openDet(id) {
+		    pushRoute('det', function () { document.getElementById('det').classList.add('on'); });
+		    var inner = document.getElementById('detInner');
+		    inner.innerHTML = '<div class="loading" style="padding-top:100px"><div class="spinner"></div><div>加载详情…</div></div>';
+		    var url = srcKey === 'jm18' ? (S().base + '/comic/detail/' + id) : (S().base + '/comic.php?id=' + id);
+		    fetchText(url).then(function (html) {
+		      var cover = '', title = '', desc = '';
+		      var coverM, titleM, descM;
+		      if (srcKey === 'jm18') {
+		        coverM = html.match(/property="og:image"\s+content="([^"]+)"/i) ||
+		          html.match(/data-src="(https?:\/\/[^"]+)"[^>]*alt="/i);
+		        titleM = html.match(/property="og:title"\s+content="([^"]+)"/i) || html.match(/<h1[^>]*>([^<]+)/i);
+		        descM = html.match(/property="og:description"\s+content="([^"]+)"/i);
+		      } else {
+		        coverM = html.match(/<img[^>]+class="[^"]*cover[^"]*"[^>]+src="([^"]+)"/i) ||
+		          html.match(/property="og:image"\s+content="([^"]+)"/i);
+		        titleM = html.match(/property="og:title"\s+content="([^"]+)"/i) || html.match(/<h1[^>]*>([^<]+)/i);
+		        descM = html.match(/property="og:description"\s+content="([^"]+)"/i);
+		      }
+		      cover = coverM ? absUrl(S().base, coverM[1]) : '';
+		      title = titleM ? decodeHtml(titleM[1].replace(/\s*[|\-].*$/, '').trim()) : ('漫画 ' + id);
+		      desc = descM ? decodeHtml(descM[1]) : '';
+		
+		      curChapters = [];
+		      if (srcKey === 'jm18') {
+		        var seen = {};
+		        var chRe = /href="\/comic\/chapter\/(\d+)\/(\d+)"[^>]*>([\s\S]*?)<\/a>/gi;
+		        var cm;
+		        while ((cm = chRe.exec(html))) {
+		          var num = cm[2];
+		          if (seen[num]) continue;
+		          var name = cm[3].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+		          if (!name || /开始阅读/.test(name)) name = '第 ' + num + ' 话';
+		          seen[num] = 1;
+		          curChapters.push({ id: cm[1] + '/' + num, name: decodeHtml(name), num: parseInt(num, 10) || 0 });
+		        }
+		        curChapters.sort(function (a, b) { return a.num - b.num; });
+		      } else {
+		        var chMap = {};
+		        var chOrder = [];
+		        var cm2;
+		        var chRe2 = /href="\/chapter\.php\?id=(\d+)"[^>]*>([\s\S]*?)<\/a>/gi;
+		        while ((cm2 = chRe2.exec(html))) {
+		          var cid = cm2[1];
+		          var name2 = cm2[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+		          if (!name2 || /开始阅读|从第/.test(name2)) continue;
+		          if (!chMap[cid]) { chMap[cid] = { id: cid, name: decodeHtml(name2) }; chOrder.push(cid); }
+		        }
+		        var ml = html.match(/data-mobile-chapter-list[^>]*>([\s\S]*?)(?:<\/div>\s*<\/div>|<script)/i);
+		        if (ml) {
+		          var re3 = /href="\/chapter\.php\?id=(\d+)"[^>]*>([\s\S]*?)<\/a>/gi;
+		          while ((cm2 = re3.exec(ml[1]))) {
+		            var cid3 = cm2[1];
+		            var name3 = cm2[2].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').replace(/^\s+|\s+$/g, '');
+		            if (name3 && !/开始阅读|从第/.test(name3) && !chMap[cid3]) {
+		              chMap[cid3] = { id: cid3, name: decodeHtml(name3) };
+		              chOrder.push(cid3);
+		            }
+		          }
+		        }
+		        for (var i = 0; i < chOrder.length; i++) curChapters.push(chMap[chOrder[i]]);
+		        curChapters.sort(function (a, b) {
+		          var na = parseInt((a.name.match(/\d+/) || [])[0], 10) || 0;
+		          var nb = parseInt((b.name.match(/\d+/) || [])[0], 10) || 0;
+		          return na - nb;
+		        });
+		      }
+		
+		      var chHtml = '';
+		      for (var c = 0; c < curChapters.length; c++) {
+		        chHtml += '<button class="ch-item" type="button" data-i="' + c + '">' + esc(curChapters[c].name) + '</button>';
+		      }
+		
+		      inner.innerHTML =
+		        '<div class="det-hero">' +
+		          (cover ? (srcKey==='jm18' ? '<img data-jm="' + esc(cover) + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt=""/>' : '<img src="' + esc(imgSrc(cover)) + '" alt="" referrerpolicy="no-referrer"/>') : '') +
+		          '<div class="det-hero-mask"></div>' +
+		          '<div class="det-nav"><button class="det-back" type="button" id="detBack"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 18l-6-6 6-6"/></svg></button></div>' +
+		          '<div class="det-overlay">' +
+		            (cover ? (srcKey==='jm18' ? '<img class="det-cover" data-jm="' + esc(cover) + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"/>' : '<img class="det-cover" src="' + esc(imgSrc(cover)) + '" referrerpolicy="no-referrer"/>') : '<div class="det-cover"></div>') +
+		            '<div class="det-meta"><div class="det-title">' + esc(title) + '</div>' +
+		            '<div class="det-sub">' + esc(S().name) + '</div><div class="det-stat">' + curChapters.length + ' 话</div></div></div></div>' +
+		        '<div class="det-body"><div class="det-actions">' +
+		          '<button class="btn-follow' + (isFollowed(srcKey, id) ? ' on' : '') + '" type="button" id="btnFollow">' + (isFollowed(srcKey, id) ? '已追更' : '追更') + '</button>' +
+		          '<button class="btn-read" type="button" id="btnRead"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>开始阅读</button>' +
+		          '<button class="btn-ghost" type="button" id="btnDesc">简介</button></div>' +
+		          '<div class="det-desc" id="detDesc" style="' + (desc ? '' : 'display:none') + '">' + esc(desc || '暂无简介') + '</div>' +
+		          '<div class="sec-hd"><div class="sec-title">目录 · ' + curChapters.length + ' 话</div></div>' +
+		          '<div class="ch-grid" id="chGrid">' + chHtml + '</div></div>';
+		
+		      document.getElementById('detBack').addEventListener('click', function () { history.back(); });
+		      document.getElementById('btnRead').addEventListener('click', function () {
+		        if (!curChapters.length) { toast('暂无章节'); return; }
+		        openChapter(0);
+		      });
+		      var descEl = document.getElementById('detDesc');
+		      var btnDesc = document.getElementById('btnDesc');
+		      if (btnDesc && descEl) {
+		        btnDesc.addEventListener('click', function () {
+		          var expanded = descEl.classList.toggle('exp');
+		          if (descEl.style.display === 'none') descEl.style.display = '';
+		          btnDesc.textContent = expanded ? '收起' : '简介';
+		          if (!expanded && !desc) { /* keep */ }
+		          try { descEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+		        });
+		      }
+		      var btnFollow = document.getElementById('btnFollow');
+		      if (btnFollow) {
+		        btnFollow.addEventListener('click', function () {
+		          var on = toggleFollow({
+		            src: srcKey,
+		            id: id,
+		            title: title,
+		            cover: cover,
+		            srcName: S().name
+		          });
+		          if (on) {
+		            btnFollow.classList.add('on');
+		            btnFollow.textContent = '已追更';
+		          } else {
+		            btnFollow.classList.remove('on');
+		            btnFollow.textContent = '追更';
+		          }
+		        });
+		      }
+		      var items = document.getElementById('chGrid').querySelectorAll('.ch-item');
+		      for (var n = 0; n < items.length; n++) {
+		        items[n].addEventListener('click', function () { openChapter(+this.getAttribute('data-i')); });
+		      }
+		      hydrateJmImages(inner);
+		    }).catch(function (e) {
+		      inner.innerHTML = '<div class="empty" style="padding-top:100px">' + esc(e.message) +
+		        '<br><button class="retry-btn" type="button" id="detBack2">返回</button></div>';
+		      document.getElementById('detBack2').addEventListener('click', function () { history.back(); });
+		    });
+		  }
+		
+		  function openChapter(idx) {
+		    if (idx < 0 || idx >= curChapters.length) return;
+		    curChIdx = idx;
+		    var ch = curChapters[idx];
+		    if (stack.indexOf('reader') < 0) {
+		      pushRoute('reader', function () { document.getElementById('reader').classList.add('on'); });
+		    } else {
+		      document.getElementById('reader').classList.add('on');
+		      syncLayerClass();
+		    }
+		    document.getElementById('rdTitle').textContent = ch.name;
+		    document.getElementById('rdPrev').disabled = idx <= 0;
+		    document.getElementById('rdNext').disabled = idx >= curChapters.length - 1;
+		    barVisible = true;
+		    document.getElementById('rdBar').classList.remove('hide');
+		    document.getElementById('rdFoot').classList.remove('hide');
+		    var pages = document.getElementById('rdPages');
+		    var scroll = document.getElementById('rdScroll');
+		    pages.innerHTML = '<div class="loading"><div class="spinner"></div><div>加载图片…</div></div>';
+		    scroll.scrollTop = 0;
+		    var url = srcKey === 'jm18'
+		      ? (S().base + '/comic/chapter/' + ch.id)
+		      : (S().base + '/chapter.php?id=' + ch.id);
+		    fetchText(url).then(function (html) {
+		      var imgs = [];
+		      var m;
+		      if (srcKey === 'jm18') {
+		        var re = /(?:data-src|src)="(https?:\/\/[^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"/gi;
+		        while ((m = re.exec(html))) {
+		          var u = m[1];
+		          if (/loading\.svg|icon|logo|avatar/i.test(u)) continue;
+		          if (/upload|xi\.|dzuxta|chapter|page/i.test(u) || /\.(jpg|jpeg|png|webp)/i.test(u)) {
+		            if (imgs.indexOf(u) < 0) imgs.push(u);
+		          }
+		        }
+		      } else {
+		        var re2 = /class="reading-image[^"]*"[^>]+src="([^"]+)"/gi;
+		        while ((m = re2.exec(html))) imgs.push(absUrl(S().base, m[1]));
+		        if (!imgs.length) {
+		          var re3 = /(?:data-src|data-original)="(https?:\/\/[^"]+\.(?:jpg|jpeg|png|webp)[^"]*)"/gi;
+		          while ((m = re3.exec(html))) {
+		            if (/chapter|comics\/chapters|page_/i.test(m[1])) imgs.push(m[1]);
+		          }
+		        }
+		      }
+		      if (!imgs.length) { pages.innerHTML = '<div class="empty">未解析到图片</div>'; return; }
+		      if (srcKey === 'jm18') {
+		        /* 先占位，边解密边显示 */
+		        var ph = '<div id="jmProg" style="position:sticky;top:0;z-index:2;background:rgba(0,0,0,.75);color:#aaa;font-size:12px;text-align:center;padding:8px 0">解密中 0/' + imgs.length + '</div>';
+		        for (var pi = 0; pi < imgs.length; pi++) {
+		          ph += '<div class="jm-slot" data-i="' + pi + '" style="min-height:120px;background:#111;margin:0 auto;width:100%;max-width:900px"></div>';
+		        }
+		        pages.innerHTML = ph;
+		        scroll.scrollTop = 0;
+		        var loaded = 0, cursor = 0, running = 0, maxC = 3;
+		        function place(i, blobUrl) {
+		          var slot = pages.querySelector('.jm-slot[data-i="' + i + '"]');
+		          if (!slot) return;
+		          if (blobUrl) {
+		            slot.style.minHeight = '0';
+		            slot.innerHTML = '<img src="' + blobUrl + '" alt="p' + (i + 1) + '" style="width:100%;display:block"/>';
+		          } else {
+		            slot.innerHTML = '<div style="padding:20px;text-align:center;color:#666;font-size:12px">第' + (i + 1) + '页失败</div>';
+		          }
+		        }
+		        function next() {
+		          while (running < maxC && cursor < imgs.length) {
+		            (function (i, u) {
+		              running++; cursor++;
+		              jmDecryptToBlobUrl(u).then(function (b) {
+		                place(i, b);
+		                loaded++; running--;
+		                var p = document.getElementById('jmProg');
+		                if (p) {
+		                  p.textContent = '解密中 ' + loaded + '/' + imgs.length + (loaded >= imgs.length ? ' · 完成' : '');
+		                  if (loaded >= imgs.length) setTimeout(function () { if (p.parentNode) p.parentNode.removeChild(p); }, 800);
+		                }
+		                next();
+		              }).catch(function () {
+		                place(i, '');
+		                loaded++; running--;
+		                next();
+		              });
+		            })(cursor, imgs[cursor]);
+		          }
+		        }
+		        next();
+		      } else {
+		        var h = '';
+		        for (var i = 0; i < imgs.length; i++) {
+		          h += '<img src="' + esc(imgSrc(imgs[i])) + '" alt="p' + (i + 1) + '" loading="' + (i < 3 ? 'eager' : 'lazy') + '" referrerpolicy="no-referrer"/>';
+		        }
+		        pages.innerHTML = h;
+		        scroll.scrollTop = 0;
+		      }
+		    }).catch(function (e) {
+		      pages.innerHTML = '<div class="empty">' + esc(e.message) + '</div>';
+		    });
+		  }
+		  function closeReaderUI() {
+		    document.getElementById('reader').classList.remove('on');
+		    document.getElementById('rdPages').innerHTML = '';
+		  }
+		  document.getElementById('rdBack').addEventListener('click', function () { history.back(); });
+		  document.getElementById('rdPrev').addEventListener('click', function () { if (curChIdx > 0) openChapter(curChIdx - 1); });
+		  document.getElementById('rdNext').addEventListener('click', function () { if (curChIdx < curChapters.length - 1) openChapter(curChIdx + 1); });
+		  document.getElementById('rdScroll').addEventListener('click', function () {
+		    barVisible = !barVisible;
+		    document.getElementById('rdBar').classList.toggle('hide', !barVisible);
+		    document.getElementById('rdFoot').classList.toggle('hide', !barVisible);
+		  });
+		
+		  function boot() {
+		    updateSrcUI();
+		    renderCatTags();
+		    return waitForNativeSdk(2500).then(function () {
+		      initViewport();
+		      return loadHome();
+		    });
+		  }
+		  boot();
+		})();
+	</script>
+</body>
+
+</html>
