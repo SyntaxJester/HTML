@@ -97,10 +97,10 @@
   --good: #39ff8f; --warn: #ffe156; --bad: #ff3864; --gray: #5d6f8a;
   --neon-glow: 0 0 6px rgba(255,43,214,.7), 0 0 16px rgba(0,240,255,.35);
 
-  --safe-top: var(--fm-safe-top, 0px);
-  --safe-bottom: var(--fm-safe-bottom, 0px);
-  --safe-left: var(--fm-safe-left, 0px);
-  --safe-right: var(--fm-safe-right, 0px);
+  --safe-top: max(var(--fm-safe-top, 0px), env(safe-area-inset-top, 0px));
+  --safe-bottom: max(var(--fm-safe-bottom, 0px), env(safe-area-inset-bottom, 0px));
+  --safe-left: max(var(--fm-safe-left, 0px), env(safe-area-inset-left, 0px));
+  --safe-right: max(var(--fm-safe-right, 0px), env(safe-area-inset-right, 0px));
 
   --r-sm: 8px; --r: 12px; --r-lg: 16px;
   --maxw: 1180px;
@@ -326,11 +326,11 @@ html:not(.tv-mode) body::after { content: ""; position: fixed; left: 0; right: 0
 .wrap { position: relative; z-index: 1; width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gut); }
 
 /* ---------------- 顶栏 ---------------- */
-.topbar { position: sticky; top: 0; z-index: 20; padding-top: calc(var(--safe-top) + 12px); padding-bottom: 12px; background: linear-gradient(to bottom, rgba(4,2,12,.97), rgba(4,2,12,.7) 72%, rgba(4,2,12,0)); backdrop-filter: blur(14px); transition: padding .25s var(--ease), background .25s var(--ease), box-shadow .25s var(--ease); }
+.topbar { position: sticky; top: 0; z-index: 20; padding-top: calc(var(--safe-top) + 8px); padding-bottom: 8px; background: linear-gradient(to bottom, rgba(4,2,12,.97), rgba(4,2,12,.7) 72%, rgba(4,2,12,0)); backdrop-filter: blur(14px); transition: padding .25s var(--ease), background .25s var(--ease), box-shadow .25s var(--ease); }
 .topbar::before { content: ""; display: none; }
 /* 实时状态文字 — 由 JS 驱动 */
 /* 状态栏移到首页搜索框上方 */
-.home-status-bar { display: flex; align-items: center; gap: 10px; margin: 14px 0 0; padding: 6px 12px; font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: color-mix(in srgb, var(--cyan) 50%, transparent); border-top: 1px solid color-mix(in srgb, var(--cyan) 12%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--cyan) 8%, transparent); background: color-mix(in srgb, var(--cyan) 3%, transparent); position: relative; overflow: hidden; flex-wrap: nowrap; height: 26px; }
+.home-status-bar { display: flex; align-items: center; gap: 10px; margin: 6px 0 0; padding: 6px 12px; font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: color-mix(in srgb, var(--cyan) 50%, transparent); border-top: 1px solid color-mix(in srgb, var(--cyan) 12%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--cyan) 8%, transparent); background: color-mix(in srgb, var(--cyan) 3%, transparent); position: relative; overflow: hidden; flex-wrap: nowrap; height: 26px; }
 .home-status-bar::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--cyan), var(--gold)); box-shadow: 0 0 6px color-mix(in srgb, var(--cyan) 60%, transparent); }
 .home-status-bar::after { content: ""; position: absolute; right: 0; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--gold), var(--cyan)); box-shadow: 0 0 6px rgba(var(--gold-rgb),.6); }
 .home-status-indicator { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); flex-shrink: 0; }
@@ -339,7 +339,7 @@ html:not(.tv-mode) body::after { content: ""; position: fixed; left: 0; right: 0
 .home-status-right { flex-shrink: 0; color: color-mix(in srgb, var(--gold) 40%, transparent); text-shadow: 0 0 8px rgba(var(--gold-rgb),.4); white-space: nowrap; }
 .topbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: linear-gradient(90deg, transparent 2%, var(--cyan) 20%, var(--gold) 80%, transparent 98%); box-shadow: 0 0 10px rgba(var(--gold-rgb),.5), 0 0 3px color-mix(in srgb, var(--cyan) 80%, transparent); opacity: 1; }
 /* 向下滚动后头部收缩、玻璃感更强（更省空间、更聚焦） */
-.topbar.shrink { padding-top: calc(var(--safe-top) + 6px); padding-bottom: 8px; background: linear-gradient(to bottom, rgba(6,7,9,.98), rgba(6,7,9,.9)); box-shadow: 0 6px 20px rgba(0,0,0,.45); }
+.topbar.shrink { padding-top: calc(var(--safe-top) + 4px); padding-bottom: 6px; background: linear-gradient(to bottom, rgba(6,7,9,.98), rgba(6,7,9,.9)); box-shadow: 0 6px 20px rgba(0,0,0,.45); }
 .topbar.shrink .brand .logo { width: 28px; height: 28px; font-size: 16px; }
 .topbar.shrink .searchbox { height: 38px; }
 .topbar .wrap { display: flex; align-items: center; }
@@ -1416,6 +1416,18 @@ function getArtwork(item) {
     /* 没有 TMDB，直接用数据源原图（可能低清） */
     return Promise.resolve(pick(item, "poster", "") ? { poster: item.poster, backdrop: pick(item, "backdrop", ""), id: pick(item, "tmdbId", 0), type: pick(item, "tmdbType", "") } : null);
   }
+  /* item 本身就来自 TMDB（目录卡片 / 搜索联想都是），已经带着确切的 tmdbId，
+     直接用它，不再按标题重新搜索去"认"是哪一部——这才是同名不同年份、
+     翻拍/撞名影视被匹配错的根本原因：新版资料不全时，重新搜索会兜底选到旧版 */
+  var knownId = pick(item, "tmdbId", 0);
+  if (knownId) {
+    return Promise.resolve({
+      poster: pick(item, "poster", ""),
+      backdrop: pick(item, "backdrop", ""),
+      id: knownId,
+      type: pick(item, "tmdbType", "") || "movie"
+    });
+  }
   var ck = "art_" + pick(item, "title", "") + "_" + pick(item, "year", "");
   return Store.get(ck).then(function (cached) {
     if (cached) { try { var o = JSON.parse(cached); if (o && o.poster) return o; } catch (e) {} }
@@ -1425,7 +1437,26 @@ function getArtwork(item) {
       "&language=" + encodeURIComponent(t.lang || "zh-CN") + "&query=" + encodeURIComponent(q);
     return request(url, { timeout: 15 }).then(function (data) {
       var arr = (data && data.results) ? data.results : [];
-      var hit = null, i; for (i = 0; i < arr.length; i++) { if (arr[i] && arr[i].poster_path) { hit = arr[i]; break; } }
+      var targetYear = num(pick(item, "year", ""));
+      function yearOf(r) { var d = (r.release_date || r.first_air_date || ""); return d ? num(d.slice(0, 4)) : 0; }
+      var hit = null, i;
+      /* 1. 优先找年份完全一致的：同名撞车/翻拍片很常见，光靠标题很容易认错 */
+      if (targetYear) {
+        for (i = 0; i < arr.length; i++) { if (arr[i] && arr[i].poster_path && yearOf(arr[i]) === targetYear) { hit = arr[i]; break; } }
+      }
+      /* 2. 没有精确命中：退而求其次找年份最接近的（容许 1 年误差，覆盖"上映年/首播年"统计口径不一致的情况） */
+      if (!hit && targetYear) {
+        var best = null, bestDiff = Infinity;
+        for (i = 0; i < arr.length; i++) {
+          var r = arr[i]; if (!r || !r.poster_path) continue;
+          var ry = yearOf(r); if (!ry) continue;
+          var diff = Math.abs(ry - targetYear);
+          if (diff < bestDiff) { bestDiff = diff; best = r; }
+        }
+        if (best && bestDiff <= 1) hit = best;
+      }
+      /* 3. 实在没有年份可比对（数据缺年份，或 TMDB 结果都没标年份），才退回原逻辑：第一个有海报的 */
+      if (!hit) { for (i = 0; i < arr.length; i++) { if (arr[i] && arr[i].poster_path) { hit = arr[i]; break; } } }
       if (!hit) return null;
       var out = {
         poster: t.imageBase + (t.listSize || "w780") + hit.poster_path,
@@ -1620,7 +1651,7 @@ var DEMO = [
 ];
 
 var STATE = { cat: "new", full: [], list: [], reqToken: 0, detail: null, driveCheck: true, clientFilter: true,
-  page: 1, totalPages: 1, hasMore: false, loadingMore: false,
+  page: 1, totalPages: 1, hasMore: false, loadingMore: false, catMeta: {},
   filters: { genre: "全部", region: "全部", year: "全部", sort: "最新" }, filtersOpen: false,
   featured: [], heroIdx: 0, heroTimer: null, playQueue: [], playIdx: 0, expand: {} };
 
@@ -1774,6 +1805,21 @@ function tmdbPages(cat, f, fromPage, count) {
     });
   }).catch(function () { STATE.hasMore = false; return []; });
 }
+/* 按分类保存当前的分页状态（page/totalPages/hasMore/clientFilter），
+   缓存命中时用来恢复，避免被其它分类的后台预取互相污染 */
+function snapshotPageMeta(key) {
+  if (!STATE.catMeta) STATE.catMeta = {};
+  STATE.catMeta[key] = { page: STATE.page, totalPages: STATE.totalPages, hasMore: STATE.hasMore, clientFilter: STATE.clientFilter };
+}
+function restorePageMeta(key) {
+  var m = STATE.catMeta && STATE.catMeta[key];
+  if (m) {
+    STATE.page = m.page; STATE.totalPages = m.totalPages; STATE.hasMore = m.hasMore; STATE.clientFilter = m.clientFilter;
+  } else {
+    /* 没有元信息（理论上不会发生在有缓存数据的情况下）：保守地当作无法续页处理 */
+    STATE.clientFilter = true;
+  }
+}
 function loadCatalog(cat) {
   STATE.page = 1; STATE.totalPages = 1; STATE.hasMore = false; STATE.loadingMore = false;
   if (CONFIG.catalogApi) {
@@ -1800,8 +1846,11 @@ function loadMore() {
   tmdbPages(STATE.cat, STATE.filters, from, 2).then(function (items) {
     if (token !== STATE.reqToken) return;
     STATE.full = dedupeById((STATE.full || []).concat(items));
-    STATE.loadingMore = false; STATE._appendMode = true; renderList(token);
-  }).catch(function () { if (token !== STATE.reqToken) return; STATE.loadingMore = false; STATE.hasMore = false; renderList(token); });
+    STATE.loadingMore = false; STATE._appendMode = true;
+    if (STATE.catCache) STATE.catCache[STATE.cat] = STATE.full;
+    snapshotPageMeta(STATE.cat);
+    renderList(token);
+  }).catch(function () { if (token !== STATE.reqToken) return; STATE.loadingMore = false; STATE.hasMore = false; snapshotPageMeta(STATE.cat); renderList(token); });
 }
 
 /* ============================================================
@@ -1909,7 +1958,7 @@ function renderGrid() {
   var cached = STATE.catCache && STATE.catCache[STATE.cat];
   if (cached && cached.length && !(tmdbEnabled() && hasActiveFilter)) {
     STATE.full = cached;
-    STATE.clientFilter = true;
+    restorePageMeta(STATE.cat); /* 恢复这个分类自己的 page/totalPages/hasMore/clientFilter，而不是写死 true */
     renderList(token);
     return; /* 缓存命中，无需再发请求 */
   }
@@ -1927,6 +1976,7 @@ function renderGrid() {
     STATE.full = list || [];
     if (!STATE.catCache) STATE.catCache = {};
     STATE.catCache[STATE.cat] = STATE.full; /* 存入缓存供下次使用 */
+    snapshotPageMeta(STATE.cat); /* 同时记下这个分类自己的分页状态 */
     renderList(token);
   }).catch(function (e) {
     if (token !== STATE.reqToken) return;
@@ -2728,11 +2778,19 @@ function tmdbSuggest(kw) {
   var url = (t.apiBase || "https://api.tmdb.org/3") + "/search/multi?api_key=" + encodeURIComponent(t.apiKey) + "&language=" + encodeURIComponent(t.lang || "zh-CN") + "&include_adult=false&page=1&query=" + encodeURIComponent(kw);
   return request(url, { timeout: 12 }).then(function (d) {
     if (!d || !d.results) return [];
-    return d.results
+    var mapped = d.results
       .filter(function (r) { return r && (r.media_type === "movie" || r.media_type === "tv"); })
       .map(function (r) { return mapTmdb(r, r.media_type === "tv"); })
-      .filter(function (x) { return x && x.title; })
-      .slice(0, 8);
+      .filter(function (x) { return x && x.title; });
+    /* 标题（或译名）跟搜索词完全一致的，视为“同名”——重拍/撞名的不同年份版本都在这一档，
+       必须全部列出来，不能被后面的截断挤掉；剩余名额再给其它相关结果 */
+    var exact = [], rest = [];
+    mapped.forEach(function (x) {
+      if (x.title === kw || (x.en && x.en === kw)) exact.push(x); else rest.push(x);
+    });
+    exact.sort(function (a, b) { return num(b.year) - num(a.year); });
+    rest.sort(function (a, b) { return num(b.year) - num(a.year); });
+    return exact.concat(rest).slice(0, Math.max(8, exact.length));
   });
 }
 function hideSuggest() { var box = $("#suggest"); if (box) { box.classList.remove("show"); box.replaceChildren(); } }
@@ -2923,7 +2981,9 @@ function onScrollLoad() {
     var tb = document.querySelector(".topbar");
     if (tb) { if (y > 24) tb.classList.add("shrink"); else tb.classList.remove("shrink"); }
     if (detail) return;
-    /* loadMore 由 IntersectionObserver 哨兵触发，scroll 无需重复判断 */
+    /* 兜底：滑动时也直接判断距底距离并加载，不完全依赖 IntersectionObserver
+       （部分壳子/WebView 里 IO 配合 fixed 布局不够灵敏，双保险更稳） */
+    if (!STATE.clientFilter && STATE.hasMore && !STATE.loadingMore && nearListBottom()) loadMore();
   });
 }
 function setupInfiniteScroll() {
@@ -3004,11 +3064,20 @@ function boot() {
       if (key === STATE.cat) { next(); return; } /* 当前分类已由 renderGrid 处理 */
       var idle = window.requestIdleCallback || function(fn){ setTimeout(fn, 80); };
       idle(function() {
+        /* loadCatalog 会写全局的 STATE.page/totalPages/hasMore/clientFilter，
+           先记下当前用户正在看的分类，抓完 key 之后把这些字段还原回去，
+           避免后台预取"华语热播"之类的分类时，把用户正在看的分类的分页状态改坏 */
+        var activeCat = STATE.cat;
         loadCatalog(key).then(function(list) {
           if (!STATE.catCache) STATE.catCache = {};
           STATE.catCache[key] = list || [];
+          snapshotPageMeta(key);
+          if (STATE.cat === activeCat) restorePageMeta(activeCat);
           next();
-        }).catch(function(){ next(); });
+        }).catch(function(){
+          if (STATE.cat === activeCat) restorePageMeta(activeCat);
+          next();
+        });
       });
     }
     /* 延迟200ms等首屏完成再开始后台预加载 */
@@ -3094,6 +3163,27 @@ function boot() {
     if (fm.config) fm.config().then(function (c) { STATE.driveCheck = (c && c.driveCheck !== false); }).catch(function () {});
     applyChrome();
   });
+
+  /* 根据 chromeMode 动态调整顶部安全区：
+     有原生 Toolbar（normal / tv-normal / tv-overlay）时归零，避免双重留白；
+     全屏模式（edge / immersive / tv-full）时使用状态栏高度。 */
+  function _applySafeTop(mode) {
+    var hasToolbar = mode === "normal" || mode === "tv-normal" || mode === "tv-overlay";
+    document.documentElement.style.setProperty(
+      "--safe-top",
+      hasToolbar ? "0px" : "max(var(--fm-safe-top,0px),env(safe-area-inset-top,0px))"
+    );
+  }
+  window.addEventListener("fmviewport", function (e) {
+    _applySafeTop(((e.detail) || {}).chromeMode || "");
+  });
+  /* 初始化时主动读一次，避免首帧 fmviewport 未触发时顶部间距偏大 */
+  (function () {
+    if (!window.fm) return;
+    try {
+      fm.ui.getViewport().then(function (vp) { _applySafeTop(((vp) || {}).chromeMode || ""); }).catch(function () {});
+    } catch (e) {}
+  })();
 
   if (IS_TV) setTimeout(function () { var f = $("#nav").querySelector(".focusable"); if (f) { lastHomeFocus = f; focusEl(f); } }, 120);
 }
@@ -3689,6 +3779,6 @@ function scrambleText(el, finalText, duration) {
   };
 })();
 </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1ae628a2f8d44751bafeb4d676de142e","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496" integrity="sha512-ZE9pZaUXND66v380QUtch/5sE9tPFh2zg45pR2PB0CVkCtOREv2AJKkSidISWkysEuQ0EH8faUU5du78bx87UQ==" data-cf-beacon='{"version":"2024.11.0","token":"1ae628a2f8d44751bafeb4d676de142e","r":1}' crossorigin="anonymous"></script>
 </body>
 </html>
