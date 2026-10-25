@@ -1,16 +1,16 @@
 {
   "pages": [
     {"key": "webhome_main", "name": "🏠玩偶聚合", "url": "https://syntaxjester.github.io/HTML/新玩偶聚合.html"},
-    {"key": "webhome_movie", "name": "🎬盘链", "url": "https://syntaxjester.github.io/HTML/盘链.html"},
-    {"key": "webhome_movie", "name": "🎬音乐聚合", "url": "https://syntaxjester.github.io/HTML/音乐聚合.html"},
-    {"key": "webhome_movie", "name": "🎬直播聚合", "url": "https://syntaxjester.github.io/HTML/直播聚合.html"},
-    {"key": "webhome_movie", "name": "🎬裤佬音乐", "url": "https://syntaxjester.github.io/HTML/裤佬音乐.html"},
-    {"key": "webhome_movie", "name": "🎬漫画聚合", "url": "https://syntaxjester.github.io/HTML/漫画聚合.html"},
-    {"key": "webhome_movie", "name": "🎬自用聚合", "url": "https://syntaxjester.github.io/HTML/自用聚合.html"}{"key": "webhome_movie", "name": "🎬哔哩哔哩", "url": "https://syntaxjester.github.io/HTML/哔哩哔哩.html"},
-    {"key": "webhome_movie", "name": "🎬Youtube", "url": "https://syntaxjester.github.io/HTML/Yoitube.html"},
-    {"key": "webhome_movie", "name": "🎬MMRGB图片", "url": "https://syntaxjester.github.io/HTML/MMRGB图片.html"},
-    {"key": "webhome_movie", "name": "🎬哔哩哔哩", "url": "https://syntaxjester.github.io/HTML/哔哩哔哩.html"},
-    {"key": "webhome_movie", "name": "🎬Applemusic", "url": "https://syntaxjester.github.io/HTML/Applemusic<.html"},
+    {"key": "webhome_pl", "name": "🎬盘链", "url": "https://syntaxjester.github.io/HTML/盘链.html"},
+    {"key": "webhome_music", "name": "🎬音乐聚合", "url": "https://syntaxjester.github.io/HTML/音乐聚合.html"},
+    {"key": "webhome_zhibo", "name": "🎬直播聚合", "url": "https://syntaxjester.github.io/HTML/直播聚合.html"},
+    {"key": "webhome_music1", "name": "🎬裤佬音乐", "url": "https://syntaxjester.github.io/HTML/裤佬音乐.html"},
+    {"key": "webhome_mh", "name": "🎬漫画聚合", "url": "https://syntaxjester.github.io/HTML/漫画聚合.html"},
+    {"key": "webhome_zy", "name": "🎬自用聚合", "url": "https://syntaxjester.github.io/HTML/自用聚合.html"},
+    {"key": "webhome_bilibili", "name": "🎬哔哩哔哩", "url": "https://syntaxjester.github.io/HTML/哔哩哔哩.html"},
+    {"key": "webhome_youtube", "name": "🎬Youtube", "url": "https://syntaxjester.github.io/HTML/Youtube.html"},
+    {"key": "webhome_mm", "name": "🎬MMRGB图片", "url": "https://syntaxjester.github.io/HTML/MMRGB图片.html"},
+    {"key": "webhome_apple", "name": "🎬Applemusic", "url": "https://syntaxjester.github.io/HTML/Applemusic.html"},
     {"key": "webhome_tv", "name": "📺听书聚合", "url": "https://syntaxjester.github.io/HTML/听书聚合.html"}
   ]
 }
