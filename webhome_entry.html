@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>WebHome</title>
+<style>
+body{{margin:0;background:#0f172a;color:#fff;font-family:sans-serif}}
+.nav{{display:flex;gap:8px;padding:10px;overflow-x:auto;white-space:nowrap}}
+.nav a{{padding:8px 14px;background:#1e40af;border-radius:18px;color:#fff;text-decoration:none;font-size:13px}}
+iframe{{width:100%;height:calc(100vh - 50px);border:0;background:#fff}}
+.empty{{padding:40px;text-align:center;color:#94a3b8}}
+</style>
+</head>
+<body>
+<div class="nav" id="nav"></div>
+<iframe id="frame" style="display:none"></iframe>
+<div class="empty" id="empty">请选择上方一个页面</div>
+<script>
+const pages = {json.dumps(pages, ensure_ascii=False, indent=2)};
+const nav = document.getElementById('nav');
+const frame = document.getElementById('frame');
+const empty = document.getElementById('empty');
+pages.forEach((p,i) => {{
+    const a = document.createElement('a');
+    a.textContent = p.name;
+    a.onclick = (e) => {{
+        e.preventDefault();
+        frame.src = p.url;
+        frame.style.display = 'block';
+        empty.style.display = 'none';
+        // 高亮当前
+        nav.querySelectorAll('a').forEach(x=>x.style.background='#1e40af');
+        a.style.background = '#dc2626';
+    }};
+    nav.appendChild(a);
+}});
+</script>
+</body>
+</html>
