@@ -2,45 +2,41 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0">
 <title>WebHome</title>
 <style>
-body{margin:0;font-family:sans-serif;background:#0f172a;color:#fff}
-.nav{display:flex;gap:8px;padding:10px;overflow-x:auto;white-space:nowrap;background:#16213e;z-index:10;position:sticky;top:0}
-.nav a{padding:8px 14px;background:#1e40af;border-radius:18px;color:#fff;text-decoration:none;font-size:13px;flex-shrink:0}
-.nav a.on{background:#dc2626}
-#frame{width:100%;height:calc(100vh - 58px);border:0;background:#fff;display:block}
+html,body{margin:0;height:100%}
+body{background:#0f172a;font-family:system-ui,sans-serif}
+.nav{display:flex;gap:8px;padding:10px;overflow-x:auto;white-space:nowrap;background:#0f172a;position:sticky;top:0;z-index:10}
+.nav::-webkit-scrollbar{display:none}
+.tab{padding:8px 14px;background:#1e40af;border-radius:18px;color:#fff;text-decoration:none;font-size:13px;flex-shrink:0;border:0;cursor:pointer}
+.tab.on{background:#dc2626}
+.tab.err{opacity:.5;text-decoration:line-through}
+#frame{width:100%;height:calc(100vh - 48px);border:0;display:block;background:#fff}
 </style>
 </head>
 <body>
 <div class="nav" id="nav"></div>
-<iframe id="frame"></iframe>
+<iframe id="frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe>
 <script>
-const pages = [{"name": "🏠玩偶聚合", "url": "https://syntaxjester.github.io/HTML/新玩偶聚合.html"}, {"name": "🎬盘链", "url": "https://syntaxjester.github.io/HTML/盘链.html"}, {"name": "🎬音乐聚合", "url": "https://syntaxjester.github.io/HTML/音乐聚合.html"}, {"name": "🎬直播聚合", "url": "https://syntaxjester.github.io/HTML/直播聚合.html"}, {"name": "🎬裕佬音乐", "url": "https://syntaxjester.github.io/HTML/裕佬音乐.html"}, {"name": "🎬漫画聚合", "url": "https://syntaxjester.github.io/HTML/漫画聚合.html"}, {"name": "🎬自用聚合", "url": "https://syntaxjester.github.io/HTML/自用聚合.html"}, {"name": "🎬哔哩哔哩", "url": "https://syntaxjester.github.io/HTML/哔哩哔哩.html"}, {"name": "🎬MMRGB图片", "url": "https://syntaxjester.github.io/HTML/MMRGB图片.html"}, {"name": "📺听书聚合", "url": "https://syntaxjester.github.io/HTML/听书聚合.html"}];
+const pages = [{"name": "🏠玩偶聚合", "url": "https://syntaxjester.github.io/HTML/新玩偶聚合.html"}, {"name": "🎬盘链", "url": "https://syntaxjester.github.io/HTML/盘链.html"}, {"name": "🎬音乐聚合", "url": "https://syntaxjester.github.io/HTML/音乐聚合.html"}, {"name": "🎬直播聚合", "url": "https://syntaxjester.github.io/HTML/直播聚合.html"}, {"name": "🎬裤佬音乐", "url": "https://syntaxjester.github.io/HTML/裤佬音乐.html"}, {"name": "🎬漫画聚合", "url": "https://syntaxjester.github.io/HTML/漫画聚合.html"}, {"name": "🎬自用聚合", "url": "https://syntaxjester.github.io/HTML/自用聚合.html"}, {"name": "🎬哔哩哔哩", "url": "https://syntaxjester.github.io/HTML/哔哩哔哩.html"}, {"name": "📺听书聚合", "url": "https://syntaxjester.github.io/HTML/听书聚合.html"}, {"name": "🎬MMRGB", "url": "https://syntaxjester.github.io/HTML/MMRGB图片.html"}, {"name": "▶Youtube", "url": "https://syntaxjester.github.io/HTML/Youtube.html", "broken": true}, {"name": "🎵Apple", "url": "https://syntaxjester.github.io/HTML/Applemusic.html", "broken": true}];
 const nav = document.getElementById('nav');
 const frame = document.getElementById('frame');
-let curIdx = 0;
-
-// 找当前iframe URL对应哪个按钮
-pages.forEach((p,i)=>{
-    const a = document.createElement('a');
-    a.textContent = p.name;
-    a.href = '#';
-    a.onclick = (e)=>{
-        e.preventDefault();
-        curIdx = i;
-        frame.src = p.url;
-        nav.querySelectorAll('a').forEach(x=>x.classList.remove('on'));
-        a.classList.add('on');
-    };
-    nav.appendChild(a);
-});
-
-// 初始加载第一个
-if (pages.length > 0) {
-    frame.src = pages[0].url;
-    nav.querySelector('a').classList.add('on');
+let current = -1;
+function select(i){
+    const p = pages[i];
+    current = i;
+    frame.src = p.url;
+    nav.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('on', j===i));
 }
+pages.forEach((p,i)=>{
+    const b = document.createElement('button');
+    b.className = 'tab' + (p.broken?' err':'');
+    b.textContent = p.name + (p.broken?'(缺)':'');
+    b.onclick = ()=>select(i);
+    nav.appendChild(b);
+});
+select(0);
 </script>
 </body>
 </html>
