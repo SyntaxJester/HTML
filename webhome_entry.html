@@ -5,34 +5,38 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>WebHome</title>
 <style>
-body{margin:0;background:#0f172a;color:#fff;font-family:sans-serif}
-.nav{display:flex;gap:8px;padding:10px;overflow-x:auto;white-space:nowrap}
+body{margin:0;font-family:sans-serif;background:#0f172a;color:#fff}
+.nav{display:flex;gap:8px;padding:10px;overflow-x:auto;white-space:nowrap;background:#16213e;z-index:10;position:sticky;top:0}
 .nav a{padding:8px 14px;background:#1e40af;border-radius:18px;color:#fff;text-decoration:none;font-size:13px;flex-shrink:0}
 .nav a.on{background:#dc2626}
+#frame{width:100%;height:calc(100vh - 58px);border:0;background:#fff;display:block}
 </style>
 </head>
 <body>
 <div class="nav" id="nav"></div>
-<div style="height:calc(100vh - 48px);overflow:auto">
-<iframe id="frame" style="width:100%;height:100%;border:0;background:#fff" src=""></iframe>
-</div>
+<iframe id="frame"></iframe>
 <script>
-const pages = [{"key": "w_main", "name": "🏠玩偶聚合", "url": "https://syntaxjester.github.io/HTML/新玩偶聚合.html"}, {"key": "w_panlian", "name": "🎬盘链", "url": "https://syntaxjester.github.io/HTML/盘链.html"}, {"key": "w_music", "name": "🎬音乐聚合", "url": "https://syntaxjester.github.io/HTML/音乐聚合.html"}, {"key": "w_live", "name": "🎬直播聚合", "url": "https://syntaxjester.github.io/HTML/直播聚合.html"}, {"key": "w_kulao", "name": "🎬裤佬音乐", "url": "https://syntaxjester.github.io/HTML/裤佬音乐.html"}, {"key": "w_manga", "name": "🎬漫画聚合", "url": "https://syntaxjester.github.io/HTML/漫画聚合.html"}, {"key": "w_self", "name": "🎬自用聚合", "url": "https://syntaxjester.github.io/HTML/自用聚合.html"}, {"key": "w_bili", "name": "🎬哔哩哔哩", "url": "https://syntaxjester.github.io/HTML/哔哩哔哩.html"}, {"key": "w_yt", "name": "🎬Youtube", "url": "https://syntaxjester.github.io/HTML/Youtube.html"}, {"key": "w_mmrgb", "name": "🎬MMRGB图片", "url": "https://syntaxjester.github.io/HTML/MMRGB图片.html"}, {"key": "w_apple", "name": "🎬Applemusic", "url": "https://syntaxjester.github.io/HTML/Applemusic.html"}, {"key": "w_tingshu", "name": "📺听书聚合", "url": "https://syntaxjester.github.io/HTML/听书聚合.html"}];
+const pages = [{"name": "🏠玩偶聚合", "url": "https://syntaxjester.github.io/HTML/新玩偶聚合.html"}, {"name": "🎬盘链", "url": "https://syntaxjester.github.io/HTML/盘链.html"}, {"name": "🎬音乐聚合", "url": "https://syntaxjester.github.io/HTML/音乐聚合.html"}, {"name": "🎬直播聚合", "url": "https://syntaxjester.github.io/HTML/直播聚合.html"}, {"name": "🎬裕佬音乐", "url": "https://syntaxjester.github.io/HTML/裕佬音乐.html"}, {"name": "🎬漫画聚合", "url": "https://syntaxjester.github.io/HTML/漫画聚合.html"}, {"name": "🎬自用聚合", "url": "https://syntaxjester.github.io/HTML/自用聚合.html"}, {"name": "🎬哔哩哔哩", "url": "https://syntaxjester.github.io/HTML/哔哩哔哩.html"}, {"name": "🎬MMRGB图片", "url": "https://syntaxjester.github.io/HTML/MMRGB图片.html"}, {"name": "📺听书聚合", "url": "https://syntaxjester.github.io/HTML/听书聚合.html"}];
 const nav = document.getElementById('nav');
 const frame = document.getElementById('frame');
-pages.forEach((p,i) => {
+let curIdx = 0;
+
+// 找当前iframe URL对应哪个按钮
+pages.forEach((p,i)=>{
     const a = document.createElement('a');
     a.textContent = p.name;
     a.href = '#';
-    a.dataset.idx = i;
-    a.onclick = (e) => {
+    a.onclick = (e)=>{
         e.preventDefault();
+        curIdx = i;
         frame.src = p.url;
         nav.querySelectorAll('a').forEach(x=>x.classList.remove('on'));
         a.classList.add('on');
     };
     nav.appendChild(a);
 });
+
+// 初始加载第一个
 if (pages.length > 0) {
     frame.src = pages[0].url;
     nav.querySelector('a').classList.add('on');
